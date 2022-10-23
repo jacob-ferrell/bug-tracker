@@ -1,6 +1,6 @@
 
 
-const LogInForm = (props) => {
+const LogInPage = (props) => {
     return (
     <div className="login-dark">
         <form method="post">
@@ -20,10 +20,11 @@ const LogInForm = (props) => {
                 <button className="btn btn-primary btn-block" type="submit">Log In</button>
             </div>
             <a href="#" className="forgot">Forgot your email or password?</a>
-            <a href="#" className="signup">Don't have an account? Sign Up</a>
+            <a href="#" className="signup">Don't have an account? <u>Sign Up</u></a>
+            <a href="#" className="demo-user">Sign In as <u>Demo User</u></a>
         </form>
     </div>
     )
 }
 
-export default LogInForm;
+export default LogInPage;

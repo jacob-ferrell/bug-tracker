@@ -4,8 +4,9 @@
 
 .login-dark {
     height:100%;
-    background:#475d62 url(../assets/login-bg.jpg);
+    background:#1e2833 url(../assets/login-bg2.jpg);
     background-size:cover;
+    background-repeat: no-repeat;
     position:relative;
   }
   
@@ -56,7 +57,7 @@
     outline:none;
   }
   
-  .login-dark form .forgot, .signup {
+  .login-dark form .forgot, .signup, .demo-user {
     display:block;
     text-align:center;
     font-size:12px;
