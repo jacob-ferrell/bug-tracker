@@ -1,5 +1,6 @@
 import '../styles/LogInPage.css';
 import { Link } from 'react-router-dom';
+import LoginButton from './LoginButton';
 
 const LogInPage = (props) => {
     return (
@@ -24,6 +25,7 @@ const LogInPage = (props) => {
             <Link className="signup" to="/signup">Don't have an account? <u>Sign Up</u></Link>
             <a href="#" className="demo-user">Sign In as <u>Demo User</u></a>
         </form>
+        <LoginButton />
     </div>
     );
 }
