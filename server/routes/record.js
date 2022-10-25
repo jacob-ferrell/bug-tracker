@@ -1,84 +1,96 @@
 const express = require("express");
- 
-// recordRoutes is an instance of the express router.
-// We use it to define our routes.
-// The router will be added as a middleware and will take control of requests starting with path /record.
+const User = require('../models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const path = require('path');
+const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
+
+
 const recordRoutes = express.Router();
+
+//route for registering new users
+recordRoutes.route('/signup').post(async (req, res) => {
+  const user = req.body;
+  const takenEmail = await User.findOne({email: user.email});
+
+  if (takenEmail) {
+    res.json({takenEmail: true});
+  } else {
+    user.password = await bcrypt.hash(req.body.password, 10);
+
+    const dbUser = new User({
+      email: user.email.toLowerCase(),
+      password: user.password,
+      firstName: user.firstName,
+      lastName: user.lastName
+
+    })
+
+    dbUser.save();
+    res.json({takenEmail: false});
+  }
+})
+//route for logging in existing users
+recordRoutes.route('/login').post((req, res) => {
+
+  const userLoggingIn = req.body;
+
+  User.findOne({email: userLoggingIn.email})
+  .then(dbUser => {
+    if (!dbUser) {
+      return res.json({
+        message: 'Invalid Email or Password'
+      })
+    }
+    bcrypt.compare(userLoggingIn.password, dbUser.password)
+    .then(isCorrect => {
+      if (!isCorrect) {
+        return res.json({
+          message: "Invalid Email or Password"
+        })
+      }
+        const payload = {
+          id: dbUser._id,
+          email: dbUser.email,
+      }
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        {expiresIn: 86400},
+        (err, token) => {
+          if (err) return res.json({message: err});
+          return res.json({
+            message: 'Success',
+            token: "Bearer " + token
+          })
+        }
+      )
+    })
+  })
+})
+
+recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
+  res.json({isLoggedIn: true, email: req.user.email})
+})
  
-// This will help us connect to the database
-const dbo = require("../db/conn");
- 
-// This help convert the id from string to ObjectId for the _id.
-const ObjectId = require("mongodb").ObjectId;
- 
- 
-// This section will help you get a list of all the records.
-recordRoutes.route("/record").get(function (req, res) {
- let db_connect = dbo.getDb("employees");
- db_connect
-   .collection("records")
-   .find({})
-   .toArray(function (err, result) {
-     if (err) throw err;
-     res.json(result);
-   });
-});
- 
-// This section will help you get a single record by id
-recordRoutes.route("/record/:id").get(function (req, res) {
- let db_connect = dbo.getDb();
- let myquery = { _id: ObjectId(req.params.id) };
- db_connect
-   .collection("records")
-   .findOne(myquery, function (err, result) {
-     if (err) throw err;
-     res.json(result);
-   });
-});
- 
-// This section will help you create a new record.
-recordRoutes.route("/record/add").post(function (req, response) {
- let db_connect = dbo.getDb();
- let myobj = {
-   name: req.body.name,
-   position: req.body.position,
-   level: req.body.level,
- };
- db_connect.collection("records").insertOne(myobj, function (err, res) {
-   if (err) throw err;
-   response.json(res);
- });
-});
- 
-// This section will help you update a record by id.
-recordRoutes.route("/update/:id").post(function (req, response) {
- let db_connect = dbo.getDb();
- let myquery = { _id: ObjectId(req.params.id) };
- let newvalues = {
-   $set: {
-     name: req.body.name,
-     position: req.body.position,
-     level: req.body.level,
-   },
- };
- db_connect
-   .collection("records")
-   .updateOne(myquery, newvalues, function (err, res) {
-     if (err) throw err;
-     console.log("1 document updated");
-     response.json(res);
-   });
-});
- 
-// This section will help you delete a record
-recordRoutes.route("/:id").delete((req, response) => {
- let db_connect = dbo.getDb();
- let myquery = { _id: ObjectId(req.params.id) };
- db_connect.collection("records").deleteOne(myquery, function (err, obj) {
-   if (err) throw err;
-   console.log("1 document deleted");
-   response.json(obj);
- });
-});
+//function for veryifying users 
+function verifyJWT(req, res, next) {
+  const token = req.headers['x-access-token']?.split(' ')[1];
+
+  if (!token) {
+    return res.json({message: "Incorrect Token Given", isLogginIn: false})
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.json({
+      isLoggedIn: false,
+      message: "Failed To Authenticate"
+    })
+    console.log('poop');
+    req.user = {};
+    req.user.id = decoded.id;
+    req.user.email = decoded.email;
+    next();
+  })
+}
  
 module.exports = recordRoutes;
