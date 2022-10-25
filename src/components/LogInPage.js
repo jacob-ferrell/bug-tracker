@@ -1,7 +1,6 @@
 import '../styles/LogInPage.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import LoginButton from './LoginButton';
 
 const LogInPage = (props) => {
 
@@ -25,7 +24,8 @@ const LogInPage = (props) => {
     })
     .then(res => res.json())
     .then(data => {
-      localStorage.setItem('token', data.token)
+      localStorage.setItem('token', data.token);
+      navigate('/dashboard');
     })
   }
 

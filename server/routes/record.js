@@ -68,9 +68,20 @@ recordRoutes.route('/login').post((req, res) => {
     })
   })
 })
-
-recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
+//if user is authorized, responds with isLoggedIn as true and the user's email
+/* recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
   res.json({isLoggedIn: true, email: req.user.email})
+}) */
+//if user is authorized, respond with all user data
+recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
+  User.findOne({email: req.user.email})
+  .then(userData => res.json({isLoggedIn: true, ...userData._doc}))
+})
+
+//retrieves all user data from database if jwt token is valid
+recordRoutes.route('/getUserData').get((req, res) => {
+  User.findOne({email: req.body.email})
+  .then(userData => res.json(userData))
 })
  
 //function for veryifying users 
@@ -85,7 +96,6 @@ function verifyJWT(req, res, next) {
       isLoggedIn: false,
       message: "Failed To Authenticate"
     })
-    console.log('poop');
     req.user = {};
     req.user.id = decoded.id;
     req.user.email = decoded.email;

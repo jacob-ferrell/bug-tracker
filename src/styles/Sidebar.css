@@ -1,0 +1,13 @@
+.sidebar {
+    background-color: #1e2833;
+    color: #6f7a85;
+    height: 100%;
+    width: fit-content;
+}
+.sidebar div {
+    cursor: pointer;
+}
+.sidebar div:hover {
+    background-color: #334457;
+
+}

@@ -2,3 +2,12 @@ html, body .dashboard {
     height: 100%;
     background-color: rgb(85, 85, 85);
 }
+.dashboard {
+    display: flex;
+}
+.dashboard-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
