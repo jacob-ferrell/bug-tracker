@@ -16,7 +16,16 @@ const userSchema = mongoose.Schema({
     lastName: {
         type: String,
         required: true
+    },
+    projects: {
+        type: Array,
+        required: true
+    },
+    tickets: {
+        type: Array,
+        required: true
     }
+    
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', userSchema);

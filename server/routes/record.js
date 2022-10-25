@@ -1,5 +1,7 @@
 const express = require("express");
 const User = require('../models/user');
+const Project = require('../models/project');
+const Ticket = require('../models/ticket');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -22,12 +24,31 @@ recordRoutes.route('/signup').post(async (req, res) => {
       email: user.email.toLowerCase(),
       password: user.password,
       firstName: user.firstName,
-      lastName: user.lastName
-
+      lastName: user.lastName,
+      projects: user.projects,
+      tickets: user.tickets
     })
 
     dbUser.save();
     res.json({takenEmail: false});
+  }
+})
+
+//route for adding new projects to db
+recordRoutes.route('/createProject').post(async (req, res) => {
+  const project = req.body;
+  const user = await User.findOne({email: project.creator});
+  const takenName = await User.findOne({email: project.creator, projects: project.name});
+
+  if (takenName) {
+    res.json({takenName: true});
+  } else {
+    const dbProject = await Project.create({...project});
+    user.projects.push(dbProject)
+    await user.save();
+
+    dbProject.save();
+    res.json({takenName: false});
   }
 })
 //route for logging in existing users
@@ -87,7 +108,6 @@ recordRoutes.route('/getUserData').get((req, res) => {
 //function for veryifying users 
 function verifyJWT(req, res, next) {
   const token = req.headers['x-access-token']?.split(' ')[1];
-
   if (!token) {
     return res.json({message: "Incorrect Token Given", isLogginIn: false})
   }

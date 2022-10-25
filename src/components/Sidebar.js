@@ -1,4 +1,5 @@
 import '../styles/Sidebar.css';
+import { Link } from 'react-router-dom';
 
 const Sidebar = props => {
 
@@ -7,13 +8,16 @@ const Sidebar = props => {
     return (
         <div className="sidebar">
             <div>
-                {`Welcome ${userData.firstName} ${userData.lastName[0].toUpperCase()}`}
+                {`Welcome ${userData.firstName} ${userData.lastName}`}
             </div>
             <div>
-                My Projects
+                <Link  to="/dashboard/">My Dashboard</Link>
             </div>
             <div>
-                My Tickets
+                <Link  to="/dashboard/my-projects">My Projects</Link>
+            </div>
+            <div>
+                <Link to ="/dashboard/my-tickets">My Tickets</Link>
             </div>
         </div>
     );

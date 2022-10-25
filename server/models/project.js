@@ -13,6 +13,14 @@ const projectSchema = mongoose.Schema({
         type: Array,
         required: true
     },
+    description: {
+        type: String,
+        required: true,
+    },
+    creator: {
+        type: String,
+        required: true
+    },
 }, {timestamps: true});
 
 module.exports = mongoose.model('Project', projectSchema);

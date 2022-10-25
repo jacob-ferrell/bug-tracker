@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import MyProjects from './MyProjects';
 
 const Dashboard = props => {
 
     const navigate = useNavigate();
-    let user;
     const [data, setData] = useState({});
 
     function logout(e) {
@@ -35,7 +35,9 @@ const Dashboard = props => {
             <Sidebar userData={data}/>
             <div className='dashboard-body'>
                 <Header />
-                
+                {props.myProjects && (
+                    <MyProjects userData={data}/>
+                )}
             </div>
             <button onClick={logout}>Log Out</button>
             {console.log(data)}
