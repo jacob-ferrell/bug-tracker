@@ -18,16 +18,9 @@ recordRoutes.route('/signup').post(async (req, res) => {
   if (takenEmail) {
     res.json({takenEmail: true});
   } else {
-    user.password = await bcrypt.hash(req.body.password, 10);
+    user.password = await bcrypt.hash(user.password, 10);
 
-    const dbUser = new User({
-      email: user.email.toLowerCase(),
-      password: user.password,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      projects: user.projects,
-      tickets: user.tickets
-    })
+    const dbUser = new User({...user})
 
     dbUser.save();
     res.json({takenEmail: false});
@@ -47,7 +40,7 @@ recordRoutes.route('/createProject').post(async (req, res) => {
     user.projects.push(dbProject)
     await user.save();
 
-    dbProject.save();
+    await dbProject.save();
     res.json({takenName: false});
   }
 })
