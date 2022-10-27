@@ -31,11 +31,12 @@ recordRoutes.route('/signup').post(async (req, res) => {
 recordRoutes.route('/createProject').post(async (req, res) => {
   const project = req.body;
   const user = await User.findOne({email: project.creator});
-  const takenName = await User.findOne({email: project.creator, projects: project.name});
-
+  const takenName = await User.findOne({email: project.creator, 'projects.name': project.name});
+  console.log(takenName);
   if (takenName) {
     res.json({takenName: true});
   } else {
+    console.log(takenName);
     const dbProject = await Project.create({...project});
     user.projects.push(dbProject)
     await user.save();
