@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const projectSchema = mongoose.Schema({
+const teamSchema = mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    tickets: {
+    members: {
         type: Array,
         required: true
     },
@@ -17,10 +17,6 @@ const projectSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    users: {
-        type: Array,
-        required: true
-    },
 }, {timestamps: true});
 
-module.exports = mongoose.model('Project', projectSchema);
+module.exports = mongoose.model('Team', teamSchema);

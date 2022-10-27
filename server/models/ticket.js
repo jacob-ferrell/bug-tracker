@@ -13,7 +13,7 @@ const ticketSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    project: {
+    project_id: {
         type: String,
         required: true
     },
@@ -25,10 +25,7 @@ const ticketSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    updated: {
-        type: String,
-        required: false
-    }
+
 }, {timestamps: true});
 
 module.exports = mongoose.model('Ticket', ticketSchema);

@@ -2,6 +2,7 @@ const express = require("express");
 const User = require('../models/user');
 const Project = require('../models/project');
 const Ticket = require('../models/ticket');
+const UserInfo = require('../models/userInfo');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -13,16 +14,24 @@ const recordRoutes = express.Router();
 //route for registering new users
 recordRoutes.route('/signup').post(async (req, res) => {
   const user = req.body;
-  const takenEmail = await User.findOne({email: user.email});
+  const takenEmail = await UserInfo.findOne({email: user.email});
 
   if (takenEmail) {
     res.json({takenEmail: true});
   } else {
     user.password = await bcrypt.hash(user.password, 10);
 
-    const dbUser = new User({...user})
+    const dbUser = new User({password: user.password});
 
-    dbUser.save();
+    dbUser.save((err, dbUser) => {
+      const dbUserInfo = new UserInfo({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        user_id: dbUser._id
+      })
+      dbUserInfo.save()
+    });
     res.json({takenEmail: false});
   }
 })
@@ -32,11 +41,9 @@ recordRoutes.route('/createProject').post(async (req, res) => {
   const project = req.body;
   const user = await User.findOne({email: project.creator});
   const takenName = await User.findOne({email: project.creator, 'projects.name': project.name});
-  console.log(takenName);
   if (takenName) {
     res.json({takenName: true});
   } else {
-    console.log(takenName);
     const dbProject = await Project.create({...project});
     user.projects.push(dbProject)
     await user.save();
