@@ -1,26 +1,12 @@
 const mongoose = require('mongoose');
+const ProjectUser = require('./projectUser');
 
 const projectSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    tickets: {
-        type: Array,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true,
-    },
-    creator: {
-        type: String,
-        required: true
-    },
-    users: {
-        type: Array,
-        required: true
-    },
+    name: String,
+    description: String,
+    creator: String,
+    users: [String]
+
 }, {timestamps: true});
 
 module.exports = mongoose.model('Project', projectSchema);

@@ -42,7 +42,7 @@ const LogInPage = (props) => {
     return (
       <div className="login-dark">
         <form onSubmit={handleLogin}>
-            <h2 className="login-form-heading">Login Form</h2>
+            <h2 className="login-form-heading">Login</h2>
             <div className="illustration">
                 <i className="icon ion-ios-locked-outline"></i>
             </div>

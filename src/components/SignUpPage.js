@@ -15,8 +15,6 @@ const SignUpPage = props => {
             lastName: form[1].value,
             email: form[2].value,
             password: form[3].value,
-            projects: [],
-            tickets: []
         }
 
         fetch('/signup', {

@@ -1,22 +1,11 @@
 const mongoose = require('mongoose');
+const Project = require('./project');
 
 const userInfoSchema = mongoose.Schema({
-    user_id: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
+    user_id: String,
+    firstName: String,
+    lastName: String,
+    projects: [Object]
     
 }, {timestamps: true});
 

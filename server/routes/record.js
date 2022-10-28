@@ -3,6 +3,7 @@ const User = require('../models/user');
 const Project = require('../models/project');
 const Ticket = require('../models/ticket');
 const UserInfo = require('../models/userInfo');
+const ProjectUser = require('../models/projectUser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -11,21 +12,23 @@ const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../confi
 
 const recordRoutes = express.Router();
 
-//route for registering new users
+//create new users
 recordRoutes.route('/signup').post(async (req, res) => {
   const user = req.body;
-  const takenEmail = await UserInfo.findOne({email: user.email});
+  const takenEmail = await User.findOne({email: user.email});
 
   if (takenEmail) {
     res.json({takenEmail: true});
   } else {
     user.password = await bcrypt.hash(user.password, 10);
 
-    const dbUser = new User({password: user.password});
+    const dbUser = new User({
+      password: user.password, 
+      email: user.email
+    });
 
     dbUser.save((err, dbUser) => {
       const dbUserInfo = new UserInfo({
-        email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
         user_id: dbUser._id
@@ -36,23 +39,41 @@ recordRoutes.route('/signup').post(async (req, res) => {
   }
 })
 
-//route for adding new projects to db
+//create new project
 recordRoutes.route('/createProject').post(async (req, res) => {
   const project = req.body;
-  const user = await User.findOne({email: project.creator});
-  const takenName = await User.findOne({email: project.creator, 'projects.name': project.name});
-  if (takenName) {
-    res.json({takenName: true});
-  } else {
-    const dbProject = await Project.create({...project});
-    user.projects.push(dbProject)
-    await user.save();
+  
+ // const user = await User.findOne({email: project.creator});
+  const takenName = false;
 
-    await dbProject.save();
-    res.json({takenName: false});
+    
+  if (!takenName) {
+    try {
+      let newProject = new Project({
+        ...project,
+        users: [project.creator]
+      });
+      let resultNewProject = await newProject.save();
+
+      const userData =  await UserInfo.findOne({user_id: project.creator});
+      userData.projects.push(resultNewProject);
+      await userData.save();
+
+      const projectUser = new ProjectUser({
+        user_id: project.creator,
+        project_id: resultNewProject._id,
+        role: 'admin'
+      });
+
+      await projectUser.save();
+      return res.json({takenName: false})
+    } catch (error) {
+      return res.json({message: "Failed to create new project"});
+    }
   }
+  return res.json({takenName: true})
 })
-//route for logging in existing users
+//log in existing users
 recordRoutes.route('/login').post((req, res) => {
 
   const userLoggingIn = req.body;
@@ -96,8 +117,10 @@ recordRoutes.route('/login').post((req, res) => {
 }) */
 //if user is authorized, respond with all user data
 recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
-  User.findOne({email: req.user.email})
-  .then(userData => res.json({isLoggedIn: true, ...userData._doc}))
+  UserInfo.findOne({user_id: req.user.id})
+  .then(userData => {
+    if (!userData) return res.json({isLoggedIn: false})
+    res.json({isLoggedIn: true, ...userData._doc})})
 })
 
 //retrieves all user data from database if jwt token is valid

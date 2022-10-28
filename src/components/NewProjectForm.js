@@ -12,8 +12,7 @@ const NewProjectForm = props => {
         const project = {
             name: form[0].value,
             description: form[1].value,
-            creator: props.userData.email,
-            users: [{email: props.userData.email, role: 'admin'}],
+            creator: props.userData.user_id,
         }
 
         fetch('/isUserAuth', {
