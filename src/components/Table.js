@@ -1,8 +1,13 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const Table = props => {
 
     const navigate = useNavigate();
+
+    const [projectData, setProjectData] = useState([]);
+
+    let projectRows;
 
     let headings = {
         projects: ['Project Name', 'My Role', 'Open Tickets'],
@@ -14,15 +19,50 @@ const Table = props => {
         );
     })
 
+    if (projectData.length) {
+        projectRows = 
+            projectData
+            .map(e => [e.project_name, e.role, 0])
+            .map(project => {
+                return (
+                    <tr>
+                        <td>{project[0]}</td>
+                        <td>{project[1]}</td>
+                        <td>{project[2]}</td>
+                    </tr>
+                );
+            })
+    }
+
+
+        /* const projectData = fetchProjectData().then(res => {
+            return res
+            .map(e => [e.project_name, e.role, 0])
+            .map(project => {
+                return (
+                    <tr>
+                        <td>{project[0]}</td>
+                        <td>{project[1]}</td>
+                        <td>{project[2]}</td>
+                    </tr>
+                );
+            })
+        }) */
+
+        useEffect(() => {
+            fetchProjectData()
+            .then(res => setProjectData(res));
+        }, [])
+    
+
     async function fetchProjectData() {
-        const projectData = await fetch('/getUserProjects', {
+        const fetchData = await fetch('/getUserProjects', {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        .then(res => res.json())
-        .then(data => !data.isLoggedIn ? navigate('/login') : data.projects)
-        return projectData;
+        const projectData = await fetchData.json();
+        return projectData.projects;
     }
 
 
@@ -34,8 +74,10 @@ const Table = props => {
                 <tr>
                     {headings}
                 </tr>
-                {console.log(fetchProjectData().then(result => result))}
             </thead>
+            <tbody>
+                {projectRows}
+            </tbody>
         </table>
     );
 }
