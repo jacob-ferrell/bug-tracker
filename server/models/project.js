@@ -5,7 +5,7 @@ const projectSchema = mongoose.Schema({
     name: String,
     description: String,
     creator: String,
-    users: [String]
+    tickets: [Object]
 
 }, {timestamps: true});
 

@@ -43,10 +43,11 @@ recordRoutes.route('/signup').post(async (req, res) => {
 recordRoutes.route('/createProject').post(async (req, res) => {
   const project = req.body;
   
- // const user = await User.findOne({email: project.creator});
-  const takenName = false;
+  const takenName = await UserInfo.findOne({
+    user_id: project.creator, 
+    'projects.project_name': project.name
+  });
 
-    
   if (!takenName) {
     try {
       let newProject = new Project({
@@ -56,7 +57,11 @@ recordRoutes.route('/createProject').post(async (req, res) => {
       let resultNewProject = await newProject.save();
 
       const userData =  await UserInfo.findOne({user_id: project.creator});
-      userData.projects.push(resultNewProject);
+      userData.projects.push({
+        project_id: resultNewProject._id, 
+        project_name: resultNewProject.name,
+        role: 'admin'
+      });
       await userData.save();
 
       const projectUser = new ProjectUser({
@@ -73,7 +78,7 @@ recordRoutes.route('/createProject').post(async (req, res) => {
   }
   return res.json({takenName: true})
 })
-//log in existing users
+//log in users and sign jwt token
 recordRoutes.route('/login').post((req, res) => {
 
   const userLoggingIn = req.body;
@@ -111,10 +116,16 @@ recordRoutes.route('/login').post((req, res) => {
     })
   })
 })
-//if user is authorized, responds with isLoggedIn as true and the user's email
-/* recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
-  res.json({isLoggedIn: true, email: req.user.email})
-}) */
+
+//get project data for a given user for display in table
+recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
+  UserInfo.findOne({user_id: req.user.id})
+  .then(userData =>  {
+    console.log(userData);
+    res.json({isLoggedIn: true, projects: userData.projects})
+    })
+})
+
 //if user is authorized, respond with all user data
 recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
   UserInfo.findOne({user_id: req.user.id})
@@ -124,10 +135,10 @@ recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
 })
 
 //retrieves all user data from database if jwt token is valid
-recordRoutes.route('/getUserData').get((req, res) => {
+/* recordRoutes.route('/getUserData').get((req, res) => {
   User.findOne({email: req.body.email})
   .then(userData => res.json(userData))
-})
+}) */
  
 //function for veryifying users 
 function verifyJWT(req, res, next) {
