@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MyProjects from './MyProjects';
+import MyTickets from './MyTickets';
 
 const Dashboard = props => {
 
@@ -38,9 +39,11 @@ const Dashboard = props => {
                 {props.myProjects && (
                     <MyProjects userData={data}/>
                 )}
+                {props.myTickets && (
+                    <MyTickets userData={data}/>
+                )}
             </div>
             <button onClick={logout}>Log Out</button>
-            {console.log(data)}
         </div>
 
         

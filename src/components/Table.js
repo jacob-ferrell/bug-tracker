@@ -10,44 +10,36 @@ const Table = props => {
     let projectRows;
 
     let headings = {
-        projects: ['Project Name', 'My Role', 'Open Tickets'],
+        projects: ['', 'Project Name', 'My Role', 'Open Tickets'],
     }
 
-    headings = headings[props.type].map(heading => {
+    headings = headings[props.type].map((heading, i) => {
         return (
-            <th>{heading}</th>
+            <th key={heading + i}>{heading}</th>
         );
     })
+
+    function addTicket(e) {
+
+    }
 
     if (projectData.length) {
         projectRows = 
             projectData
-            .map(e => [e.project_name, e.role, 0])
-            .map(project => {
+            .map(e => [e.project_name, e.role, 0, e.project_id])
+            .map((project, i) => {
                 return (
-                    <tr>
+                    <tr key={project + i}>
+                        <td><button data-projectid={project[3]} 
+                        className='btn btn-info add-ticket-btn' 
+                        data-type='ticket' onClick={props.addTicket}>+</button></td>
                         <td>{project[0]}</td>
-                        <td>{project[1]}</td>
+                        <td>{project[1][0].toUpperCase() + project[1].slice(1)}</td>
                         <td>{project[2]}</td>
                     </tr>
                 );
             })
     }
-
-
-        /* const projectData = fetchProjectData().then(res => {
-            return res
-            .map(e => [e.project_name, e.role, 0])
-            .map(project => {
-                return (
-                    <tr>
-                        <td>{project[0]}</td>
-                        <td>{project[1]}</td>
-                        <td>{project[2]}</td>
-                    </tr>
-                );
-            })
-        }) */
 
         useEffect(() => {
             fetchProjectData()

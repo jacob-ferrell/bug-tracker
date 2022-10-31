@@ -48,35 +48,62 @@ recordRoutes.route('/createProject').post(async (req, res) => {
     'projects.project_name': project.name
   });
 
-  if (!takenName) {
-    try {
-      let newProject = new Project({
-        ...project,
-        users: [project.creator]
-      });
-      let resultNewProject = await newProject.save();
+  if (takenName) return res.json({takenName: true});
 
-      const userData =  await UserInfo.findOne({user_id: project.creator});
-      userData.projects.push({
-        project_id: resultNewProject._id, 
-        project_name: resultNewProject.name,
-        role: 'admin'
-      });
-      await userData.save();
+  try {
+    let newProject = new Project({
+      ...project,
+      users: [project.creator]
+    });
+    let resultNewProject = await newProject.save();
 
-      const projectUser = new ProjectUser({
-        user_id: project.creator,
-        project_id: resultNewProject._id,
-        role: 'admin'
-      });
+    const userData =  await UserInfo.findOne({user_id: project.creator});
+    userData.projects.push({
+      project_id: resultNewProject._id, 
+      project_name: resultNewProject.name,
+      role: 'admin'
+    });
+    await userData.save();
 
-      await projectUser.save();
-      return res.json({takenName: false})
-    } catch (error) {
-      return res.json({message: "Failed to create new project"});
-    }
+    const projectUser = new ProjectUser({
+      user_id: project.creator,
+      project_id: resultNewProject._id,
+      role: 'admin'
+    });
+
+    await projectUser.save();
+    return res.json({takenName: false})
+  } catch (err) {
+    return res.json({message: "Failed to create new project"});
+  
   }
-  return res.json({takenName: true})
+  
+})
+
+//create new ticket
+recordRoutes.route('/createTicket').post( async (req, res) => {
+  const ticket = req.body;
+
+  const takenTitle = await Project.findOne({
+    'tickets.title': ticket.title
+  });
+
+  if (takenTitle) return res.json({takenTitle: true});
+
+  try {
+    let newTicket = new Ticket({
+      ...ticket,
+    })
+    let resultNewTicket = await newTicket.save();
+
+    const project = await Project.findById(ticket.project_id)
+    project.tickets.push(resultNewTicket);
+    await project.save();
+  } catch (err) {
+    return res.json({message: "Failed to create ticket"})
+  }
+
+
 })
 //log in users and sign jwt token
 recordRoutes.route('/login').post((req, res) => {
@@ -121,7 +148,6 @@ recordRoutes.route('/login').post((req, res) => {
 recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
   UserInfo.findOne({user_id: req.user.id})
   .then(userData =>  {
-    console.log(userData);
     res.json({isLoggedIn: true, projects: userData.projects})
     })
 })

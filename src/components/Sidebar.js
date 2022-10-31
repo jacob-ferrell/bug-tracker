@@ -25,21 +25,6 @@ const Sidebar = props => {
       <li>
         <Link to ="/dashboard/my-team">My Team</Link>
       </li>
-      <li>
-        <a href="#">
-          <i className="zmdi zmdi-info-outline"></i> About
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <i className="zmdi zmdi-settings"></i> Services
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <i className="zmdi zmdi-comment-more"></i> Contact
-        </a>
-      </li>
     </ul>
   </div>
 </div>

@@ -1,24 +1,32 @@
 import {useState} from 'react';
 import NewProjectForm from './NewProjectForm';
+import NewTicketForm from './NewTicketForm';
 import Table from './Table';
 
 const MyProjects = props => {
 
-    const [showForm, setShowForm] = useState(false);
+    const [formType, setFormType] = useState(null);
+
+    const [project, setProject] = useState(null);
 
     function handleCreateClick(e) {
-        setShowForm(true);
+        const projectId = e.target.dataset.projectid || null;
+        const type = e.target.dataset.type || null;
+        setProject(projectId);
+        setFormType(type);
     }
 
     return (
         <div className="my-projects">
-            { !showForm ? (
+            { !formType ? (
             <div>
-                <Table type='projects'></Table>
-                <button onClick={handleCreateClick} className='btn btn-primary'>Create Project</button>
+                <button onClick={handleCreateClick} className='btn btn-primary'
+                data-type='project'>New Project</button>
+                <Table addTicket={handleCreateClick} type='projects'></Table>
             </div>
             )
-        : (<NewProjectForm userData={props.userData}/>)}
+        : formType == 'project' ? (<NewProjectForm userData={props.userData}/>)
+        : (<NewTicketForm userData={props.userData} projectId={project}/>)}
         </div>
     );
 }
