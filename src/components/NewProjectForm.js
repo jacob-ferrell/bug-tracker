@@ -15,25 +15,19 @@ const NewProjectForm = props => {
             creator: props.userData.user_id,
         }
 
-        fetch('/isUserAuth', {
+        fetch('/createProject', {
+            method: 'POST',
             headers: {
+                'Content-type': 'application/json',
                 'x-access-token': localStorage.getItem('token')
-            }
+            },
+            body: JSON.stringify(project)
         })
         .then(res => res.json())
-        .then(data => !data.isLoggedIn 
-            ? navigate('/login') 
-            : fetch('/createProject', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(project)
-            })
-            .then(res => res.json())
-            .then(data => data.takenName 
-                ? alert('You already have a project with that name')
-                : null));
+        .then(data => data.isLoggedIn == false
+            ? navigate('/login')
+            : data.takenName ? alert('You already have a project with that name')
+            : null);
     }
 
     return (

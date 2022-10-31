@@ -22,25 +22,20 @@ const NewTicketForm = props => {
             priority,
        }
 
-       fetch('/isUserAuth', {
-        headers: {
-            'x-access-token': localStorage.getItem('token')
-        }
+
+        fetch('/createTicket', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+                'x-access-token': localStorage.getItem('token')
+            },
+            body: JSON.stringify(ticket)
         })
         .then(res => res.json())
-        .then(data => !data.isLoggedIn 
+        .then(data => data.isLoggedIn == false
             ? navigate('/login') 
-            : fetch('/createTicket', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(ticket)
-            })
-            .then(res => res.json())
-            .then(data => data.takenTitle 
-                ? alert('This project already has a ticket with that title')
-                : null));
+            : data.takenTitle ? alert('This project already has a ticket with that title')
+            : null);
         }
 
     

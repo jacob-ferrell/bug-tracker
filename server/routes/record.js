@@ -40,7 +40,7 @@ recordRoutes.route('/signup').post(async (req, res) => {
 })
 
 //create new project
-recordRoutes.route('/createProject').post(async (req, res) => {
+recordRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
   const project = req.body;
   
   const takenName = await UserInfo.findOne({
@@ -81,7 +81,7 @@ recordRoutes.route('/createProject').post(async (req, res) => {
 })
 
 //create new ticket
-recordRoutes.route('/createTicket').post( async (req, res) => {
+recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
   const ticket = req.body;
 
   const takenTitle = await Project.findOne({
@@ -99,6 +99,10 @@ recordRoutes.route('/createTicket').post( async (req, res) => {
     const project = await Project.findById(ticket.project_id)
     project.tickets.push(resultNewTicket);
     await project.save();
+    return res.json({
+      message: 'Sucessfully created ticket',
+      isLoggedIn
+  })
   } catch (err) {
     return res.json({message: "Failed to create ticket"})
   }
@@ -170,7 +174,7 @@ recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
 function verifyJWT(req, res, next) {
   const token = req.headers['x-access-token']?.split(' ')[1];
   if (!token) {
-    return res.json({message: "Incorrect Token Given", isLogginIn: false})
+    return res.json({message: "Incorrect Token Given", isLoggedIn: false})
   }
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.json({

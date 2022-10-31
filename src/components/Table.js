@@ -23,10 +23,17 @@ const Table = props => {
 
     }
 
+    function getOpenTickets(project) {
+        console.log(project);
+        return project.tickets.filter(ticket => {
+            return ticket.status == 'open';
+        })
+    }
+
     if (projectData.length) {
         projectRows = 
             projectData
-            .map(e => [e.project_name, e.role, 0, e.project_id])
+            .map(e => [e.project_name, e.role, getOpenTickets(e).length, e.project_id])
             .map((project, i) => {
                 return (
                     <tr key={project + i}>
@@ -43,7 +50,11 @@ const Table = props => {
 
         useEffect(() => {
             fetchProjectData()
-            .then(res => setProjectData(res));
+            .then(res => {
+                res.isLoggedIn == false 
+                ? navigate('/login')
+                : setProjectData(res);
+            });
         }, [])
     
 
