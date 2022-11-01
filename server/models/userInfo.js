@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 
 const userInfoSchema = mongoose.Schema({
     user_id: String,
+    email: String,
     firstName: String,
     lastName: String,
     projects: [{type: Schema.Types.ObjectId, ref: 'Project'}]

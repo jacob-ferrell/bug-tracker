@@ -16,4 +16,4 @@ const projectUserSchema = mongoose.Schema({
     
 }, {timestamps: true});
 
-module.exports = mongoose.model('projectUser', projectUserSchema);
+module.exports = mongoose.model('ProjectUser', projectUserSchema);

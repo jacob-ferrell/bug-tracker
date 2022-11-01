@@ -7,6 +7,7 @@ const ProjectUser = require('../models/projectUser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const { populate } = require("../models/user");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
 
 
@@ -17,9 +18,7 @@ recordRoutes.route('/signup').post(async (req, res) => {
   const user = req.body;
   const takenEmail = await User.findOne({email: user.email});
 
-  if (takenEmail) {
-    res.json({takenEmail: true});
-  } else {
+  if (!takenEmail) {
     user.password = await bcrypt.hash(user.password, 10);
 
     const dbUser = new User({
@@ -31,76 +30,109 @@ recordRoutes.route('/signup').post(async (req, res) => {
       const dbUserInfo = new UserInfo({
         firstName: user.firstName,
         lastName: user.lastName,
-        user_id: dbUser._id
+        user_id: dbUser._id,
+        email: user.email
       })
       dbUserInfo.save()
     });
-    res.json({takenEmail: false});
+    return res.json({takenEmail: false});
   }
+  return res.json({takenEmail: true});
+ 
 })
 
 //create new project
 recordRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
   const project = req.body;
-  const userProjectIds = await UserInfo.findOne({ user_id: req.user.id})
-    .then(user => user.projects);
 
-  console.log(userProjectIds)
-  
-  const takenName = await UserInfo.find({
-    user_id: project.creator, 
+  const getTakenName = async () => {
+    return new Promise(resolve => {
+      Project.find({name: project.name})
+      .populate('users')
+      .exec((err, project) => {
+        if (err) return console.log(err);
+        for (let i in project) {
+          let sameName = project[i];
+          if (sameName.users.find(user => {
+            return user.user_id == req.user.id;
+          })) {
+            return resolve(true);
+          } 
+        }
+        resolve(false);
+      })
   })
-  .populate({
-    path: 'projects',
-    match: { name: project.name }
-  })
-
-  console.log(takenName);
-
-
-  if (takenName) return res.json({takenName: true});
+  }
 
   try {
-    let newProject = new Project({
-      ...project,
-      users: [{
-        user_id: project.creator,
-        role: 'admin'
-      }]
-    });
-    let resultNewProject = await newProject.save();
+    let takenName = await getTakenName();
 
-    const userData =  await UserInfo.findOne({user_id: project.creator});
-    userData.projects.push(resultNewProject._id);
-    await userData.save();
+    if (takenName) return res.json({takenName})
 
-    return res.json({takenName: false})
+    const user = await UserInfo.findOne({user_id: req.user.id});
+
+    const newProject = new Project({
+      ...project
+    })
+
+    const projectUser = new ProjectUser({
+      user_id: req.user.id,
+      project_id: newProject._id,
+      role: 'admin'
+    })
+    await projectUser.save();
+
+    newProject.users.push(projectUser._id)
+
+    newProject.save(err => {
+      if (err) return;
+
+      user.projects.push(newProject._id);
+      user.save();
+    })
+    return res.json({takenName})
   } catch (err) {
-    return res.json({message: "Failed to create new project"});
-  
+    console.log(err);
+    return res.json({message: 'Failed to create project'});
   }
-  
 })
 
 //create new ticket
 recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
   const ticket = req.body;
+  const project = await Project.findById(ticket.project_id);
 
-  const takenTitle = await Project.findOne({
-    'tickets.title': ticket.title
-  });
 
-  if (takenTitle) return res.json({takenTitle: true});
+  const getTakenTitle = async () => {
+    return new Promise(resolve => {
+      project
+      .populate('tickets')
+      .exec((err, project) => {
+        if (err) return console.log(err);
+        if (project.tickets.find(projTicket => {
+          return projTicket.title == ticket.title;
+        })) {
+          return resolve(true);
+        } 
+        resolve(false);
+      })
+  })
+  }
+
 
   try {
+    let takenTitle = await getTakenTitle();
+
+    if (takenTitle) return res.json({takenTitle: true});
+
     let newTicket = new Ticket({
       ...ticket,
     })
-    let resultNewTicket = await newTicket.save();
+    await newTicket.save();
 
-    const project = await Project.findById(ticket.project_id)
-    project.tickets.push(resultNewTicket);
+    project.tickets.push(newTicket._id);
     await project.save();
+
     return res.json({
       message: 'Sucessfully created ticket',
       isLoggedIn
@@ -152,10 +184,50 @@ recordRoutes.route('/login').post((req, res) => {
 
 //get project data for a given user for display in table
 recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
-  UserInfo.findOne({user_id: req.user.id})
-  .then(userData =>  {
-    res.json({isLoggedIn: true, projects: userData.projects})
+  const getRole = async project => {
+    return ProjectUser.findOne({project_id: project._id})
+      .exec((err, user)=> {
+        if (err) return console.log(err);
+        console.log('poop' + user.role);
+        return user.role;
     })
+  }
+  const addRoles =  async projects => {
+      for (let i = 0; i < projects.length; i++) {
+        const role = await getRole(projects[i]);
+        console.log(role)
+        projects[i] = {...projects[i]._doc, role};
+      }
+      console.log(projects);
+      return projects
+    
+
+  }
+
+  
+
+  UserInfo.findOne({user_id: req.user.id})
+  .populate('projects')
+  .exec((err, user) => {
+    if (err) return console.log(err);
+    const projects = [...user.projects].map(project => project._doc);
+    
+    return res.json({isLoggedIn: true, projects});
+  })
+  /* .then(userData =>  {
+    if (!userData) return res.json({isLoggedIn: false})
+    res.json({isLoggedIn: true, projects: userData.projects})
+    }) */
+})
+
+//get data for user's project roles
+recordRoutes.route('/getProjectRoles').get(verifyJWT, (req, res) => {
+  ProjectUser.find({user_id: req.user.id})
+  .exec((err, users) => {
+    if (err) return console.log(err);
+    const roles = [...users].map(e => e._doc);
+    return res.json({isLoggedIn: true, roles})
+  })
 })
 
 //if user is authorized, respond with all user data

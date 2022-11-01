@@ -27,7 +27,7 @@ const NewProjectForm = props => {
         .then(data => data.isLoggedIn == false
             ? navigate('/login')
             : data.takenName ? alert('You already have a project with that name')
-            : null);
+            : props.hide());
     }
 
     return (

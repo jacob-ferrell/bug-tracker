@@ -7,7 +7,7 @@ const projectSchema = mongoose.Schema({
     description: String,
     creator: String,
     tickets: [{type: Schema.Types.ObjectId, ref: 'Ticket'}],
-    users: [Object],
+    users: [{type: Schema.Types.ObjectId, ref: 'ProjectUser'}],
 
 }, {timestamps: true});
 

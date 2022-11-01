@@ -7,7 +7,15 @@ const MyProjects = props => {
 
     const [formType, setFormType] = useState(null);
 
+    const [showProjectForm, setShowProjectForm] = useState(false);
+    const [showTicketForm, setShowTicketForm] = useState(false);
+
+
     const [project, setProject] = useState(null);
+
+    const toggleProjectForm = () => setShowProjectForm(!showProjectForm);
+    const toggleTicketForm = () => setShowTicketForm(!showTicketForm);
+    
 
     function handleCreateClick(e) {
         const projectId = e.target.dataset.projectid || null;
@@ -18,15 +26,16 @@ const MyProjects = props => {
 
     return (
         <div className="my-projects">
-            { !formType ? (
             <div>
-                <button onClick={handleCreateClick} className='btn btn-primary'
-                data-type='project'>New Project</button>
+                {!showProjectForm && (
+                <button onClick={toggleProjectForm} className='btn btn-primary'
+                data-type='project'>New Project</button>)}
                 <Table addTicket={handleCreateClick} type='projects'></Table>
             </div>
-            )
-        : formType == 'project' ? (<NewProjectForm userData={props.userData}/>)
-        : (<NewTicketForm userData={props.userData} projectId={project}/>)}
+            {showProjectForm && (
+            <NewProjectForm userData={props.userData} hide={toggleProjectForm}/>)}
+            {showTicketForm &&(
+            <NewTicketForm userData={props.userData} projectId={project} hide={toggleTicketForm}/>)}
         </div>
     );
 }
