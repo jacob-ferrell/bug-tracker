@@ -42,36 +42,38 @@ recordRoutes.route('/signup').post(async (req, res) => {
 //create new project
 recordRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
   const project = req.body;
+  const userProjectIds = await UserInfo.findOne({ user_id: req.user.id})
+    .then(user => user.projects);
+
+  console.log(userProjectIds)
   
-  const takenName = await UserInfo.findOne({
+  const takenName = await UserInfo.find({
     user_id: project.creator, 
-    'projects.project_name': project.name
-  });
+  })
+  .populate({
+    path: 'projects',
+    match: { name: project.name }
+  })
+
+  console.log(takenName);
+
 
   if (takenName) return res.json({takenName: true});
 
   try {
     let newProject = new Project({
       ...project,
-      users: [project.creator]
+      users: [{
+        user_id: project.creator,
+        role: 'admin'
+      }]
     });
     let resultNewProject = await newProject.save();
 
     const userData =  await UserInfo.findOne({user_id: project.creator});
-    userData.projects.push({
-      project_id: resultNewProject._id, 
-      project_name: resultNewProject.name,
-      role: 'admin'
-    });
+    userData.projects.push(resultNewProject._id);
     await userData.save();
 
-    const projectUser = new ProjectUser({
-      user_id: project.creator,
-      project_id: resultNewProject._id,
-      role: 'admin'
-    });
-
-    await projectUser.save();
     return res.json({takenName: false})
   } catch (err) {
     return res.json({message: "Failed to create new project"});

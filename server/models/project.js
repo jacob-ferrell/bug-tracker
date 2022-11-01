@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const ProjectUser = require('./projectUser');
+const { Schema } = mongoose;
 
 const projectSchema = mongoose.Schema({
     name: String,
     description: String,
     creator: String,
-    tickets: [Object]
+    tickets: [{type: Schema.Types.ObjectId, ref: 'Ticket'}],
+    users: [Object],
 
 }, {timestamps: true});
 
