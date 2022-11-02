@@ -102,13 +102,13 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
   const ticket = req.body;
   const project = await Project.findById(ticket.project_id);
 
-
   const getTakenTitle = async () => {
     return new Promise(resolve => {
-      project
+      Project.findById(ticket.project_id)
       .populate('tickets')
       .exec((err, project) => {
         if (err) return console.log(err);
+        console.log(project.tickets);
         if (project.tickets.find(projTicket => {
           return projTicket.title == ticket.title;
         })) {
@@ -122,6 +122,8 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
 
   try {
     let takenTitle = await getTakenTitle();
+    console.log(takenTitle);
+    console.log('poop')
 
     if (takenTitle) return res.json({takenTitle: true});
 
@@ -133,11 +135,9 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
     project.tickets.push(newTicket._id);
     await project.save();
 
-    return res.json({
-      message: 'Sucessfully created ticket',
-      isLoggedIn
-  })
+    return res.json({message: 'Sucessfully created ticket'})
   } catch (err) {
+    console.log(err);
     return res.json({message: "Failed to create ticket"})
   }
 
@@ -184,28 +184,6 @@ recordRoutes.route('/login').post((req, res) => {
 
 //get project data for a given user for display in table
 recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
-  const getRole = async project => {
-    return ProjectUser.findOne({project_id: project._id})
-      .exec((err, user)=> {
-        if (err) return console.log(err);
-        console.log('poop' + user.role);
-        return user.role;
-    })
-  }
-  const addRoles =  async projects => {
-      for (let i = 0; i < projects.length; i++) {
-        const role = await getRole(projects[i]);
-        console.log(role)
-        projects[i] = {...projects[i]._doc, role};
-      }
-      console.log(projects);
-      return projects
-    
-
-  }
-
-  
-
   UserInfo.findOne({user_id: req.user.id})
   .populate('projects')
   .exec((err, user) => {
@@ -214,10 +192,6 @@ recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
     
     return res.json({isLoggedIn: true, projects});
   })
-  /* .then(userData =>  {
-    if (!userData) return res.json({isLoggedIn: false})
-    res.json({isLoggedIn: true, projects: userData.projects})
-    }) */
 })
 
 //get data for user's project roles
@@ -230,6 +204,11 @@ recordRoutes.route('/getProjectRoles').get(verifyJWT, (req, res) => {
   })
 })
 
+//get all tickets associated with user's projects
+recordRoutes.route('getTickets').get(verifyJWT, (req, res) => {
+
+})
+
 //if user is authorized, respond with all user data
 recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
   UserInfo.findOne({user_id: req.user.id})
@@ -238,11 +217,6 @@ recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
     res.json({isLoggedIn: true, ...userData._doc})})
 })
 
-//retrieves all user data from database if jwt token is valid
-/* recordRoutes.route('/getUserData').get((req, res) => {
-  User.findOne({email: req.body.email})
-  .then(userData => res.json(userData))
-}) */
  
 //function for veryifying users 
 function verifyJWT(req, res, next) {

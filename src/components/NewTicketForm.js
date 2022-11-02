@@ -35,7 +35,8 @@ const NewTicketForm = props => {
         .then(data => data.isLoggedIn == false
             ? navigate('/login') 
             : data.takenTitle ? alert('This project already has a ticket with that title')
-            : null);
+            : props.hide());
+
         }
 
     
@@ -55,7 +56,7 @@ const NewTicketForm = props => {
                 </textarea>
             </div>
             <div className='form-check'>
-                <input className='form-check-input' type='radio' onClick={handleRadioClick} name='priority' id='low'></input>
+                <input required className='form-check-input' type='radio' onClick={handleRadioClick} name='priority' id='low'></input>
                 <label className="form-check-label" htmlFor='lowPriorityRadio'>Low</label>
             </div>
             <div className='form-check'>

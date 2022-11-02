@@ -2,12 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 const Table = props => {
-
     const navigate = useNavigate();
 
     const [projectData, setProjectData] = useState([]);
 
     const [roles, setRoles] = useState([]);
+
+    const [tickets, setTickets] = useState([]);
 
     let projectRows;
 
@@ -33,7 +34,7 @@ const Table = props => {
     }
 
     if (projectData.length) {
-        console.log(roles);
+        console.log(projectData)
         projectRows = projectData
             .map((project, i) => {
                 const role = getRole(project);
@@ -44,13 +45,14 @@ const Table = props => {
                         data-type='ticket' onClick={props.addTicket}>+</button></td>
                         <td>{project.name}</td>
                         <td>{role[0].toUpperCase() + role.slice(1)}</td>
-                        <td>{0}</td>
+                        <td>{getOpenTickets(project).length}</td>
                     </tr>
                 );
             })
     }
 
         useEffect(() => {
+
             fetchProjectData()
             .then(res => {
                 res.isLoggedIn == false 
@@ -62,6 +64,12 @@ const Table = props => {
                 res.isLoggedIn == false 
                 ? navigate('/login')
                 : setRoles(res.roles);
+            })
+            fetchTickets()
+            .then(res => {
+                res.isLoggedIn == false 
+                ? navigate('/login')
+                : setTickets(res);
             })
         }, [])
     
@@ -84,6 +92,16 @@ const Table = props => {
         })
         const roles = await fetchData.json();
         return roles;
+    }
+
+    async function fetchTickets() {
+        const fetchData = await fetch('/getTickets', {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        })
+        const tickets = await fetchData.json();
+        return tickets;
     }
 
     function getRole(project) {
