@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import MyProjects from './MyProjects';
 import MyTickets from './MyTickets';
+import MyTeam from './MyTeam';
 
 const Dashboard = props => {
 
@@ -41,6 +42,9 @@ const Dashboard = props => {
                 )}
                 {props.myTickets && (
                     <MyTickets userData={data}/>
+                )}
+                {props.myTeam && (
+                    <MyTeam userData={data}/>
                 )}
             </div>
             <button onClick={logout}>Log Out</button>

@@ -4,6 +4,7 @@ const Project = require('../models/project');
 const Ticket = require('../models/ticket');
 const UserInfo = require('../models/userInfo');
 const ProjectUser = require('../models/projectUser');
+const TeamMember = require('../models/teamMember');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -108,7 +109,6 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
       .populate('tickets')
       .exec((err, project) => {
         if (err) return console.log(err);
-        console.log(project.tickets);
         if (project.tickets.find(projTicket => {
           return projTicket.title == ticket.title;
         })) {
@@ -122,8 +122,6 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
 
   try {
     let takenTitle = await getTakenTitle();
-    console.log(takenTitle);
-    console.log('poop')
 
     if (takenTitle) return res.json({takenTitle: true});
 
@@ -190,7 +188,7 @@ recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
     if (err) return console.log(err);
     const projects = [...user.projects].map(project => project._doc);
     
-    return res.json({isLoggedIn: true, projects});
+    return res.json({projects});
   })
 })
 
@@ -200,13 +198,51 @@ recordRoutes.route('/getProjectRoles').get(verifyJWT, (req, res) => {
   .exec((err, users) => {
     if (err) return console.log(err);
     const roles = [...users].map(e => e._doc);
-    return res.json({isLoggedIn: true, roles})
+    return res.json({roles})
   })
 })
 
 //get all tickets associated with user's projects
-recordRoutes.route('getTickets').get(verifyJWT, (req, res) => {
+recordRoutes.route('/getTickets').get(verifyJWT, async (req, res) => {
 
+  const getProjectIds = async () => {
+    return new Promise(resolve => {
+      ProjectUser.find({user_id: req.user.id})
+      .exec((err, projUsers) => {
+        resolve(projUsers.map(e => e.project_id));
+      })
+    })
+  }
+
+
+  try {
+    const projectIds = await getProjectIds();
+    Project.find({
+      '_id': { $in: projectIds}
+    })
+    .populate('tickets')
+    .exec((err, projects) => {
+      let tickets = [];
+      for (let i in projects) {
+        let project = projects[i];
+        if (project.tickets.length) {
+          tickets = tickets.concat(project.tickets)
+        }
+      }
+      return res.json({tickets})
+    })
+
+  } catch(err) {
+    console.log(err);
+  }
+})
+
+//find a user by email
+recordRoutes.route('/findUser').post(verifyJWT, async (req, res) => {
+  console.log(req.body)
+  const userToAdd = await UserInfo.findOne({email: req.body.email})
+  if (!userToAdd) return res.json({failed: true});
+  return res.json({user: userToAdd._doc})
 })
 
 //if user is authorized, respond with all user data

@@ -5,14 +5,7 @@ const teamSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    members: {
-        type: Array,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true,
-    },
+    members: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],
     creator: {
         type: String,
         required: true
