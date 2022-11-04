@@ -4,6 +4,7 @@ const Project = require('../models/project');
 const Ticket = require('../models/ticket');
 const UserInfo = require('../models/userInfo');
 const ProjectUser = require('../models/projectUser');
+const Team = require('../models/team');
 const TeamMember = require('../models/teamMember');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -32,7 +33,7 @@ recordRoutes.route('/signup').post(async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         user_id: dbUser._id,
-        email: user.email
+        email: user.email,
       })
       dbUserInfo.save()
     });
@@ -141,6 +142,24 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
 
 
 })
+
+//create new team
+recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
+  const team = req.body;
+  const user = await UserInfo.findOne({user_id: req.body.creator});
+  try {
+    let newTeam = new Team({...team});
+    newTeam.members.push(req.body.creator);
+    await newTeam.save();
+    user.team.push(newTeam._id);
+    await user.save();
+    return res.json({message: 'Succesfully created team'});
+  } catch(err) {
+    console.log(err);
+    return res.json({message: 'Failed to create team'});s
+  }
+})
+
 //log in users and sign jwt token
 recordRoutes.route('/login').post((req, res) => {
 
@@ -237,9 +256,8 @@ recordRoutes.route('/getTickets').get(verifyJWT, async (req, res) => {
   }
 })
 
-//find a user by email
+//find a user by email and return user_id
 recordRoutes.route('/findUser').post(verifyJWT, async (req, res) => {
-  console.log(req.body)
   const userToAdd = await UserInfo.findOne({email: req.body.email})
   if (!userToAdd) return res.json({failed: true});
   return res.json({user: userToAdd._doc})

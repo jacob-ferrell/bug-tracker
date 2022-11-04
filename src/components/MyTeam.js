@@ -8,7 +8,7 @@ const MyTeam = props => {
 
     return (
         <div className='my-team'>
-            <AddToTeam />
+            <AddToTeam userData={props.userData}/>
         </div>
     );
 }

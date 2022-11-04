@@ -8,7 +8,8 @@ const userInfoSchema = mongoose.Schema({
     email: String,
     firstName: String,
     lastName: String,
-    projects: [{type: Schema.Types.ObjectId, ref: 'Project'}]
+    projects: [{type: Schema.Types.ObjectId, ref: 'Project'}],
+    team: [{type: Schema.Types.ObjectId, ref: 'Team'}]
     
 }, {timestamps: true});
 

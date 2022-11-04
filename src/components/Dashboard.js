@@ -27,7 +27,6 @@ const Dashboard = props => {
         .then(res => res.json())
         .then(data => !data.isLoggedIn ? navigate('/login') 
         : setData(data))
-
     }, [])
 
 
