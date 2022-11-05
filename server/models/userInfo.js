@@ -4,12 +4,12 @@ const { Schema } = mongoose;
 
 
 const userInfoSchema = mongoose.Schema({
-    user_id: String,
+    user_id: {type: Schema.Types.ObjectId, ref: 'User'},
     email: String,
     firstName: String,
     lastName: String,
     projects: [{type: Schema.Types.ObjectId, ref: 'Project'}],
-    team: [{type: Schema.Types.ObjectId, ref: 'Team'}]
+    team: {type: Schema.Types.ObjectId, ref: 'Team'}
     
 }, {timestamps: true});
 

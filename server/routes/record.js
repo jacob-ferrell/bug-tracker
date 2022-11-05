@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { populate } = require("../models/user");
+const { response } = require("express");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
 
 
@@ -150,8 +151,15 @@ recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
   try {
     let newTeam = new Team({...team});
     newTeam.members.push(req.body.creator);
-    await newTeam.save();
-    user.team.push(newTeam._id);
+    newTeam.save(team => {
+      let teamMember = new TeamMember({
+        user_id: req.body.creator,
+        team_id: newTeam._id,
+        role: 'admin'
+      })
+      teamMember.save();
+    });
+    user.team= newTeam._id;
     await user.save();
     return res.json({success: true});
   } catch(err) {
@@ -162,11 +170,24 @@ recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
 
 //add member to team
 recordRoutes.route('/addToTeam').post(verifyJWT, async (req, res) => {
-  const user_id = req.body.user_id;
+  const userToAddId = req.body.userToAdd;
+  console.log(userToAddId)
+  try {
+    const userToAdd = await UserInfo.findOne({user_id: userToAddId});    
+    const user = await UserInfo.findOne({user_id: req.user.id});
+    const teamId = user.team;
+    const team = await Team.findById(teamId);
+    console.log(teamId);
+    userToAdd.team = teamId;
+    await userToAdd.save();
+    team.members.push(userToAdd._id);
+    await team.save();
+    return response.json({success: true});
+  } catch(err) {
+    console.log(err);
+    return response.json({success: false});
 
-
-  const user = await UserInfo.findOne({user_id: user_id});
-  user.team
+  }
 })
 
 //log in users and sign jwt token
@@ -267,17 +288,21 @@ recordRoutes.route('/getTickets').get(verifyJWT, async (req, res) => {
 
 //find a user by email and return user_id
 recordRoutes.route('/findUser').post(verifyJWT, async (req, res) => {
-  const userToAdd = await UserInfo.findOne({email: req.body.email})
+  const userToAdd = await UserInfo.findOne({email: req.body.email});
   if (!userToAdd) return res.json({failed: true});
-  return res.json({user: userToAdd._doc})
+  return res.json({...userToAdd._doc})
 })
 
 //if user is authorized, respond with all user data
 recordRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
-  UserInfo.findOne({user_id: req.user.id})
-  .then(userData => {
-    if (!userData) return res.json({isLoggedIn: false})
-    res.json({isLoggedIn: true, ...userData._doc})})
+  try {
+    UserInfo.findOne({user_id: req.user.id})
+    .then(userData => {
+      if (!userData) return res.json({isLoggedIn: false})
+      res.json({isLoggedIn: true, ...userData._doc})})
+  } catch (err) {
+    console.log(err);
+ }
 })
 
  

@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const projectUserSchema = mongoose.Schema({
-    user_id: {
-        type: String,
-        required: true
-    },
-    project_id: {
-        type: String,
-        required: true
-    },
+    user_id: {type: Schema.Types.ObjectId, ref: 'User'},
+    project_id: {type: Schema.Types.ObjectId, ref: 'Project'},
     role: {
         type: String,
         required: true

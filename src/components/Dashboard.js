@@ -11,22 +11,30 @@ import MyTeam from './MyTeam';
 const Dashboard = props => {
 
     const navigate = useNavigate();
-    const [data, setData] = useState({});
+    const [data, setData] = useState(null);
 
     function logout(e) {
         localStorage.removeItem('token');
         navigate('/login')
     }
 
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch('/isUserAuth', {
+                headers: {
+                    'x-access-token': localStorage.getItem('token')
+                }
+            })
+            const json = await response.json();
+            if (!json.isLoggedIn) navigate('/login');
+            setData(json);
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
     useEffect(() => {
-        fetch('/isUserAuth', {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        })
-        .then(res => res.json())
-        .then(data => !data.isLoggedIn ? navigate('/login') 
-        : setData(data))
+        fetchUserData();
     }, [])
 
 
@@ -36,13 +44,13 @@ const Dashboard = props => {
             <Sidebar userData={data}/>
             <div className='dashboard-body'>
                 <Header />
-                {props.myProjects && (
+                {(props.myProjects && data) && (
                     <MyProjects userData={data}/>
                 )}
-                {props.myTickets && (
+                {(props.myTickets && data) && (
                     <MyTickets userData={data}/>
                 )}
-                {props.myTeam && (
+                {(props.myTeam && data) && (
                     <MyTeam userData={data}/>
                 )}
             </div>

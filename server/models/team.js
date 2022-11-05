@@ -8,10 +8,7 @@ const teamSchema = mongoose.Schema({
         required: true
     },
     members: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    creator: {
-        type: String,
-        required: true
-    },
+    creator: {type: Schema.Types.ObjectId, ref: 'User'},
 }, {timestamps: true});
 
 module.exports = mongoose.model('Team', teamSchema);

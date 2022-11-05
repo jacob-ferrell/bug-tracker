@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const projectSchema = mongoose.Schema({
     name: String,
     description: String,
-    creator: String,
+    creator: {type: Schema.Types.ObjectId, ref: 'User'},
     tickets: [{type: Schema.Types.ObjectId, ref: 'Ticket'}],
     users: [{type: Schema.Types.ObjectId, ref: 'ProjectUser'}],
 

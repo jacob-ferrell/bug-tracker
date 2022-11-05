@@ -1,12 +1,50 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AddToTeam = props => {
-    const [userId, setUserId] = useState(null);
-    const [hasTeam, setHasTeam] = useState(false);
+    const [userToAdd, setUserToAdd] = useState(null);
+    const [hasTeam, setHasTeam] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (props.userData.team.length) setHasTeam(true);
+        if (props.userData.team) setHasTeam(true);
     }, [])
+
+    const fetchUserByEmail = async email => {
+        try {
+            const response = await fetch('/findUser', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'x-access-token': localStorage.getItem('token')
+                },
+                body: JSON.stringify(email) 
+            })
+            const json = await response.json();
+            if (json.failed) {
+                setUserToAdd(null);
+                return alert ('Failed to find user');
+            }
+            if (json.team) return alert('User already has a team');
+            setUserToAdd(json);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const addUserToTeam = async () => {
+        console.log(userToAdd)
+        const response = await fetch('/addToTeam', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+                'x-access-token': localStorage.getItem('token')
+            },
+            body: JSON.stringify({userToAdd: userToAdd.user_id})
+        })
+        const json = await response.json();
+        if (!json.success) alert('Failed to add user to team');
+    }
 
     function handleAddSubmit(e) {
         e.preventDefault();
@@ -14,19 +52,8 @@ const AddToTeam = props => {
             email: e.target[0].value
         };
 
-        fetch('/findUser', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json',
-                'x-access-token': localStorage.getItem('token')
-            },
-            body: JSON.stringify(email)
-        })
-        .then(res => res.json())
-        .then(res => {
-            if (res.failed) return alert ('Failed to find user');
-            setUserId(res.user_id);
-        })
+        fetchUserByEmail(email);
+        if (userToAdd) addUserToTeam();
     }
 
     function handleCreateSubmit(e) {
@@ -56,7 +83,6 @@ const AddToTeam = props => {
                 <h2>Add Member to Team</h2>
                 <input type='email' placeholder="User Email"></input>
                 <button type='submit' className="btn btn-primary">Search</button>
-                <div>{userId}</div>
             </form>)
             : 
             <form onSubmit={handleCreateSubmit}>

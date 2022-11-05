@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const ticketSchema = mongoose.Schema({
     title: {
@@ -9,14 +10,8 @@ const ticketSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    creator: {
-        type: String,
-        required: true
-    },
-    project_id: {
-        type: String,
-        required: true
-    },
+    creator: {type: Schema.Types.ObjectId, ref: 'User'},
+    project_id: {type: Schema.Types.ObjectId, ref: 'Project'},
     priority: {
         type: String,
         required: true
