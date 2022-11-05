@@ -11,13 +11,29 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const { response } = require("express");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
-import verifyJWT from './verifyJWT.js';
 
 
-const recordRoutes = express.Router();
+const projectRoutes = express.Router();
+
+const verifyJWT = (req, res, next) => {
+    const token = req.headers['x-access-token']?.split(' ')[1];
+    if (!token) {
+      return res.json({message: "Incorrect Token Given", isLoggedIn: false})
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) return res.json({
+        isLoggedIn: false,
+        message: "Failed To Authenticate"
+      })
+      req.user = {};
+      req.user.id = decoded.id;
+      req.user.email = decoded.email;
+      next();
+    })
+  }
 
 //create new project
-recordRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
+projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     const project = req.body;
   
     const getTakenName = async () => {
@@ -73,7 +89,7 @@ recordRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
   })
 
   //get project data for a given user for display in table
-recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
+projectRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
     UserInfo.findOne({user_id: req.user.id})
     .populate('projects')
     .exec((err, user) => {
@@ -85,7 +101,7 @@ recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
   })
   
   //get data for user's project roles
-  recordRoutes.route('/getProjectRoles').get(verifyJWT, (req, res) => {
+  projectRoutes.route('/getProjectRoles').get(verifyJWT, (req, res) => {
     ProjectUser.find({user_id: req.user.id})
     .exec((err, users) => {
       if (err) return console.log(err);
@@ -93,3 +109,5 @@ recordRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
       return res.json({roles})
     })
   })
+
+  module.exports = projectRoutes

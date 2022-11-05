@@ -29,6 +29,30 @@ const Table = props => {
         }).length;
     }
 
+    async function fetchProjectData() {
+        const projects = await fetchProjects();
+        const roles = await fetchProjectRoles();
+        const tickets = await fetchTickets();
+        console.log(projects, roles, tickets);
+        setprojectData({projects, roles, tickets});
+    }
+
+    async function fetchTeamData() {
+        const teamData = await fetchTeamMembers();
+        setTeamData(teamData);
+    }
+    if (teamData.length) {
+        teamRows = teamData.map((member, i) => {
+            return (
+                <tr key={member.name + i}>
+                    <td>{member.name}</td>
+                    <td>{member.email}</td>
+                    <td>{member.role}</td>
+                </tr>
+            );
+        })
+    }
+
     if (projectData.projects) {
         projectRows = projectData.projects
             .map((project, i) => {
@@ -48,16 +72,10 @@ const Table = props => {
     }
 
         useEffect(() => {
-            async function fetchProjectData() {
-                const projects = await fetchProjects();
-                const roles = await fetchProjectRoles();
-                const tickets = await fetchTickets();
-                console.log(projects, roles, tickets);
-                setprojectData({projects, roles, tickets});
-            }
+            
             switch (props.type) {
                 case 'projects': fetchProjectData(); break;
-                //case 'teamMembers'
+                case 'teamMembers': fetchTeamData(); break;
             }
         }, [])
     
@@ -110,6 +128,22 @@ const Table = props => {
         }
     }
 
+    async function fetchTeamMembers() {
+        try {
+            const fetchData = await fetch('/getTeamMembers', {
+                method: 'GET',
+                headers: {
+                    'x-access-token': localStorage.getItem('token')
+                },  
+            })
+            const res = await fetchData.json();
+            if (res.isLoggedIn == false) return navigate('/login')
+            return res;
+        } catch(err) {
+
+        }
+    }
+
     function getProjectRole(project) {
         return projectData.roles.find(role => role.project_id == project._id).role
     }
@@ -127,7 +161,12 @@ const Table = props => {
                 </tr>
             </thead>
             <tbody>
-                {projectRows}
+                { props.type == 'projects' && (
+                    projectRows
+                )}
+                {props.type == 'teamMembers' && (
+                    teamRows
+                )}
             </tbody>
         </table>
     );

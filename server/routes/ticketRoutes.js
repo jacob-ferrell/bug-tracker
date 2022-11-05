@@ -11,12 +11,28 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const { response } = require("express");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
-import verifyJWT from './verifyJWT.js';
 
-const recordRoutes = express.Router();
+const ticketRoutes = express.Router();
+
+const verifyJWT = (req, res, next) => {
+    const token = req.headers['x-access-token']?.split(' ')[1];
+    if (!token) {
+      return res.json({message: "Incorrect Token Given", isLoggedIn: false})
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) return res.json({
+        isLoggedIn: false,
+        message: "Failed To Authenticate"
+      })
+      req.user = {};
+      req.user.id = decoded.id;
+      req.user.email = decoded.email;
+      next();
+    })
+  }
 
 //create new ticket
-recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
+ticketRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
     const ticket = req.body;
     const project = await Project.findById(ticket.project_id);
   
@@ -60,7 +76,7 @@ recordRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
   })
 
   //get all tickets associated with user's projects
-recordRoutes.route('/getTickets').get(verifyJWT, async (req, res) => {
+ticketRoutes.route('/getTickets').get(verifyJWT, async (req, res) => {
 
     const getProjectIds = async () => {
       return new Promise(resolve => {
@@ -93,3 +109,5 @@ recordRoutes.route('/getTickets').get(verifyJWT, async (req, res) => {
       console.log(err);
     }
   })
+
+  module.exports = ticketRoutes;

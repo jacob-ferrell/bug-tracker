@@ -13,10 +13,27 @@ const { response } = require("express");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
 
 
-const recordRoutes = express.Router();
+const userRoutes = express.Router();
+
+const verifyJWT = (req, res, next) => {
+    const token = req.headers['x-access-token']?.split(' ')[1];
+    if (!token) {
+      return res.json({message: "Incorrect Token Given", isLoggedIn: false})
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) return res.json({
+        isLoggedIn: false,
+        message: "Failed To Authenticate"
+      })
+      req.user = {};
+      req.user.id = decoded.id;
+      req.user.email = decoded.email;
+      next();
+    })
+  }
 
 //create new users
-recordRoutes.route('/signup').post(async (req, res) => {
+userRoutes.route('/signup').post(async (req, res) => {
     const user = req.body;
     const takenEmail = await User.findOne({email: user.email});
   
@@ -44,7 +61,7 @@ recordRoutes.route('/signup').post(async (req, res) => {
   })
 
   //log in users and sign jwt token
-recordRoutes.route('/login').post((req, res) => {
+userRoutes.route('/login').post((req, res) => {
 
     const userLoggingIn = req.body;
   
@@ -81,4 +98,25 @@ recordRoutes.route('/login').post((req, res) => {
       })
     })
   })
+
+    //if user is authorized, respond with all user data
+    userRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {
+        try {
+        UserInfo.findOne({user_id: req.user.id})
+        .then(userData => {
+            if (!userData) return res.json({isLoggedIn: false})
+            res.json({isLoggedIn: true, ...userData._doc})})
+        } catch (err) {
+        console.log(err);
+    }
+    })
+
+    //find a user by email and return user_id
+  userRoutes.route('/findUser').post(verifyJWT, async (req, res) => {
+    const userToAdd = await UserInfo.findOne({email: req.body.email});
+    if (!userToAdd) return res.json({failed: true});
+    return res.json({...userToAdd._doc})
+  })
+
+  module.exports = userRoutes;
 

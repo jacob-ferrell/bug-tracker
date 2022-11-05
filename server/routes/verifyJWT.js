@@ -1,5 +1,5 @@
 //function for veryifying users 
-export default function verifyJWT(req, res, next) {
+const verifyJWT = (req, res, next) => {
     const token = req.headers['x-access-token']?.split(' ')[1];
     if (!token) {
       return res.json({message: "Incorrect Token Given", isLoggedIn: false})

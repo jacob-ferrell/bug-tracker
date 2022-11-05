@@ -11,12 +11,28 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const { response } = require("express");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
-import verifyJWT from './verifyJWT.js';
 
-const recordRoutes = express.Router();
+const teamRoutes = express.Router();
+
+const verifyJWT = (req, res, next) => {
+    const token = req.headers['x-access-token']?.split(' ')[1];
+    if (!token) {
+      return res.json({message: "Incorrect Token Given", isLoggedIn: false})
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) return res.json({
+        isLoggedIn: false,
+        message: "Failed To Authenticate"
+      })
+      req.user = {};
+      req.user.id = decoded.id;
+      req.user.email = decoded.email;
+      next();
+    })
+  }
 
 //create new team
-recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
+teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
     const team = req.body;
     const user = await UserInfo.findOne({user_id: req.body.creator});
     try {
@@ -40,15 +56,27 @@ recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
   })
   
   //add member to team
-  recordRoutes.route('/addToTeam').post(verifyJWT, async (req, res) => {
+  teamRoutes.route('/addToTeam').post(verifyJWT, async (req, res) => {
     const userToAddId = req.body.userToAdd;
+    const userToAddRole = req.body.role || 'admin';
     console.log(userToAddId)
     try {
       const userToAdd = await UserInfo.findOne({user_id: userToAddId});    
+      const teamMemberToAdd = await TeamMember.findOne({user_id: userToAddId});
       const user = await UserInfo.findOne({user_id: req.user.id});
       const teamId = user.team;
+      if (teamMemberToAdd) {
+        teamMemberToAdd.team_id = teamId;
+        await teamMemberToAdd.save();
+      } else {
+        const newTeamMember = new TeamMember({
+            user_id: userToAddId,
+            team_id: teamId,
+            role: userToAddRole
+        })
+        await newTeamMember.save();
+      }
       const team = await Team.findById(teamId);
-      console.log(teamId);
       userToAdd.team = teamId;
       await userToAdd.save();
       team.members.push(userToAdd._id);
@@ -60,3 +88,30 @@ recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
   
     }
   })
+
+  //get all team member data
+  teamRoutes.route('/getTeamMembers').get(verifyJWT, async (req, res) => {
+    try {
+      const user = await UserInfo.findOne({user_id: req.user.id});
+      const teamId = user.team;
+      const teamMembers = await TeamMember.find({team_id: teamId})
+      let memberData = teamMembers.map(e => {
+        return {
+            role: e.role,
+            user_id: e.user_id
+        }
+      })
+      for (let i in memberData) {
+        const member = memberData[i];
+        const userInfo = await UserInfo.findOne({user_id: member.user_id});
+        member.name = userInfo.firstName + ' ' + userInfo.lastName;
+        member.email = userInfo.email;
+      }
+      console.log(memberData);
+      return res.json(memberData);
+    } catch (err) {
+        console.log(err);
+    }
+  })
+
+  module.exports = teamRoutes;
