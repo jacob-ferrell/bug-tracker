@@ -3,14 +3,13 @@ import { useState, useEffect } from 'react';
 
 const Table = props => {
     const navigate = useNavigate();
-
-    const [projectData, setProjectData] = useState([]);
+    const [projectData, setprojectData] = useState({projects: null, roles: null, tickets: null })
     const [teamData, setTeamData] = useState([]);
-    const [projectRoles, setProjectRoles] = useState([]);
 
     const [tickets, setTickets] = useState([]);
 
-    let projectRows;
+    let projectRows, teamRows;
+
 
     let headings = {
         projects: ['', 'Project Name', 'My Role', 'Open Tickets'],
@@ -23,25 +22,15 @@ const Table = props => {
         );
     })
 
-    const getAllProjectData = () => {
-        fetchProjectData()
-        fetchTickets()
-        fetchProjectRoles()
-    }
-
-    function addTicket(e) {
-
-    }
-
     function getOpenTickets(project) {
         const id = project._id;
-        return tickets.filter(ticket => {
+        return projectData.tickets.filter(ticket => {
             return ticket.project_id == id && ticket.status == 'open';
         }).length;
     }
 
-    if (props.projects && projectData.length && projectRoles.length) {
-        projectRows = projectData
+    if (projectData.projects) {
+        projectRows = projectData.projects
             .map((project, i) => {
                 const role = getProjectRole(project);
                 const openTickets = getOpenTickets(project);
@@ -59,12 +48,21 @@ const Table = props => {
     }
 
         useEffect(() => {
-            if (props.projects) getAllProjectData();
-            
+            async function fetchProjectData() {
+                const projects = await fetchProjects();
+                const roles = await fetchProjectRoles();
+                const tickets = await fetchTickets();
+                console.log(projects, roles, tickets);
+                setprojectData({projects, roles, tickets});
+            }
+            switch (props.type) {
+                case 'projects': fetchProjectData(); break;
+                //case 'teamMembers'
+            }
         }, [])
     
 
-    async function fetchProjectData() {
+    async function fetchProjects() {
         try {
             const fetchData = await fetch('/getUserProjects', {
                 method: 'GET',
@@ -74,7 +72,7 @@ const Table = props => {
             })
             const res = await fetchData.json();
             if (res.isLoggedIn == false) return navigate('/login')
-            setProjectData(res);
+            return res.projects;
         } catch(err) {
             console.log(err);
         }
@@ -90,7 +88,7 @@ const Table = props => {
             })
             const res = await fetchData.json();
             if (res.isLoggedIn == false) return navigate('/login')
-            setProjectRoles(res.roles);
+            return res.roles;
         } catch(err) {
             console.log(err);
         }
@@ -106,14 +104,14 @@ const Table = props => {
             })
             const res = await fetchData.json();
             if (res.isLoggedIn == false) return navigate('/login')
-            setTickets(res.tickets);
+            return res.tickets;
         } catch(err) {
             console.log(err);
         }
     }
 
     function getProjectRole(project) {
-        return projectRoles.find(role => role.project_id == project._id).role
+        return projectData.roles.find(role => role.project_id == project._id).role
     }
         
 
