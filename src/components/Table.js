@@ -5,8 +5,8 @@ const Table = props => {
     const navigate = useNavigate();
 
     const [projectData, setProjectData] = useState([]);
-
-    const [roles, setRoles] = useState([]);
+    const [teamData, setTeamData] = useState([]);
+    const [projectRoles, setProjectRoles] = useState([]);
 
     const [tickets, setTickets] = useState([]);
 
@@ -14,6 +14,7 @@ const Table = props => {
 
     let headings = {
         projects: ['', 'Project Name', 'My Role', 'Open Tickets'],
+        teamMembers: ['Name', 'Email', 'Role'],
     }
 
     headings = headings[props.type].map((heading, i) => {
@@ -21,6 +22,12 @@ const Table = props => {
             <th key={heading + i}>{heading}</th>
         );
     })
+
+    const getAllProjectData = () => {
+        fetchProjectData()
+        fetchTickets()
+        fetchProjectRoles()
+    }
 
     function addTicket(e) {
 
@@ -33,11 +40,10 @@ const Table = props => {
         }).length;
     }
 
-    if (projectData.length && roles.length) {
-        console.log(tickets)
+    if (props.projects && projectData.length && projectRoles.length) {
         projectRows = projectData
             .map((project, i) => {
-                const role = getRole(project);
+                const role = getProjectRole(project);
                 const openTickets = getOpenTickets(project);
                 return (
                     <tr key={project + i}>
@@ -53,63 +59,61 @@ const Table = props => {
     }
 
         useEffect(() => {
-
-            fetchProjectData()
-            .then(res => {
-                res.isLoggedIn == false 
-                ? navigate('/login')
-                : setProjectData(res);
-            })
-            fetchTickets()
-            .then(res => {
-                res.isLoggedIn == false 
-                ? navigate('/login')
-                : setTickets(res);
-            })
-            fetchRoles()
-            .then(res => {
-                res.isLoggedIn == false 
-                ? navigate('/login')
-                : setRoles(res);
-            })
+            if (props.projects) getAllProjectData();
+            
         }, [])
     
 
     async function fetchProjectData() {
-        const fetchData = await fetch('/getUserProjects', {
-            method: 'GET',
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        })
-        const projectData = await fetchData.json();
-        return projectData.projects;
+        try {
+            const fetchData = await fetch('/getUserProjects', {
+                method: 'GET',
+                headers: {
+                    'x-access-token': localStorage.getItem('token')
+                }
+            })
+            const res = await fetchData.json();
+            if (res.isLoggedIn == false) return navigate('/login')
+            setProjectData(res);
+        } catch(err) {
+            console.log(err);
+        }
     }
 
-    async function fetchRoles() {
-        const fetchData = await fetch('/getProjectRoles', {
-            method: 'GET',
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        })
-        const roles = await fetchData.json();
-        return roles.roles;
+    async function fetchProjectRoles() {
+        try {
+            const fetchData = await fetch('/getProjectRoles', {
+                method: 'GET',
+                headers: {
+                    'x-access-token': localStorage.getItem('token')
+                }
+            })
+            const res = await fetchData.json();
+            if (res.isLoggedIn == false) return navigate('/login')
+            setProjectRoles(res.roles);
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     async function fetchTickets() {
-        const fetchData = await fetch('/getTickets', {
-            method: 'GET',
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            },            
-        })
-        const tickets = await fetchData.json();
-        return tickets.tickets;
+        try {
+            const fetchData = await fetch('/getTickets', {
+                method: 'GET',
+                headers: {
+                    'x-access-token': localStorage.getItem('token')
+                },            
+            })
+            const res = await fetchData.json();
+            if (res.isLoggedIn == false) return navigate('/login')
+            setTickets(res.tickets);
+        } catch(err) {
+            console.log(err);
+        }
     }
 
-    function getRole(project) {
-        return roles.find(role => role.project_id == project._id).role
+    function getProjectRole(project) {
+        return projectRoles.find(role => role.project_id == project._id).role
     }
         
 

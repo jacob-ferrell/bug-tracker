@@ -9,7 +9,6 @@ const TeamMember = require('../models/teamMember');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { populate } = require("../models/user");
 const { response } = require("express");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
 

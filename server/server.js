@@ -19,6 +19,8 @@ app.use(bodyParser.json());
 app.use(require('./routes/record'));
 
 
+
+
 mongoose.connect(dbURI, { useNewUrlParser:true, useUnifiedTopology:true })
 .then (res => {
   app.listen(process.env.PORT, () => console.log('Server is up'));

@@ -32,7 +32,7 @@ const MyProjects = props => {
                 {!showProjectForm && (
                 <button onClick={toggleProjectForm} className='btn btn-primary'
                 data-type='project'>New Project</button>)}
-                <Table addTicket={handleNewTicketClick} type='projects'></Table>
+                <Table addTicket={handleNewTicketClick} projects={true}></Table>
             </div>
             {showProjectForm && (
             <NewProjectForm userData={props.userData} hide={toggleProjectForm}/>)}
