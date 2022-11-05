@@ -153,11 +153,20 @@ recordRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
     await newTeam.save();
     user.team.push(newTeam._id);
     await user.save();
-    return res.json({message: 'Succesfully created team'});
+    return res.json({success: true});
   } catch(err) {
     console.log(err);
-    return res.json({message: 'Failed to create team'});s
+    return res.json({success: false});
   }
+})
+
+//add member to team
+recordRoutes.route('/addToTeam').post(verifyJWT, async (req, res) => {
+  const user_id = req.body.user_id;
+
+
+  const user = await UserInfo.findOne({user_id: user_id});
+  user.team
 })
 
 //log in users and sign jwt token

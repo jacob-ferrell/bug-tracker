@@ -23,9 +23,10 @@ const AddToTeam = props => {
             body: JSON.stringify(email)
         })
         .then(res => res.json())
-        .then(res => res.failed 
-            ? alert ('Failed to find user')
-            : setUserId(res.user_id))
+        .then(res => {
+            if (res.failed) return alert ('Failed to find user');
+            setUserId(res.user_id);
+        })
     }
 
     function handleCreateSubmit(e) {
@@ -42,6 +43,10 @@ const AddToTeam = props => {
             },
             body: JSON.stringify(team)
         })
+        .then(res => res.json())
+        .then(res => res.success 
+            ? setHasTeam(true)
+            : alert('Failed to create team'))
     }
 
     return (
