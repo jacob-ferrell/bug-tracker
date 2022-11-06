@@ -10,5 +10,5 @@
 - Issues are created through the respective projects, providing details such as a description, urgency, status, etc.
 - Notifications alert users to changes throughout all of their projects, teams, etc.
 - Team admins are able to add new members to their teams, and assign those members to projects with varying roles
-- Project admins will be able to assign other team members to varying roles within that project, offering differing levels of permissions
+- Project admins are able to assign other team members to varying roles within that project, offering differing levels of permissions
 -
