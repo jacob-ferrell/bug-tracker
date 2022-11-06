@@ -6,12 +6,7 @@ const UserInfo = require('../models/userInfo');
 const ProjectUser = require('../models/projectUser');
 const Team = require('../models/team');
 const TeamMember = require('../models/teamMember');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const path = require('path');
-const { response } = require("express");
-const project = require("../models/project");
-const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
 
 
 const projectRoutes = express.Router();
@@ -89,18 +84,6 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     }
   })
 
-  //get project data for a given user for display in table
-projectRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
-    UserInfo.findOne({user_id: req.user.id})
-    .populate('projects')
-    .exec((err, user) => {
-      if (err) return console.log(err);
-      const projects = [...user.projects].map(project => project._doc);
-      
-      return res.json({projects});
-    })
-  })
-
   //get all project data for user
   projectRoutes.route('/getProjectData').get(verifyJWT, async (req, res) => {
     try {
@@ -128,6 +111,18 @@ projectRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
               })
 
             project.tickets = tickets;
+
+            const users = await ProjectUser.find({project_id: project.project_id});
+            for (let i in users) {
+                const userInfo =  await UserInfo.findOne({user_id: users[i].user_id});
+                users[i] = {
+                    role: users[i].role,
+                    name: userInfo.firstName + ' ' + userInfo.lastName,
+                    email: userInfo.email,
+                    user_id: users[i].user_id
+                }
+            }
+            project.users = users;
         }
         res.json([...projects]);
         })
@@ -136,15 +131,7 @@ projectRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
         console.log(err);
     }
   })
+
   
-  //get data for user's project roles
-  projectRoutes.route('/getProjectRoles').get(verifyJWT, (req, res) => {
-    ProjectUser.find({user_id: req.user.id})
-    .exec((err, users) => {
-      if (err) return console.log(err);
-      const roles = [...users].map(e => e._doc);
-      return res.json({roles})
-    })
-  })
 
   module.exports = projectRoutes

@@ -1,4 +1,4 @@
-import { useEffect, useInsertionEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddToTeam from './AddToTeam';
 import Table from './Table';
@@ -10,10 +10,10 @@ const MyTeam = props => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTeamData();
+        fetchAndSetTeamData();
     }, [])
 
-    async function fetchTeamMembers() {
+    async function fetchTeamData() {
         try {
             const fetchData = await fetch('/getTeamMembers', {
                 method: 'GET',
@@ -22,15 +22,15 @@ const MyTeam = props => {
                 },  
             })
             const res = await fetchData.json();
-            if (res.isLoggedIn == false) return navigate('/login')
+            if (res.isLoggedIn == false) return navigate('/login');
             return res;
         } catch(err) {
 
         }
     }
 
-    async function fetchTeamData() {
-        const teamData = await fetchTeamMembers();
+    async function fetchAndSetTeamData() {
+        const teamData = await fetchTeamData();
         setTeamData(teamData);
     }
 
@@ -39,7 +39,7 @@ const MyTeam = props => {
 
     return (
         <div className='my-team'>
-            <AddToTeam userData={props.userData} updateTeam={fetchTeamData} />
+            <AddToTeam userData={props.userData} updateData={fetchAndSetTeamData} />
             <Table userData={props.userData} teamData={teamData} type='teamMembers'/>
         </div>
     );

@@ -1,8 +1,5 @@
-import { useNavigate } from 'react-router-dom';
 
 const NewProjectForm = props => {
-
-    const navigate = useNavigate();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -15,19 +12,9 @@ const NewProjectForm = props => {
             creator: props.userData.user_id,
         }
 
-        fetch('/createProject', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json',
-                'x-access-token': localStorage.getItem('token')
-            },
-            body: JSON.stringify(project)
-        })
-        .then(res => res.json())
-        .then(data => data.isLoggedIn == false
-            ? navigate('/login')
-            : data.takenName ? alert('You already have a project with that name')
-            : props.hide());
+        props.createProject(project)
+        .then(() => setTimeout(() => props.updateData(), 100));
+
     }
 
     return (

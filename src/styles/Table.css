@@ -1,0 +1,10 @@
+.add-ticket-btn {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.table-project-row {
+    cursor: pointer;
+}

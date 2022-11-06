@@ -1,20 +1,19 @@
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import '../styles/Table.css';
 
 const Table = props => {
-    const navigate = useNavigate();
-    //const [projectData, setprojectData] = useState({projects: null, roles: null, tickets: null })
     const teamData = props.teamData;
     const projectData = props.projectData;
+    const users = props.users;
+    const tickets = props.tickets;
 
-    const [tickets, setTickets] = useState([]);
-
-    let projectRows, teamRows;
+    let projectRows, teamRows, userRows, ticketRows;
 
 
     let headings = {
-        projects: ['', 'Project Name', 'My Role', 'Open Tickets'],
+        projects: ['Project Name', 'My Role', 'Open Tickets'],
         teamMembers: ['Name', 'Email', 'Role'],
+        projectUsers: ['Name', 'Email', 'Role'],
+        tickets: ['Title', 'Creator', 'Status', 'Created'],
     }
 
     headings = headings[props.type].map((heading, i) => {
@@ -30,17 +29,6 @@ const Table = props => {
         }).length;
     }
 
-/*     async function fetchProjectData() {
-        const projects = await fetchProjects();
-        const roles = await fetchProjectRoles();
-        const tickets = await fetchTickets();
-        setprojectData({projects, roles, tickets});
-    } */
-
-   /*  async function fetchTeamData() {
-        const teamData = await fetchTeamMembers();
-        //setTeamData(teamData);
-    } */
     if (teamData) {
         teamRows = teamData.map((member, i) => {
             return (
@@ -57,11 +45,13 @@ const Table = props => {
         projectRows = projectData.map((project, i) => {
                 const role = project.role;
                 const openTickets = getOpenTickets(project);
+                const id = project.project_id;
                 return (
-                    <tr key={project.name + i}>
-                        <td><button data-projectid={project.project_id} 
+                    <tr key={project.name + i} className='table-project-row' data-projectid={id}
+                    onClick={props.handleClick}>
+                        {/* <td><button data-projectid={project.project_id} 
                         className='btn btn-info add-ticket-btn' 
-                        data-type='ticket' onClick={props.addTicket}>+</button></td>
+                        data-type='ticket' onClick={props.addTicket}>+</button></td> */}
                         <td>{project.name}</td>
                         <td>{role[0].toUpperCase() + role.slice(1)}</td>
                         <td>{openTickets}</td>
@@ -70,88 +60,32 @@ const Table = props => {
             })
     }
 
-        useEffect(() => {
-            
-            /* switch (props.type) {
-                case 'projects': fetchProjectData(); break;
-                //case 'teamMembers': fetchTeamData(); break;
-            } */
-        }, [])
-    
-
-    async function fetchProjects() {
-        try {
-            const fetchData = await fetch('/getUserProjects', {
-                method: 'GET',
-                headers: {
-                    'x-access-token': localStorage.getItem('token')
-                }
-            })
-            const res = await fetchData.json();
-            if (res.isLoggedIn == false) return navigate('/login')
-            return res.projects;
-        } catch(err) {
-            console.log(err);
-        }
+    if (users) {
+        userRows = users.map((user, i) => {
+            return (
+                <tr key={user.name + i}>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td> 
+                </tr>
+            );
+        })
+    }
+    if (tickets) {
+        ticketRows = tickets.map((ticket, i) => {
+            let status = ticket.status;
+            status = status[0].toUpperCase() + status.slice(1);
+            return (
+                <tr key={ticket.title + i}>
+                    <td>{ticket.title}</td>
+                    <td>{props.getName(ticket.creator)}</td>
+                    <td>{status}</td>
+                    <td>{props.getDate(ticket.createdAt)}</td>
+                </tr>
+            );
+        })
     }
 
-    async function fetchProjectRoles() {
-        try {
-            const fetchData = await fetch('/getProjectRoles', {
-                method: 'GET',
-                headers: {
-                    'x-access-token': localStorage.getItem('token')
-                }
-            })
-            const res = await fetchData.json();
-            if (res.isLoggedIn == false) return navigate('/login')
-            return res.roles;
-        } catch(err) {
-            console.log(err);
-        }
-    }
-
-    async function fetchTickets() {
-        try {
-            const fetchData = await fetch('/getTickets', {
-                method: 'GET',
-                headers: {
-                    'x-access-token': localStorage.getItem('token')
-                },            
-            })
-            const res = await fetchData.json();
-            if (res.isLoggedIn == false) return navigate('/login')
-            return res.tickets;
-        } catch(err) {
-            console.log(err);
-        }
-    }
-
-  /*   async function fetchTeamMembers() {
-        try {
-            const fetchData = await fetch('/getTeamMembers', {
-                method: 'GET',
-                headers: {
-                    'x-access-token': localStorage.getItem('token')
-                },  
-            })
-            const res = await fetchData.json();
-            if (res.isLoggedIn == false) return navigate('/login')
-            return res;
-        } catch(err) {
-
-        }
-    } */
-
-    function getProjectRole(project) {
-        return projectData.roles.find(role => role.project_id == project._id).role
-    }
-        
-
-
-
-
-    
     return (
         <table className="table table-dark table-sm table-striped table-hover table-bordered">
             <thead>
@@ -160,11 +94,17 @@ const Table = props => {
                 </tr>
             </thead>
             <tbody>
-                { props.type == 'projects' && (
+                { projectData && (
                     projectRows
                 )}
-                {props.type == 'teamMembers' && (
+                {teamData && (
                     teamRows
+                )}
+                {users && (
+                    userRows
+                )}
+                {tickets && (
+                    ticketRows
                 )}
             </tbody>
         </table>

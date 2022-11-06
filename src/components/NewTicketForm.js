@@ -1,18 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
 
 const NewTicketForm = props => {
-
-    const navigate = useNavigate();
 
     const [priority, setPriority] = useState(null);
 
     const handleRadioClick = e => setPriority(e.target.id);
     
-
     function handleSubmit(e) {
         e.preventDefault();
-        const form = e.target
+        const form = e.target;
         const ticket = {
             title: form[0].value,
             description: form[1].value,
@@ -20,26 +16,10 @@ const NewTicketForm = props => {
             project_id: props.projectId,
             status: 'open',
             priority,
-       }
-
-
-        fetch('/createTicket', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json',
-                'x-access-token': localStorage.getItem('token')
-            },
-            body: JSON.stringify(ticket)
-        })
-        .then(res => res.json())
-        .then(data => data.isLoggedIn == false
-            ? navigate('/login') 
-            : data.takenTitle ? alert('This project already has a ticket with that title')
-            : props.hide());
-
-        }
-
-    
+        };
+        props.createTicket(ticket)
+        .then(() => props.updateData());
+    }
 
     return (
         <div className='new-ticket-form'>
@@ -70,7 +50,6 @@ const NewTicketForm = props => {
             <div className="form-group">
                 <button className="btn btn-primary btn-block" type="submit">Create Ticket</button>
             </div>
-
             </form>
         </div>
     );

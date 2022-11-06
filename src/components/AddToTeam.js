@@ -52,7 +52,11 @@ const AddToTeam = props => {
             email: e.target[0].value
         };
         fetchUserByEmail(email);
-        if (userToAdd) addUserToTeam();
+        if (userToAdd) {
+            addUserToTeam();
+            props.updateTeam();
+
+        };
         props.updateTeam();
 
     }
