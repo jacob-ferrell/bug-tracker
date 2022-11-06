@@ -51,9 +51,10 @@ const AddToTeam = props => {
         const email = {
             email: e.target[0].value
         };
-        console.log('asdf')
         fetchUserByEmail(email);
         if (userToAdd) addUserToTeam();
+        props.updateTeam();
+
     }
 
     function handleCreateSubmit(e) {

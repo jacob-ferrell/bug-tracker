@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import NewProjectForm from './NewProjectForm';
 import NewTicketForm from './NewTicketForm';
 import Table from './Table';
@@ -6,12 +7,18 @@ import Table from './Table';
 const MyProjects = props => {
 
     const [formType, setFormType] = useState(null);
-
+    const [projectData, setProjectData] = useState(null);
     const [showProjectForm, setShowProjectForm] = useState(false);
     const [showTicketForm, setShowTicketForm] = useState(false);
 
 
     const [project, setProject] = useState(null);
+
+    const navigate = useNavigate();
+
+    useEffect (() => {
+        fetchAndSetProjectData();
+    }, [])
 
     const toggleProjectForm = () => setShowProjectForm(!showProjectForm);
     const toggleTicketForm = () => setShowTicketForm(!showTicketForm);
@@ -24,6 +31,24 @@ const MyProjects = props => {
         setShowProjectForm(false);
     }
 
+    async function fetchProjectData() {
+        const fetchData = await fetch('/getProjectData', {
+            method: 'GET',
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            },  
+        })
+        const res = await fetchData.json();
+        if (res.isLoggedIn == false) return navigate('/login')
+        console.log(res);
+        return res;
+    }
+
+    async function fetchAndSetProjectData() {
+        const data = await fetchProjectData();
+        setProjectData(data);
+    }
+
 
 
     return (
@@ -32,7 +57,7 @@ const MyProjects = props => {
                 {!showProjectForm && (
                 <button onClick={toggleProjectForm} className='btn btn-primary'
                 data-type='project'>New Project</button>)}
-                <Table addTicket={handleNewTicketClick} type='projects'></Table>
+                <Table addTicket={handleNewTicketClick} type='projects' projectData={projectData}></Table>
             </div>
             {showProjectForm && (
             <NewProjectForm userData={props.userData} hide={toggleProjectForm}/>)}

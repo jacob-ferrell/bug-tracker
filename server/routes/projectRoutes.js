@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { response } = require("express");
+const project = require("../models/project");
 const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
 
 
@@ -98,6 +99,42 @@ projectRoutes.route('/getUserProjects').get(verifyJWT, (req, res) => {
       
       return res.json({projects});
     })
+  })
+
+  //get all project data for user
+  projectRoutes.route('/getProjectData').get(verifyJWT, async (req, res) => {
+    try {
+        UserInfo.findOne({user_id: req.user.id})
+        .populate('projects')
+        .exec(async (err, user) => {
+        if (err) return console.log(err);
+        const projects = user.projects.map(project => {
+            return {
+                name: project.name,
+                project_id: project._id,
+                tickets: project.tickets
+            }
+        });
+        for (let i in projects) {
+            const project = projects[i];
+            const projectUser = await ProjectUser.findOne({
+                user_id: req.user.id,
+                project_id: project.project_id
+            })
+            project.role = projectUser.role;
+
+            const tickets = await Ticket.find({
+                '_id': { $in: project.tickets}
+              })
+
+            project.tickets = tickets;
+        }
+        res.json([...projects]);
+        })
+    }
+    catch (err) {
+        console.log(err);
+    }
   })
   
   //get data for user's project roles

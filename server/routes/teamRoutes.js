@@ -14,7 +14,7 @@ const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../confi
 
 const teamRoutes = express.Router();
 
-const verifyJWT = (req, res, next) => {
+function verifyJWT (req, res, next) {
     const token = req.headers['x-access-token']?.split(' ')[1];
     if (!token) {
       return res.json({message: "Incorrect Token Given", isLoggedIn: false})
@@ -83,9 +83,7 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
       await team.save();
       return response.json({success: true});
     } catch(err) {
-      console.log(err);
-      return response.json({success: false});
-  
+      console.log(err);  
     }
   })
 
@@ -94,7 +92,7 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
     try {
       const user = await UserInfo.findOne({user_id: req.user.id});
       const teamId = user.team;
-      const teamMembers = await TeamMember.find({team_id: teamId})
+      const teamMembers = await TeamMember.find({team_id: teamId});
       let memberData = teamMembers.map(e => {
         return {
             role: e.role,

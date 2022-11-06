@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 
 const Table = props => {
     const navigate = useNavigate();
-    const [projectData, setprojectData] = useState({projects: null, roles: null, tickets: null })
-    const [teamData, setTeamData] = useState([]);
+    //const [projectData, setprojectData] = useState({projects: null, roles: null, tickets: null })
+    const teamData = props.teamData;
+    const projectData = props.projectData;
 
     const [tickets, setTickets] = useState([]);
 
@@ -23,25 +24,24 @@ const Table = props => {
     })
 
     function getOpenTickets(project) {
-        const id = project._id;
-        return projectData.tickets.filter(ticket => {
+        const id = project.project_id;
+        return project.tickets.filter(ticket => {
             return ticket.project_id == id && ticket.status == 'open';
         }).length;
     }
 
-    async function fetchProjectData() {
+/*     async function fetchProjectData() {
         const projects = await fetchProjects();
         const roles = await fetchProjectRoles();
         const tickets = await fetchTickets();
-        console.log(projects, roles, tickets);
         setprojectData({projects, roles, tickets});
-    }
+    } */
 
-    async function fetchTeamData() {
+   /*  async function fetchTeamData() {
         const teamData = await fetchTeamMembers();
-        setTeamData(teamData);
-    }
-    if (teamData.length) {
+        //setTeamData(teamData);
+    } */
+    if (teamData) {
         teamRows = teamData.map((member, i) => {
             return (
                 <tr key={member.name + i}>
@@ -53,14 +53,13 @@ const Table = props => {
         })
     }
 
-    if (projectData.projects) {
-        projectRows = projectData.projects
-            .map((project, i) => {
-                const role = getProjectRole(project);
+    if (projectData) {
+        projectRows = projectData.map((project, i) => {
+                const role = project.role;
                 const openTickets = getOpenTickets(project);
                 return (
-                    <tr key={project + i}>
-                        <td><button data-projectid={project._id} 
+                    <tr key={project.name + i}>
+                        <td><button data-projectid={project.project_id} 
                         className='btn btn-info add-ticket-btn' 
                         data-type='ticket' onClick={props.addTicket}>+</button></td>
                         <td>{project.name}</td>
@@ -73,10 +72,10 @@ const Table = props => {
 
         useEffect(() => {
             
-            switch (props.type) {
+            /* switch (props.type) {
                 case 'projects': fetchProjectData(); break;
-                case 'teamMembers': fetchTeamData(); break;
-            }
+                //case 'teamMembers': fetchTeamData(); break;
+            } */
         }, [])
     
 
@@ -128,7 +127,7 @@ const Table = props => {
         }
     }
 
-    async function fetchTeamMembers() {
+  /*   async function fetchTeamMembers() {
         try {
             const fetchData = await fetch('/getTeamMembers', {
                 method: 'GET',
@@ -142,7 +141,7 @@ const Table = props => {
         } catch(err) {
 
         }
-    }
+    } */
 
     function getProjectRole(project) {
         return projectData.roles.find(role => role.project_id == project._id).role
