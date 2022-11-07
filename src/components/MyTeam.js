@@ -5,41 +5,17 @@ import Table from './Table';
 
 const MyTeam = props => {
 
-    const [teamData, setTeamData] = useState(null);
+    const teamData = props.teamData;
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchAndSetTeamData();
+        props.getData();
     }, [])
-
-    async function fetchTeamData() {
-        try {
-            const fetchData = await fetch('/getTeamMembers', {
-                method: 'GET',
-                headers: {
-                    'x-access-token': localStorage.getItem('token')
-                },  
-            })
-            const res = await fetchData.json();
-            if (res.isLoggedIn == false) return navigate('/login');
-            return res;
-        } catch(err) {
-
-        }
-    }
-
-    async function fetchAndSetTeamData() {
-        const teamData = await fetchTeamData();
-        setTeamData(teamData);
-    }
-
-
-
 
     return (
         <div className='my-team'>
-            <AddToTeam userData={props.userData} updateData={fetchAndSetTeamData} />
+            <AddToTeam userData={props.userData} updateData={props.getData} />
             <Table userData={props.userData} teamData={teamData} type='teamMembers'/>
         </div>
     );

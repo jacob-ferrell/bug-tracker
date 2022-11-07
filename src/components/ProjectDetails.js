@@ -1,8 +1,11 @@
 import Table from './Table';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const ProjectDetails = props => {
     //const [project, setProject] = useState(null);
+    const {state} = useLocation();
+    console.log(state)
     const project = props.projectData.find(project => project.project_id == props.projectId);
 
     function formatDate(date) {

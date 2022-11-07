@@ -41,9 +41,7 @@ const Dashboard = props => {
 
     return (
         <div className='dashboard'>
-            <Sidebar userData={data}/>
-            <div className='dashboard-body'>
-                <Header />
+            {/* <div className='dashboard-body'>
                 {(props.myProjects && data) && (
                     <MyProjects userData={data}/>
                 )}
@@ -53,7 +51,7 @@ const Dashboard = props => {
                 {(props.myTeam && data) && (
                     <MyTeam userData={data}/>
                 )}
-            </div>
+            </div> */}
             <button onClick={logout}>Log Out</button>
         </div>
 

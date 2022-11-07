@@ -13,8 +13,6 @@ const NewProjectForm = props => {
         }
 
         props.createProject(project)
-        .then(() => setTimeout(() => props.updateData(), 100));
-
     }
 
     return (

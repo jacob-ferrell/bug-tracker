@@ -7,10 +7,11 @@ import ProjectDetails from './ProjectDetails';
 
 const MyProjects = props => {
 
-    const [projectData, setProjectData] = useState(null);
     const [showProjectForm, setShowProjectForm] = useState(false);
     const [showTicketForm, setShowTicketForm] = useState(false);
     const [showProjectDetails, setShowProjectDetails] = useState(false);
+
+    const projectData = props.projectData;
 
 
     const [project, setProject] = useState(null);
@@ -18,7 +19,7 @@ const MyProjects = props => {
     const navigate = useNavigate();
 
     useEffect (() => {
-        fetchAndSetProjectData();
+        props.getData();
     }, [])
 
     const toggleProjectForm = () => setShowProjectForm(!showProjectForm);
@@ -32,29 +33,23 @@ const MyProjects = props => {
         setShowProjectForm(false);
     }
 
-    function handleProjectClick(e) {
+    function handleNewProjectClick() {
+        navigate('/dashboard/new-project')
+    }
+
+    /* function handleProjectClick(e) {
         setProject(e.currentTarget.dataset.projectid);
         setShowProjectForm(false);
         setShowTicketForm(false);
         setShowProjectDetails(true);
-    }
-
-    async function fetchProjectData() {
-        const fetchData = await fetch('/getProjectData', {
-            method: 'GET',
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            },  
-        })
-        const res = await fetchData.json();
-        if (res.isLoggedIn == false) return navigate('/login')
-        console.log(res)
-        return res;
-    }
-
-    async function fetchAndSetProjectData() {
-        const data = await fetchProjectData();
-        setProjectData(data);
+    } */
+    function handleProjectClick(e) {
+        const id = e.currentTarget.dataset.projectid
+        setProject(id);
+        setShowProjectForm(false);
+        setShowTicketForm(false);
+        setShowProjectDetails(true);
+        navigate('/dashboard/my-projects/project-details', {state: id})
     }
 
     async function fetchCreateTicket(ticket) {
@@ -89,22 +84,17 @@ const MyProjects = props => {
 
     return (
         <div className="my-projects">
-            {(!showProjectDetails && !showProjectForm) && (
                 <div>
-                    <button onClick={toggleProjectForm} className='btn btn-primary'
+                    <button onClick={handleNewProjectClick} className='btn btn-primary'
                     data-type='project'>New Project</button>
                     <Table addTicket={handleNewTicketClick} type='projects' projectData={projectData}
-                    handleClick={handleProjectClick}></Table>
-                </div>)}
-            {showProjectForm && (
-            <NewProjectForm userData={props.userData} hide={toggleProjectForm} updateData={fetchAndSetProjectData}
-            createProject={fetchCreateProject}/>)}
-            {showTicketForm &&(
-            <NewTicketForm userData={props.userData} projectId={project} createTicket={fetchCreateTicket}
-            updateData={fetchAndSetProjectData}/>)}
-            {props.details && (
-                <ProjectDetails projectData={projectData} projectId={project}/>
-            )}
+                    handleClick={props.handleClick}></Table>
+                </div>
+            {/* <NewProjectForm userData={props.userData} hide={toggleProjectForm} updateData={props.getData}
+            createProject={fetchCreateProject}/> */}
+            {/* <NewTicketForm userData={props.userData} projectId={project} createTicket={fetchCreateTicket}
+            updateData={props.getData}/> */}
+
         </div>
     );
 }
