@@ -1,6 +1,6 @@
 import "./styles/App.css";
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import LogInPage from "./components/LogInPage";
 import SignUpPage from "./components/SignUpPage";
 import Dashboard from './components/Dashboard';
@@ -11,6 +11,7 @@ import MyTickets from './components/MyTickets';
 import MyTeam from './components/MyTeam';
 import ProjectDetails from "./components/ProjectDetails";
 import NewProjectForm from "./components/NewProjectForm";
+import AuthenticatedRoutes from "./components/AuthenticatedRoutes";
 
 
 function App() {
@@ -21,11 +22,17 @@ function App() {
 
   const navigate = useNavigate();
 
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [projectData, setProjectData] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [teamData, setTeamData] = useState(null);
+  const [state, setState] = useState({
+    loggedIn: false,
+    userData: null,
+    projectData: null,
+    selectedProject: null,
+    teamData: null,
+    selectedProject: null,
+    fetchAndSetProjectData,
+    handleProjectClick,
+    fetchCreateProject
+  })
 
   const fetchUserData = async () => {
     try {
@@ -56,22 +63,34 @@ async function fetchProjectData() {
 
 async function fetchAndSetProjectData() {
   const data = await fetchProjectData();
-  setProjectData(data);
+  setState(state => ({
+    ...state,
+    projectData: data
+  }));
 }
 
 async function fetchAndSetUserData() {
-  const userData = await fetchUserData();
-  if (!userData.isLoggedIn) {
-    setLoggedIn(false);
+  const data = await fetchUserData();
+  if (!data.isLoggedIn) {
+    setState(state => ({
+      ...state,
+      loggedIn: false
+    }));
     return navigate('/login');
   };
-  setLoggedIn(true);
-  setUserData(userData);
+  setState(state => ({
+    ...state,
+    loggedIn: true,
+    userData: data
+  }));
 }
 
 function handleProjectClick(e) {
-  const id = e.currentTarget.dataset.projectid
-  setSelectedProject(id);
+  const id = e.currentTarget.dataset.projectid;
+  setState(state => ({
+    ...state,
+    selectedProject: id
+  }));
   navigate('/dashboard/my-projects/project-details', {state: id})
 }
 
@@ -86,7 +105,9 @@ async function fetchCreateProject(project) {
   })
   const res = await fetchData.json();
   if (res.isLoggedIn == false) {
-    setLoggedIn(false);
+    setState(state => ({
+      loggedIn: false,
+    }));
     return navigate('/login');
   }  
   if (res.takenName) return alert('You already have a project with that name');
@@ -104,7 +125,10 @@ async function fetchTeamData() {
       })
       const res = await fetchData.json();
       if (res.isLoggedIn == false) {
-        setLoggedIn(false);
+        setState(state => ({
+          ...state,
+          loggedIn: true,
+        }));
         return navigate('/login');
       }
       return res;
@@ -114,37 +138,27 @@ async function fetchTeamData() {
 }
 
 async function fetchAndSetTeamData() {
-  const teamData = await fetchTeamData();
-  setTeamData(teamData);
+  const data = await fetchTeamData();
+  setState(state => ({
+    ...state,
+    teamData: data
+  }));
 }
 
   
   return (
-    <div className="App">
-      {loggedIn && (<Sidebar />)}
-      {loggedIn && (<Header />)}
-      <div className='content'>
+    <div className='app'>
         <Routes>
-          <Route path={'/'}  element={ <Navigate to='/dashboard' /> } />
-          <Route path={'/login'}  element={ <LogInPage /> } />
-          <Route path={'/signup'}  element={ <SignUpPage /> } />
-          <Route path={'/dashboard'}  element={ <Dashboard /> } />
-          <Route path={'/dashboard/my-projects'}  element={ <MyProjects userData={userData} 
-            projectData={projectData} 
-            getData={fetchAndSetProjectData} 
-            handleClick={handleProjectClick}/> } />
-          <Route path={'/dashboard/my-tickets'}  element={ <MyTickets userData={userData}/> } />
-          <Route path={'/dashboard/new-project'}  
-            element={ <NewProjectForm userData={userData} 
-            createProject={fetchCreateProject}/> } 
-          />
-          <Route path={'/dashboard/my-team'}  
-            element={ <MyTeam userData={userData} 
-              getData={fetchAndSetTeamData} teamData={teamData}/> } />
-          <Route path={'/dashboard/my-projects/project-details'}  
-          element={ <ProjectDetails projectData={projectData} projectId={selectedProject}/> } />
+          <Route path='/'  element={ <Navigate to='/login' /> } />
+          <Route path='/login'  exact element={ <LogInPage /> } />
+          <Route path='/signup'  exact element={ <SignUpPage /> } />
+          <Route path='/dashboard' element={<Dashboard />}>
+              <Route path='my-projects' element={<MyProjects state={state} />} />
+              <Route path='my-team' element={<MyTeam getData={fetchAndSetTeamData} teamData={state.teamData} userData={state.userData}/>} />
+              <Route path='my-projects/project-details' element={<ProjectDetails />} />
+          </Route>
+          {/* <Route element={<AuthenticatedRoutes state={state}/>} /> */}
         </Routes>
-      </div>
     </div>
   );
 }

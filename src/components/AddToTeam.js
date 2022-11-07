@@ -7,9 +7,10 @@ const AddToTeam = props => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (props.userData.team) setHasTeam(true);
-    }, [])
-
+        const userData = props.userData;
+        if (userData && userData.team) setHasTeam(true);
+        console.log('oo')
+    }, [props.userData])
     const fetchUserByEmail = async email => {
         try {
             const response = await fetch('/findUser', {

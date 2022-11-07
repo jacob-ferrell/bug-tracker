@@ -1,11 +1,9 @@
 import Table from './Table';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 
 const ProjectDetails = props => {
     //const [project, setProject] = useState(null);
-    const {state} = useLocation();
-    console.log(state)
+
     const project = props.projectData.find(project => project.project_id == props.projectId);
 
     function formatDate(date) {
@@ -29,14 +27,14 @@ const ProjectDetails = props => {
     }, [])
 
     return (
-        <div className='project-details'>
+        <div className='project-details content'>
             <div className='project-users'>
                 <h4>{project.name + ' Users'}</h4>
-                <Table users={project.users} type='projectUsers' />
+                <Table users={project.users} type='projectUsers' className='table-projectUsers'/>
             </div>
             <div className='project-tickets'>
                 <h4>{project.name + ' Tickets'}</h4>
-                <Table tickets={project.tickets} type='tickets' getDate={formatDate} getName={nameFromId}/>
+                <Table className='table-tickets' tickets={project.tickets} type='tickets' getDate={formatDate} getName={nameFromId}/>
             </div>
         </div>
     );

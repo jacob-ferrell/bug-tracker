@@ -6,12 +6,21 @@ import Table from './Table';
 import ProjectDetails from './ProjectDetails';
 
 const MyProjects = props => {
+    const {
+        projectData, 
+        userData, 
+        teamData,
+        selectedProject,
+        fetchAndSetProjectData,
+        fetchAndSetTeamData,
+        handleProjectClick,
+        fetchCreateProject,
+
+    } = props.state;
 
     const [showProjectForm, setShowProjectForm] = useState(false);
     const [showTicketForm, setShowTicketForm] = useState(false);
     const [showProjectDetails, setShowProjectDetails] = useState(false);
-
-    const projectData = props.projectData;
 
 
     const [project, setProject] = useState(null);
@@ -19,7 +28,7 @@ const MyProjects = props => {
     const navigate = useNavigate();
 
     useEffect (() => {
-        props.getData();
+        fetchAndSetProjectData();
     }, [])
 
     const toggleProjectForm = () => setShowProjectForm(!showProjectForm);
@@ -43,16 +52,16 @@ const MyProjects = props => {
         setShowTicketForm(false);
         setShowProjectDetails(true);
     } */
-    function handleProjectClick(e) {
+    /* function handleProjectClick(e) {
         const id = e.currentTarget.dataset.projectid
         setProject(id);
         setShowProjectForm(false);
         setShowTicketForm(false);
         setShowProjectDetails(true);
-        navigate('/dashboard/my-projects/project-details', {state: id})
-    }
+        navigate('/dashboard/my-projects/project-details')
+    } */
 
-    async function fetchCreateTicket(ticket) {
+   /*  async function fetchCreateTicket(ticket) {
         const fetchData = await fetch('/createTicket', {
             method: 'POST',
             headers: {
@@ -80,10 +89,10 @@ const MyProjects = props => {
         if (res.isLoggedIn == 'false') return navigate('/login');
         if (res.takenName) return alert('You already have a project with that name');
         toggleProjectForm();
-    }
+    } */
 
     return (
-        <div className="my-projects">
+        <div className="my-projects content">
                 <div>
                     <button onClick={handleNewProjectClick} className='btn btn-primary'
                     data-type='project'>New Project</button>

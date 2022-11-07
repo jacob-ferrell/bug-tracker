@@ -22,7 +22,7 @@ const NewTicketForm = props => {
     }
 
     return (
-        <div className='new-ticket-form'>
+        <div className='new-ticket-form content'>
             <form onSubmit={handleSubmit}>
             <h2 className="login-form-heading">New Ticket</h2>
             <div className="illustration">

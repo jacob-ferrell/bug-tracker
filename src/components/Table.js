@@ -87,7 +87,7 @@ const Table = props => {
     }
 
     return (
-        <table className="table table-dark table-sm table-striped table-hover table-bordered">
+        <table className="table w-auto table-dark table-lg table-striped table-hover table-bordered">
             <thead>
                 <tr>
                     {headings}

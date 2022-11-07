@@ -4,11 +4,11 @@ html, body, #root, .App {
 
 }
 .content {
-    display: flex;
-    flex-direction: column;
+    position: fixed;
+    left: 220px;
+    top: 120px;
     height: 100%;
     width: 100%;
-    margin-left: 220px;
     background-color: rgb(85, 85, 85);
 
 }

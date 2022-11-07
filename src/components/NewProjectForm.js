@@ -16,7 +16,7 @@ const NewProjectForm = props => {
     }
 
     return (
-        <div className='new-project-form'>
+        <div className='new-project-form content'>
             <form onSubmit={handleSubmit}>
             <h2 className="login-form-heading">New Project</h2>
             <div className="illustration">

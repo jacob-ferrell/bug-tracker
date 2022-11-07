@@ -10,7 +10,7 @@ const MyTickets = props => {
     }
 
     return (
-        <div className='my-tickets'>
+        <div className='my-tickets content'>
             { !showForm ? (
             <div>
                 {/* <Table type='tickets'></Table> */}

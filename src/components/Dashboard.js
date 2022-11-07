@@ -1,7 +1,7 @@
 import '../styles/Dashboard.css';
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MyProjects from './MyProjects';
@@ -41,6 +41,9 @@ const Dashboard = props => {
 
     return (
         <div className='dashboard'>
+            <Sidebar />
+            <Header />
+
             {/* <div className='dashboard-body'>
                 {(props.myProjects && data) && (
                     <MyProjects userData={data}/>
@@ -52,7 +55,7 @@ const Dashboard = props => {
                     <MyTeam userData={data}/>
                 )}
             </div> */}
-            <button onClick={logout}>Log Out</button>
+            <Outlet />
         </div>
 
         
