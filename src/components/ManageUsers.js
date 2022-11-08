@@ -4,17 +4,25 @@ import Dropdown from 'react-bootstrap/Dropdown'
 
 
 const ManageUsers = props => {
-
-    useEffect(() => {
-        if (!props.teamData) props.getTeamData();
-        if (!props.projectData) props.getProjectData();
+    useEffect(() => { 
     }, [])
+    const {
+        projectData, 
+        userData, 
+        teamData,
+        selectedProject,
+        fetchAndSetProjectData,
+        fetchAndSetTeamData,
+        handleProjectClick,
+        fetchCreateProject,
 
-    let project;
-    setTimeout(() => {
-        project = props.projectData.find(project => project.project_id == props.projectId);
+    } = props.state;
+    console.log(projectData);
+    const projectId = selectedProject || localStorage.getItem('selectedProject');
+ // || JSON.parse(localStorage.getItem('projectData'));
+    const project = projectData.find(project => project.project_id == projectId);
 
-    }, 500)
+    
 
     const dropDown = (
         <Dropdown>
@@ -40,7 +48,7 @@ const ManageUsers = props => {
             <div className="team-container">
                 <h4>Team Members</h4>
                 <div>Click on a member's row to add them to a project</div>
-                <Table userData={props.userData} teamData={props.teamData} 
+                <Table userData={userData} teamData={teamData} 
                 manage={true} type='teamMembers'/>
                 {dropDown}
             </div>

@@ -19,6 +19,8 @@ function App() {
 
   useEffect(() => {
     fetchAndSetUserData();
+    fetchAndSetProjectData();
+    fetchAndSetTeamData();
   }, [])
 
   const navigate = useNavigate();
@@ -68,23 +70,29 @@ function checkAuth(data) {
       ...state,
       loggedIn: false,
     }));
-    return false;
+    logout()
   }
-  return true;
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('selectedProject');
+  navigate('/login')
 }
 
 async function fetchAndSetProjectData() {
   const data = await fetchProjectData();
-  if (!checkAuth(data)) return navigate('/login');
+  checkAuth(data);
   setState(state => ({
     ...state,
     projectData: data
   }));
+  localStorage.setItem('projectData', JSON.stringify(data));
 }
 
 async function fetchAndSetUserData() {
   const data = await fetchUserData();
-  if (!checkAuth(data)) return navigate('/login');
+  checkAuth(data);
   setState(state => ({
     ...state,
     loggedIn: true,
@@ -100,7 +108,8 @@ function handleProjectClick(e) {
     ...state,
     selectedProject: id
   }));
-  navigate(`/dashboard/my-projects/${name}/details`, {state: id})
+  localStorage.setItem('selectedProject', id);
+  navigate(`/dashboard/my-projects/${name}/details`);
 }
 
 /* async function fetchCreateProject(project) {
@@ -148,7 +157,7 @@ async function fetchTeamData() {
 
 async function fetchAndSetTeamData() {
   const data = await fetchTeamData();
-  if (!checkAuth(data)) return navigate('/login');
+  checkAuth(data);
   setState(state => ({
     ...state,
     teamData: data
@@ -158,7 +167,7 @@ async function fetchAndSetTeamData() {
 
   
   return (
-    <div className='app'>
+    <div className='App'>
         <Routes>
           <Route path='/'  element={ <Navigate to='/login' /> } />
           <Route path='/login'  exact element={ <LogInPage /> } />
@@ -179,10 +188,7 @@ async function fetchAndSetTeamData() {
               />
               <Route path={`my-projects/:projectName/manage-users`}
                 element={
-                  <ManageUsers projectId={state.selectedProject} 
-                    userData={state.userData} teamData={state.teamData}
-                    projectData={state.projectData} getProjectData={fetchAndSetProjectData}
-                    getTeamData={fetchAndSetTeamData}/>
+                  <ManageUsers state={state} />
                 } />
           </Route>
         </Routes>
