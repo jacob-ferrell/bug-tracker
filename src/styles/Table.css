@@ -9,3 +9,6 @@ td {
     cursor: pointer;
 }
 
+#table thead th{
+    border-bottom: none;
+}

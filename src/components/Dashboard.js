@@ -21,8 +21,9 @@ const Dashboard = props => {
         <div className='dashboard'>
             <header>
                 <Sidebar />
-                <Header />
+                <Header userData={props.userData}/>
             </header>
+            <Outlet />
         </div>
     );
 }

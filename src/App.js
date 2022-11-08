@@ -172,7 +172,7 @@ async function fetchAndSetTeamData() {
           <Route path='/'  element={ <Navigate to='/login' /> } />
           <Route path='/login'  exact element={ <LogInPage /> } />
           <Route path='/signup'  exact element={ <SignUpPage /> } />
-          <Route path='/dashboard' element={<Dashboard />}>
+          <Route path='/dashboard' element={<Dashboard userData={state.userData}/>}>
               <Route path='my-projects' element={<MyProjects state={state} />} />
               <Route path='my-team' 
                 element={

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Table from "./Table";
 import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
 
 
 const ManageUsers = props => {
@@ -25,17 +26,9 @@ const ManageUsers = props => {
     
 
     const dropDown = (
-        <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                Dropdown Button
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-                <Dropdown.Item >Action</Dropdown.Item>
-                <Dropdown.Item >Another action</Dropdown.Item>
-                <Dropdown.Item >Something else</Dropdown.Item>
-            </Dropdown.Menu>
-        </Dropdown>
+            <DropdownButton title='Role'>
+                <Dropdown.Item>Poop</Dropdown.Item>
+            </DropdownButton>
     );
 
     return (
@@ -50,8 +43,8 @@ const ManageUsers = props => {
                 <div>Click on a member's row to add them to a project</div>
                 <Table userData={userData} teamData={teamData} 
                 manage={true} type='teamMembers'/>
-                {dropDown}
             </div>
+            {dropDown}
         </div>
     );
 }
