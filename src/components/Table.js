@@ -6,7 +6,7 @@ const Table = props => {
     const users = props.users;
     const tickets = props.tickets;
 
-    let projectRows, teamRows, userRows, ticketRows;
+    let projectRows, teamRows, userRows, ticketRows, checkBox;
 
 
     let headings = {
@@ -29,8 +29,14 @@ const Table = props => {
         }).length;
     }
 
+    function getCheckBox() {
+
+    }
+
     if (teamData) {
-        teamRows = teamData.map((member, i) => {
+        teamRows = teamData
+            .filter(member => member.email != props.userData.email)
+            .map((member, i) => {
             return (
                 <tr key={member.name + i}>
                     <td>{member.name}</td>
@@ -48,7 +54,7 @@ const Table = props => {
                 const id = project.project_id;
                 return (
                     <tr key={project.name + i} className='table-project-row' data-projectid={id}
-                    onClick={props.handleClick}>
+                    data-name={project.name} onClick={props.handleClick}>
                         {/* <td><button data-projectid={project.project_id} 
                         className='btn btn-info add-ticket-btn' 
                         data-type='ticket' onClick={props.addTicket}>+</button></td> */}

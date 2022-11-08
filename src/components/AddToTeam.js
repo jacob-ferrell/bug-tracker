@@ -9,7 +9,6 @@ const AddToTeam = props => {
     useEffect(() => {
         const userData = props.userData;
         if (userData && userData.team) setHasTeam(true);
-        console.log('oo')
     }, [props.userData])
     const fetchUserByEmail = async email => {
         try {

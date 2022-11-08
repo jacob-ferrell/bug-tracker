@@ -97,7 +97,7 @@ const MyProjects = props => {
                     <button onClick={handleNewProjectClick} className='btn btn-primary'
                     data-type='project'>New Project</button>
                     <Table addTicket={handleNewTicketClick} type='projects' projectData={projectData}
-                    handleClick={props.handleClick}></Table>
+                    handleClick={handleProjectClick}></Table>
                 </div>
             {/* <NewProjectForm userData={props.userData} hide={toggleProjectForm} updateData={props.getData}
             createProject={fetchCreateProject}/> */}
