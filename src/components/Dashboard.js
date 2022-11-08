@@ -10,55 +10,20 @@ import MyTeam from './MyTeam';
 
 const Dashboard = props => {
 
-    const navigate = useNavigate();
-    const [data, setData] = useState(null);
 
-    function logout(e) {
-        localStorage.removeItem('token');
-        navigate('/login')
-    }
-
-    const fetchUserData = async () => {
-        try {
-            const response = await fetch('/isUserAuth', {
-                headers: {
-                    'x-access-token': localStorage.getItem('token')
-                }
-            })
-            const json = await response.json();
-            if (!json.isLoggedIn) navigate('/login');
-            setData(json);
-        } catch(err) {
-            console.log(err);
-        }
-    }
 
     useEffect(() => {
-        fetchUserData();
     }, [])
 
 
 
     return (
         <div className='dashboard'>
-            <Sidebar />
-            <Header />
-
-            {/* <div className='dashboard-body'>
-                {(props.myProjects && data) && (
-                    <MyProjects userData={data}/>
-                )}
-                {(props.myTickets && data) && (
-                    <MyTickets userData={data}/>
-                )}
-                {(props.myTeam && data) && (
-                    <MyTeam userData={data}/>
-                )}
-            </div> */}
-            <Outlet />
+            <header>
+                <Sidebar />
+                <Header />
+            </header>
         </div>
-
-        
     );
 }
 
