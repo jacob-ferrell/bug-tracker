@@ -15,7 +15,9 @@ const LogInPage = (props) => {
       password: form[1].value
     }
 
-    fetch('/login', {
+    props.login(user);
+
+    /* fetch('/login', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
@@ -26,7 +28,7 @@ const LogInPage = (props) => {
     .then(data => {
       localStorage.setItem('token', data.token);
       navigate('/dashboard');
-    })
+    }) */
   }
 
   useEffect(() => {

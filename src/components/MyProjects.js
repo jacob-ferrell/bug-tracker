@@ -28,7 +28,7 @@ const MyProjects = props => {
     const navigate = useNavigate();
 
     useEffect (() => {
-        //fetchAndSetProjectData();
+        fetchAndSetProjectData();
     }, [])
 
     const toggleProjectForm = () => setShowProjectForm(!showProjectForm);

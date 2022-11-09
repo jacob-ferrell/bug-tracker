@@ -13,7 +13,7 @@ const Sidebar = props => {
 
     return (
        
-        <nav id="sidebarMenu" className="collapse d-lg-block sidebar bg-dark collapse">
+        <nav id="sidebarMenu" className="collapse d-lg-block sidebar bg-dark collapse mx-0">
             <div className="position-sticky">
                 <div className="list-group list-group-flush mt-4 bg-dark">
                     <Link to='/dashboard' className="list-group-item bg-dark text-light list-group-item-action flex-fill py-2 ripple" aria-current="true">

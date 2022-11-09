@@ -12,3 +12,9 @@ td {
 #table thead th{
     border-bottom: none;
 }
+
+#table table, #table td, #table tr {
+    /* background-color: #343a40; */
+}
+
+

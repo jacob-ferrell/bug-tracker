@@ -1,4 +1,4 @@
-html, body, #root, .App {
+html, body, #root, .App, .dashboard{
     height: 100%;
     background-color: rgb(216, 216, 216);
 

@@ -19,8 +19,8 @@ body {
     background-color: #fbfbfb;
   }
   @media (min-width: 991.98px) {
-    main {
-      padding-left: 240px;
+    .content {
+      margin-left: 240px;
     }
   }
   
@@ -30,8 +30,9 @@ body {
     top: 0;
     bottom: 0;
     left: 0;
-    padding: 58px 0 0; /* Height of navbar */
+    padding: 65px 0 0; /* Height of navbar */
     box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+    height: 100%;
     width: 240px;
     z-index: 600;
   }
@@ -56,9 +57,8 @@ body {
   }
 
   .content {
-    position: fixed;
-    left: 241px;
-    top: 79px;
+    margin-top: 78px;
+    padding: 10px;
     height: 100%;
     width: 100%;
     background-color: rgb(161, 161, 161);

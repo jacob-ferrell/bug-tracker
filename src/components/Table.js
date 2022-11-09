@@ -34,11 +34,12 @@ const Table = props => {
     }
 
     if (teamData) {
+        const handleClick = props.handleTeamClick || null;
         teamRows = teamData
             .filter(member => member.email != props.userData.email)
             .map((member, i) => {
             return (
-                <tr key={member.name + i}>
+                <tr key={member.name + i} onClick={handleClick} data-user={member.user_id}>
                     <td>{member.name}</td>
                     <td>{member.email}</td>
                     <td>{member.role}</td>
@@ -93,7 +94,7 @@ const Table = props => {
     }
 
     return (
-        <table id='table' className="table w-auto table-dark table-lg  table-hover table-bordered">
+        <table id='table' className="table w-auto table-dark table-lg table-striped table-hover">
             <thead>
                 <tr >
                     {headings}

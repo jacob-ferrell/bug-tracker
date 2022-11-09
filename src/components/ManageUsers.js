@@ -5,8 +5,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 
 
 const ManageUsers = props => {
-    useEffect(() => { 
-    }, [])
+
     const {
         projectData, 
         userData, 
@@ -18,18 +17,28 @@ const ManageUsers = props => {
         fetchCreateProject,
 
     } = props.state;
-    console.log(projectData);
+
+    const [teamMember, setTeamMember] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const projects = projectData || JSON.parse(localStorage.getItem('projectData'));
+
     const projectId = selectedProject || localStorage.getItem('selectedProject');
- // || JSON.parse(localStorage.getItem('projectData'));
-    const project = projectData.find(project => project.project_id == projectId);
+    const project = projects.find(project => project.project_id == projectId);
+
+    const handleTeamClick = e => {
+        const userId = e.currentTarget.dataset.user;
+        const teamMember = teamData.find(member => member.user_id == userId);
+        setTeamMember({...teamMember});
+        setShowDropdown(true);
+    }
+
+    const handleRoleClick = e => {
+        console.log(e.target.dataset.role)
+    }
 
     
 
-    const dropDown = (
-            <DropdownButton title='Role'>
-                <Dropdown.Item>Poop</Dropdown.Item>
-            </DropdownButton>
-    );
+
 
     return (
         <div className="manage-users content">
@@ -42,9 +51,17 @@ const ManageUsers = props => {
                 <h4>Team Members</h4>
                 <div>Click on a member's row to add them to a project</div>
                 <Table userData={userData} teamData={teamData} 
-                manage={true} type='teamMembers'/>
+                handleTeamClick={handleTeamClick} type='teamMembers'/>
             </div>
-            {dropDown}
+            {showDropdown && (
+                <div>
+                    <div>Select a role to assign {teamMember.name}</div>
+                    <DropdownButton title='Role'>
+                    <Dropdown.Item data-role='manager' onClick={handleRoleClick}>Manager</Dropdown.Item>
+                    <Dropdown.Item data-role='developer' onClick={handleRoleClick}>Developer</Dropdown.Item>
+                    </DropdownButton>
+                </div>
+            )}
         </div>
     );
 }

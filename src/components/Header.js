@@ -3,8 +3,8 @@ import {Dropdown, DropdownButton} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const Header = props => {
-    //const {firstName, lastName} = props.userData;
-    //const initials = (firstName[0] + lastName[0]).toUpperCase();
+    const {firstName, lastName} = props.userData || JSON.parse(localStorage.getItem('userData'));
+    const initials = (firstName[0] + lastName[0]).toUpperCase(); 
 
     return (
         <nav id="main-navbar" className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -34,11 +34,12 @@ const Header = props => {
                   <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDYevtE5YFoPymQ9qI-WSRPSMWa3TV7yMycppPt-QkSYd8e1-FgVhklNMRwK7yFdDMY6w&usqp=CAU" height="50" alt="Bug Tracker Logo"
                     loading="lazy" className='rounded-circle' />
                 </a>
-                <form className="d-none d-md-flex input-group w-auto my-auto">
+                <h2 className='text-white mb-0'>Bug Tracker</h2>
+                {/* <form className="d-none d-md-flex input-group w-auto my-auto">
                   <input autoComplete="off" type="search" className="form-control rounded"
-                    placeholder='Search (ctrl + "/" to focus)' style={{minWidth: '225px'}} />
+                    style={{minWidth: '225px'}} />
                   <span className="input-group-text border-0"><i className="fas fa-search"></i></span>
-                </form>
+                </form> */}
 
                 <ul className="navbar-nav ms-auto d-flex flex-row bg-dark">
                   <Dropdown className="nav-item rounded-0 bg-dark">
@@ -52,16 +53,16 @@ const Header = props => {
                   </Dropdown>
                   <Dropdown className="nav-item rounded-0 bg-dark">
                     <Dropdown.Toggle variant="dark" className='rounded-0'>
-                        {'JF'}
+                        {initials}
                     {/* <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" className="rounded-circle"
                         height="22" alt="Avatar" loading="lazy" /> */}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                         <Dropdown.Item>
-                            <a className="dropdown-item" href="#">My profile</a>
+                            My Profile
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                            <a className="dropdown-item" href="#">Logout</a>
+                        <Dropdown.Item onClick={props.logout}>
+                            Logout
                         </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>

@@ -18,9 +18,13 @@ import {fetchProjectData, fetchCreateProject, fetchTeamData, fetchUserData} from
 function App() {
 
   useEffect(() => {
-    fetchAndSetUserData();
-    fetchAndSetProjectData();
-    fetchAndSetTeamData();
+
+    /* async function fetchData() {
+      await fetchAndSetUserData();
+      await fetchAndSetProjectData();
+      await fetchAndSetTeamData();
+    }
+    fetchData(); */
   }, [])
 
   const navigate = useNavigate();
@@ -35,7 +39,9 @@ function App() {
     selectedProject: null,
     fetchAndSetProjectData,
     handleProjectClick,
-    fetchCreateProject
+    fetchCreateProject,
+    logout,
+    fetchData
   })
 
 /*   const fetchUserData = async () => {
@@ -63,6 +69,32 @@ async function fetchProjectData() {
   if (res.isLoggedIn == false) return navigate('/login')
   return res;
 } */
+async function fetchData() {
+  await fetchAndSetUserData();
+  await fetchAndSetProjectData();
+  await fetchAndSetTeamData();
+}
+
+async function login(user) {
+  console.log('pasdf')
+  const data = await fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(user)
+  })
+  const res = await data.json();
+  console.log(res);
+  if(res.isLoggedIn == false) return logout();
+  console.log(res.userData);
+  setState(state => ({
+    ...state,
+    userData: res.userData
+  }));
+  localStorage.setItem('token', res.token);
+  navigate('/dashboard');
+}
 
 function checkAuth(data) {
   if (data.isLoggedIn == false) {
@@ -70,19 +102,23 @@ function checkAuth(data) {
       ...state,
       loggedIn: false,
     }));
-    logout()
+    return false;
   }
 }
 
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('selectedProject');
+  localStorage.removeItem('userData');
+  localStorage.removeItem('teamData');
+  localStorage.removeItem('projectData');
   navigate('/login')
 }
 
 async function fetchAndSetProjectData() {
   const data = await fetchProjectData();
-  checkAuth(data);
+  console.log(data);
+  //if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     projectData: data
@@ -92,12 +128,14 @@ async function fetchAndSetProjectData() {
 
 async function fetchAndSetUserData() {
   const data = await fetchUserData();
-  checkAuth(data);
+  //if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     loggedIn: true,
     userData: data
   }));
+  localStorage.setItem('userData', JSON.stringify(data));
+
 }
 
 function handleProjectClick(e) {
@@ -157,11 +195,13 @@ async function fetchTeamData() {
 
 async function fetchAndSetTeamData() {
   const data = await fetchTeamData();
-  checkAuth(data);
+  //if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     teamData: data
   }));
+  localStorage.setItem('teamData', JSON.stringify(data));
+
   
 }
 
@@ -170,9 +210,9 @@ async function fetchAndSetTeamData() {
     <div className='App'>
         <Routes>
           <Route path='/'  element={ <Navigate to='/login' /> } />
-          <Route path='/login'  exact element={ <LogInPage /> } />
+          <Route path='/login'  exact element={ <LogInPage login={login}/> } />
           <Route path='/signup'  exact element={ <SignUpPage /> } />
-          <Route path='/dashboard' element={<Dashboard userData={state.userData}/>}>
+          <Route path='/dashboard' element={<Dashboard state={state}/>}>
               <Route path='my-projects' element={<MyProjects state={state} />} />
               <Route path='my-team' 
                 element={

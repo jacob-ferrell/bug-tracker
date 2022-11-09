@@ -61,43 +61,76 @@ userRoutes.route('/signup').post(async (req, res) => {
   })
 
   //log in users and sign jwt token
-userRoutes.route('/login').post((req, res) => {
+userRoutes.route('/login').post(async (req, res) => {
 
-    const userLoggingIn = req.body;
-  
-    User.findOne({email: userLoggingIn.email})
-    .then(dbUser => {
-      if (!dbUser) {
+    /* const userLoggingIn = req.body;
+    const user = await User.findOne({email: userLoggingIn.email});
+    if (!user) return res.json({
+        message: 'Invalid Email or Password'
+      })
+    const isCorrect = bcrypt.compare(userLoggingIn.password, user.password);
+    if (!isCorrect) return res.json({
+        message: "Invalid Email or Password",
+        isLoggedIn: false
+      })
+    const userData = await UserInfo.findOne({user_id: user._id});
+    const payload = {
+      id: user._id,
+      email: user.email,
+    }
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      {expiresIn: 86400},
+      (err, token) => {
+        if (err) return res.json({message: err, isLoggedIn: false});
         return res.json({
-          message: 'Invalid Email or Password'
+          message: 'Success',
+          userData: {...userData},
+          token: "Bearer " + token
         })
       }
-      bcrypt.compare(userLoggingIn.password, dbUser.password)
-      .then(isCorrect => {
-        if (!isCorrect) {
+    ) */
+  const userLoggingIn = req.body;
+  const userData = await UserInfo.findOne({email: req.body.email});
+
+  User.findOne({email: userLoggingIn.email})
+  .then(dbUser => {
+    if (!dbUser) {
+      return res.json({
+        message: 'Invalid Email or Password',
+        isLoggedIn: false
+      })
+    }
+    bcrypt.compare(userLoggingIn.password, dbUser.password)
+    .then(isCorrect => {
+      if (!isCorrect) {
+        return res.json({
+          message: "Invalid Email or Password",
+          isLoggedIn: false
+        })
+      }
+        const payload = {
+          id: dbUser._id,
+          email: dbUser.email,
+      }
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        {expiresIn: 86400},
+        (err, token) => {
+          if (err) return res.json({message: err});
           return res.json({
-            message: "Invalid Email or Password"
+            message: 'Success',
+            userData: {...userData._doc},
+            token: "Bearer " + token
           })
         }
-          const payload = {
-            id: dbUser._id,
-            email: dbUser.email,
-        }
-        jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          {expiresIn: 86400},
-          (err, token) => {
-            if (err) return res.json({message: err});
-            return res.json({
-              message: 'Success',
-              token: "Bearer " + token
-            })
-          }
-        )
-      })
+      )
     })
   })
+  })
+
 
     //if user is authorized, respond with all user data
     userRoutes.route('/isUserAuth').get(verifyJWT, (req, res) => {

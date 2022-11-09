@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router-dom';
 const ProjectDetails = props => {
 
     const navigate = useNavigate();
-    const project = props.projectData.find(project => project.project_id == props.projectId);
+    const projects = props.projectData || JSON.parse(localStorage.getItem('projectData'));
+    const projectId = props.projectId || localStorage.getItem('selectedProject');
+    const project = projects.find(project => project.project_id == projectId);
 
     const handleManageClick = (e) => navigate(`/dashboard/my-projects/${project.name}/manage-users`);
 
@@ -29,16 +31,23 @@ const ProjectDetails = props => {
     }, [])
 
     return (
-        <div className='project-details content'>
-            <div className='project-users'>
-                <h4>Project Users</h4>
-                <Table users={project.users} type='projectUsers' className='table-projectUsers'/>
-                <button className='btn btn-primary' onClick={handleManageClick}>Manage Project Users</button>
+        <div className='project-details content d-inline-block flex-column'>
+            <div className='details-container'>
+                <h4 className='bg-primary text-white'>Details for {project.name}</h4>
+
             </div>
-            <div className='project-tickets'>
-                <h4>Project Tickets</h4>
-                <Table className='table-tickets' tickets={project.tickets} type='tickets' getDate={formatDate} getName={nameFromId}/>
+            <div className='tables-container d-flex flex-row justify-content-sm-between'>
+                <div className='project-users'>
+                    <h4>Project Users</h4>
+                    <Table users={project.users} type='projectUsers' className='table-projectUsers'/>
+                    <button className='btn btn-primary' onClick={handleManageClick}>Manage Project Users</button>
+                </div>
+                <div className='project-tickets'>
+                    <h4>Project Tickets</h4>
+                    <Table className='table-tickets' tickets={project.tickets} type='tickets' getDate={formatDate} getName={nameFromId}/>
+                </div>
             </div>
+           
         </div>
     );
 }
