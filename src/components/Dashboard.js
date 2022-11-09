@@ -64,21 +64,25 @@ const navigate = useNavigate();
                 <Header userData={userData} logout={logout}/>
             </header>
             <Sidebar />
-            <NewProjectForm 
-                createProject={fetchCreateProject}
-                handleClose={handleNewClose} 
-                show={showNewProject}
-                updateData={fetchAndSetProjectData}
-                projectData={projectData}
-            />
-            <EditProjectForm 
-                handleClose={handleEditClose}
-                show={showEdit}
-                updateData={fetchAndSetProjectData}
-                projectData={projectData}
-                projectId={selectedProject}
-                editProject={fetchEditProject}
-            />
+            {showNewProject &&(
+              <NewProjectForm 
+                  createProject={fetchCreateProject}
+                  handleClose={handleNewClose} 
+                  show={showNewProject}
+                  updateData={fetchAndSetProjectData}
+                  projectData={projectData}
+              />
+            )}
+            {showEdit && (
+              <EditProjectForm 
+                  handleClose={handleEditClose}
+                  show={showEdit}
+                  updateData={fetchAndSetProjectData}
+                  projectData={projectData}
+                  projectId={selectedProject}
+                  editProject={fetchEditProject}
+              />
+            )}
             <div className='content p-3 w-auto'>
                     <div className='projects bg-light shadow rounded p-2'>
                         <div className='projects-header d-flex justify-content-between'>

@@ -17,18 +17,7 @@ import {fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, f
 
 function App() {
 
-  useEffect(() => {
-
-    /* async function fetchData() {
-      await fetchAndSetUserData();
-      await fetchAndSetProjectData();
-      await fetchAndSetTeamData();
-    }
-    fetchData(); */
-  }, [])
-
   const navigate = useNavigate();
-  const { projectName } = useParams();
 
   const [state, setState] = useState({
     loggedIn: false,
@@ -49,31 +38,6 @@ function App() {
     handleEditProjectClick
   })
 
-/*   const fetchUserData = async () => {
-    try {
-        const response = await fetch('/isUserAuth', {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        })
-        const json = await response.json();
-        return json;
-    } catch(err) {
-        console.log(err);
-    }
-}
-
-async function fetchProjectData() {
-  const fetchData = await fetch('/getProjectData', {
-      method: 'GET',
-      headers: {
-          'x-access-token': localStorage.getItem('token')
-      },  
-  })
-  const res = await fetchData.json();
-  if (res.isLoggedIn == false) return navigate('/login')
-  return res;
-} */
 async function fetchData() {
   await fetchAndSetUserData();
   await fetchAndSetProjectData();
@@ -81,7 +45,6 @@ async function fetchData() {
 }
 
 async function login(user) {
-  console.log('pasdf')
   const data = await fetch('/login', {
     method: 'POST',
     headers: {
@@ -90,25 +53,13 @@ async function login(user) {
     body: JSON.stringify(user)
   })
   const res = await data.json();
-  console.log(res);
   if(res.isLoggedIn == false) return logout();
-  console.log(res.userData);
   setState(state => ({
     ...state,
     userData: res.userData
   }));
   localStorage.setItem('token', res.token);
   navigate('/dashboard');
-}
-
-function checkAuth(data) {
-  if (data.isLoggedIn == false) {
-    setState(state => ({
-      ...state,
-      loggedIn: false,
-    }));
-    return false;
-  }
 }
 
 function logout() {
@@ -123,7 +74,7 @@ function logout() {
 async function fetchAndSetProjectData() {
   const data = await fetchProjectData();
   console.log(data);
-  //if(data.isLoggedIn == false) return logout();
+  if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     projectData: data
@@ -133,7 +84,7 @@ async function fetchAndSetProjectData() {
 
 async function fetchAndSetUserData() {
   const data = await fetchUserData();
-  //if(data.isLoggedIn == false) return logout();
+  if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     loggedIn: true,
@@ -171,53 +122,9 @@ function handleEditShow() {
   setState(state => ({...state, showEdit: true}));
 }
 
-
-/* async function fetchCreateProject(project) {
-  const fetchData = await fetch('/createProject', {
-      method: 'POST',
-      headers: {
-          'Content-type': 'application/json',
-          'x-access-token': localStorage.getItem('token')
-      },
-      body: JSON.stringify(project)
-  })
-  const res = await fetchData.json();
-  if (res.isLoggedIn == false) {
-    setState(state => ({
-      loggedIn: false,
-    }));
-    return navigate('/login');
-  }  
-  if (res.takenName) return alert('You already have a project with that name');
-  fetchAndSetProjectData();
-  navigate('/dashboard/my-projects');
-}
-
-async function fetchTeamData() {
-  try {
-      const fetchData = await fetch('/getTeamMembers', {
-          method: 'GET',
-          headers: {
-              'x-access-token': localStorage.getItem('token')
-          },  
-      })
-      const res = await fetchData.json();
-      if (res.isLoggedIn == false) {
-        setState(state => ({
-          ...state,
-          loggedIn: true,
-        }));
-        return navigate('/login');
-      }
-      return res;
-  } catch(err) {
-
-  }
-} */
-
 async function fetchAndSetTeamData() {
   const data = await fetchTeamData();
-  //if(data.isLoggedIn == false) return logout();
+  if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     teamData: data
