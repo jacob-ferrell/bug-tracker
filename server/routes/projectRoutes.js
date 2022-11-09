@@ -95,7 +95,8 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
             return {
                 name: project.name,
                 project_id: project._id,
-                tickets: project.tickets
+                tickets: project.tickets,
+                description: project.description
             }
         });
         for (let i in projects) {

@@ -33,10 +33,10 @@ const ProjectDetails = props => {
     return (
         <div className='project-details content d-inline-block flex-column'>
             <div className='details-container'>
-                <h4 className='bg-primary text-white'>Details for {project.name}</h4>
-
+                <h4 className='bg-secondary text-white'>Details for {project.name}</h4>
+                <div className='bg-white'>{project.description}</div>
             </div>
-            <div className='tables-container d-flex flex-row justify-content-sm-between'>
+            <div className='tables-container d-flex flex-row '>
                 <div className='project-users'>
                     <h4>Project Users</h4>
                     <Table users={project.users} type='projectUsers' className='table-projectUsers'/>
