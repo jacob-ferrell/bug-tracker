@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import NewProjectForm from './NewProjectForm';
+import NewProjectForm from './modals/NewProjectForm';
 import NewTicketForm from './NewTicketForm';
 import Table from './Table';
 import ProjectDetails from './ProjectDetails';

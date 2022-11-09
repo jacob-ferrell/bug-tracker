@@ -37,7 +37,7 @@ const ProjectDetails = props => {
                 <div className='bg-white'>{project.description}</div>
             </div>
             <div className='tables-container d-flex flex-row '>
-                <div className='project-users'>
+                <div className='project-users container-fluid bg-light shadow rounded p-2'>
                     <h4>Project Users</h4>
                     <Table users={project.users} type='projectUsers' className='table-projectUsers'/>
                     <button className='btn btn-primary' onClick={handleManageClick}>Manage Project Users</button>

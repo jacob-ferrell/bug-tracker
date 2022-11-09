@@ -2,3 +2,7 @@
 #main-navbar {
     border-bottom: 2px solid rgb(85, 85, 85);
 }
+
+.navbar-toggler .dropdown-toggle::after {
+    display: none;
+}

@@ -6,6 +6,10 @@
 }
 
 td {
+    cursor: default;
+}
+
+.ellipsis {
     cursor: pointer;
 }
 
@@ -15,6 +19,16 @@ td {
 
 #table table, #table td, #table tr {
     /* background-color: #343a40; */
+}
+
+.table-project-row .dropdown-toggle::after {
+    display: none;
+}
+
+#ellipsis {
+    padding: 0;
+    margin: 0;
+    padding-left: 4px;
 }
 
 

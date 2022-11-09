@@ -9,7 +9,7 @@ const Header = props => {
     return (
         <nav id="main-navbar" className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
               <div className="container-fluid">
-                <DropdownButton className='navbar-toggler border-0' variant='dark' title={<i className="fas fa-bars"></i>}>
+                <DropdownButton className='navbar-toggler border-0' variant='dark' title={<i className="fas fa-bars fa-lg"></i>}>
                         <Dropdown.Item>
                           <Link to='/dashboard' className="list-group-item bg-dark text-light list-group-item-action flex-fill py-2 ripple" aria-current="true">
                           <i className="fas fa-tachometer-alt fa-fw me-3"></i><span>Dashboard</span>

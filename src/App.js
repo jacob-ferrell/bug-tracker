@@ -10,9 +10,9 @@ import MyProjects from './components/MyProjects';
 import MyTickets from './components/MyTickets';
 import MyTeam from './components/MyTeam';
 import ProjectDetails from "./components/ProjectDetails";
-import NewProjectForm from "./components/NewProjectForm";
+import NewProjectForm from "./components/modals/NewProjectForm";
 import ManageUsers from "./components/ManageUsers";
-import {fetchProjectData, fetchCreateProject, fetchTeamData, fetchUserData} from './api.js';
+import {fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, fetchUserData} from './api.js';
 
 
 function App() {
@@ -37,11 +37,16 @@ function App() {
     selectedProject: null,
     teamData: null,
     selectedProject: null,
+    showEdit: false,
+    handleEditClose,
+    handleEditShow,
     fetchAndSetProjectData,
+    fetchEditProject,
     handleProjectClick,
     fetchCreateProject,
     logout,
-    fetchData
+    fetchData,
+    handleEditProjectClick
   })
 
 /*   const fetchUserData = async () => {
@@ -149,6 +154,23 @@ function handleProjectClick(e) {
   localStorage.setItem('selectedProject', id);
   navigate(`/dashboard/my-projects/${name}/details`);
 }
+
+function handleEditProjectClick(e) {
+  const projectId = e.target.dataset.projectid;
+  setState(state => ({
+    ...state,
+    showEdit: true,
+    selectedProject: projectId
+  }))
+
+}
+function handleEditClose() {
+  setState(state => ({...state, showEdit: false}));
+}
+function handleEditShow() {
+  setState(state => ({...state, showEdit: true}));
+}
+
 
 /* async function fetchCreateProject(project) {
   const fetchData = await fetch('/createProject', {

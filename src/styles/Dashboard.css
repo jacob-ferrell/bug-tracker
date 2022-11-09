@@ -22,6 +22,7 @@ body {
     .content {
       margin-left: 240px;
     }
+    
   }
   
   /* Sidebar */
@@ -57,7 +58,10 @@ body {
   }
 
   .content {
-    margin-top: 78px;
+    position: fixed;
+    left: 0;
+    right: 5px;
+    top: 78px;
     padding: 10px;
     height: 100%;
     width: 100%;

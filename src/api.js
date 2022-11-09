@@ -12,6 +12,19 @@ async function fetchCreateProject(project) {
     const res = await fetchData.json();
     if (res.takenName) return alert('You already have a project with that name');
   }
+
+  async function fetchEditProject(project) {
+    const fetchData = await fetch('/editProject', {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'x-access-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify(project)
+    })
+    const res = await fetchData.json();
+    if (res.takenName) return alert('You already have a project with that name');
+  }
   
   async function fetchTeamData() {
     try {
@@ -53,4 +66,4 @@ async function fetchProjectData() {
   return res;
 }
 
-export {fetchProjectData, fetchCreateProject, fetchTeamData, fetchUserData};
+export {fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, fetchUserData};

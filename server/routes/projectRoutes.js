@@ -31,6 +31,7 @@ const verifyJWT = (req, res, next) => {
 //create new project
 projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     const project = req.body;
+    project.creator = req.user.id;
   
     const getTakenName = async () => {
       return new Promise(resolve => {
@@ -81,6 +82,41 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     } catch (err) {
       console.log(err);
       return res.json({message: 'Failed to create project'});
+    }
+  })
+
+  //edit project
+  projectRoutes.route('/editProject').post(verifyJWT, async(req, res) => {
+    const project = req.body;
+    const projectId = project.project_id;
+    const getTakenName = async () => {
+      return new Promise(resolve => {
+        Project.find({_id: {$ne: projectId}, name: project.name})
+        .populate('users')
+        .exec((err, project) => {
+          if (err) return console.log(err);
+          for (let i in project) {
+            let sameName = project[i];
+            if (sameName.users.find(user => {
+              return user.user_id == req.user.id;
+            })) {
+              return resolve(true);
+            } 
+          }
+          resolve(false);
+        })
+      })
+    }
+    try {
+      const takenName = await getTakenName();
+      if (takenName) return res.json({takenName});
+      const toEdit = await Project.findById(projectId);
+      toEdit.name = project.name;
+      toEdit.description = project.description;
+      await toEdit.save();
+      return res.json({takenName});
+    } catch (err) {
+      console.log(err);
     }
   })
 
