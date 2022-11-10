@@ -15,6 +15,21 @@ const Dashboard = props => {
 
 const navigate = useNavigate();
 
+const {
+    projectData, 
+    userData, 
+    teamData,
+    fetchAndSetProjectData,
+    fetchAndSetTeamData,
+    fetchAndSetUserData,
+    fetchEditProject,
+    handleProjectClick,
+    fetchCreateProject,
+    logout,
+    fetchData
+
+} = props.state;
+
     useEffect(() => {
         fetch('/isUserAuth', {
             headers: {
@@ -26,20 +41,7 @@ const navigate = useNavigate();
         .then(() => fetchData())
     }, [])
 
-      const {
-        projectData, 
-        userData, 
-        teamData,
-        fetchAndSetProjectData,
-        fetchAndSetTeamData,
-        fetchAndSetUserData,
-        fetchEditProject,
-        handleProjectClick,
-        fetchCreateProject,
-        logout,
-        fetchData
-
-    } = props.state;
+      
 
     const [showNewProject, setShowNewProject] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
