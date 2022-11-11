@@ -6,7 +6,6 @@ import SignUpPage from "./components/SignUpPage";
 import Dashboard from './components/Dashboard';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import MyProjects from './components/MyProjects';
 import MyTickets from './components/MyTickets';
 import MyTeam from './components/MyTeam';
 import ProjectDetails from "./components/ProjectDetails";
@@ -39,9 +38,22 @@ function App() {
   })
 
 async function fetchData() {
-  await fetchAndSetUserData();
-  await fetchAndSetProjectData();
-  await fetchAndSetTeamData();
+
+  const userData = await fetchUserData();
+  localStorage.setItem('userData', JSON.stringify(userData));
+
+  const projectData = await fetchProjectData();
+  localStorage.setItem('projectData', JSON.stringify(projectData));
+
+  const teamData = await fetchTeamData();
+  localStorage.setItem('teamData', JSON.stringify(teamData));
+
+  setState(state => ({
+    ...state,
+    userData,
+    projectData,
+    teamData
+  }))
 }
 
 async function login(user) {
@@ -91,7 +103,16 @@ async function fetchAndSetUserData() {
     userData: data
   }));
   localStorage.setItem('userData', JSON.stringify(data));
+}
 
+async function fetchAndSetTeamData() {
+  const data = await fetchTeamData();
+  if(data.isLoggedIn == false) return logout();
+  setState(state => ({
+    ...state,
+    teamData: data
+  }));
+  localStorage.setItem('teamData', JSON.stringify(data));
 }
 
 function handleProjectClick(e) {
@@ -121,19 +142,6 @@ function handleEditClose() {
 function handleEditShow() {
   setState(state => ({...state, showEdit: true}));
 }
-
-async function fetchAndSetTeamData() {
-  const data = await fetchTeamData();
-  if(data.isLoggedIn == false) return logout();
-  setState(state => ({
-    ...state,
-    teamData: data
-  }));
-  localStorage.setItem('teamData', JSON.stringify(data));
-
-  
-}
-
   
   return (
     <div className='App'>
@@ -142,7 +150,6 @@ async function fetchAndSetTeamData() {
           <Route path='/login'  exact element={ <LogInPage login={login}/> } />
           <Route path='/signup'  exact element={ <SignUpPage /> } />
           <Route path='/dashboard' element={<Dashboard state={state}/>}>
-              <Route path='my-projects' element={<MyProjects state={state} />} />
               <Route path='my-team' 
                 element={
                   <MyTeam getData={fetchAndSetTeamData} 

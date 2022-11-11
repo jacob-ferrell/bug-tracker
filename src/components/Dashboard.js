@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import MyProjects from './MyProjects';
 import MyTickets from './MyTickets';
 import MyTeam from './MyTeam';
 import ProjectsTable from './tables/ProjectsTable';
@@ -31,6 +30,7 @@ const {
 } = props.state;
 
     useEffect(() => {
+        console.log('fire')
         fetch('/isUserAuth', {
             headers: {
                 'x-access-token': localStorage.getItem('token')

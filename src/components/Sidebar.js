@@ -19,8 +19,8 @@ const Sidebar = props => {
                     <Link to='/dashboard' className="list-group-item bg-dark text-light list-group-item-action flex-fill py-2 ripple" aria-current="true">
                     <i className="fas fa-tachometer-alt fa-fw me-3"></i><span>Dashboard</span>
                     </Link>
-                    <Link to="/dashboard/my-projects" className="bg-dark text-light list-group-item list-group-item-action py-2 ripple">
-                    <i className="fas fa-chart-area fa-fw me-3"></i>My Projects</Link>
+                    <Link to="/dashboard/my-tickets" className="bg-dark text-light list-group-item list-group-item-action py-2 ripple">
+                    <i className="fas fa-chart-area fa-fw me-3"></i>My Tickets</Link>
                     <Link to='/dashboard/my-team' className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
                         className="fas fa-users fa-fw me-3"></i><span>My Team</span></Link>
                     <a href="#" className="list-group-item list-group-item-action py-2 bg-dark text-light ripple"><i

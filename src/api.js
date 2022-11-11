@@ -43,13 +43,13 @@ async function fetchCreateProject(project) {
 
   const fetchUserData = async () => {
     try {
-        const response = await fetch('/isUserAuth', {
+        const fetchData = await fetch('/isUserAuth', {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        const json = await response.json();
-        return json;
+        const res = await fetchData.json();
+        return res;
     } catch(err) {
         console.log(err);
     }
