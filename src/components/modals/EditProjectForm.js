@@ -12,17 +12,12 @@ const EditProjectForm = props => {
     const [loading, setLoading] = useState(false);
 
     useState(() => {
-        if (props.projectId) {
             const projects = props.projectData || JSON.parse(localStorage.getItem('projectData'));
             const projectId = props.projectId;
             const project = projects.find(project => project.project_id == projectId);
-            console.log(project.name, project.description)
             setName(project.name);
             setDescription(project.description);
-        }
-        console.log('qwer')
     }, [])
-    console.log('asdf')
 
     const handleSubmit = async e => {
         const project = {

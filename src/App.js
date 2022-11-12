@@ -37,6 +37,16 @@ function App() {
     handleEditProjectClick
   })
 
+ /*  useEffect(() => {
+    fetch('/isUserAuth', {
+        headers: {
+            'x-access-token': localStorage.getItem('token')
+        }
+    })
+    .then(res => res.json())
+    .then(data => data.isLoggedIn ? navigate('/dashboard') : null)
+}, []) */
+
 async function fetchData() {
 
   const userData = await fetchUserData();
@@ -68,7 +78,8 @@ async function login(user) {
   if(res.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
-    userData: res.userData
+    userData: res.userData,
+    loggedIn: true
   }));
   localStorage.setItem('token', res.token);
   navigate('/dashboard');
@@ -80,6 +91,12 @@ function logout() {
   localStorage.removeItem('userData');
   localStorage.removeItem('teamData');
   localStorage.removeItem('projectData');
+  setState(state => ({
+    ...state,
+    userData: null,
+    projectData: null,
+    teamData: null
+  }))
   navigate('/login')
 }
 

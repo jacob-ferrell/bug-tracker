@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const ProjectsTable = props => {
 
-    const headings = ['', 'Project', 'Description', 'My Role', 'Open Tickets', '']
+    const headings = ['', 'Project', 'Description', 'My Role', /* 'Open Tickets', */ '']
         .map((heading, i) => {
             return (
                 <th className='text-left' key={heading + i}>{heading}</th>
@@ -12,7 +12,7 @@ const ProjectsTable = props => {
     const projectData = props.projectData || JSON.parse(localStorage.getItem('projectData'));
     const projectRows = projectData.map((project, i) => {
         const role = project.role;
-        const openTickets = getOpenTickets(project);
+        /* const openTickets = getOpenTickets(project); */
         const id = project.project_id;
         return (
             <tr key={project.name + i} className='table-project-row'
@@ -23,7 +23,7 @@ const ProjectsTable = props => {
                 </td>
                 <td>{project.description}</td>
                 <td>{role[0].toUpperCase() + role.slice(1)}</td>
-                <td >{openTickets}</td>
+                {/* <td >{openTickets}</td> */}
                 <td className="ellipsis text-center">
                     <DropdownButton variant='light' id='ellipsis' title='⠇'>
                         <Dropdown.Item 
