@@ -35,6 +35,7 @@ async function fetchCreateProject(project) {
             },  
         })
         const res = await fetchData.json();
+        console.log('poop' + res)
         return res;
     } catch(err) {
         console.log(err);

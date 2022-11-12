@@ -17,6 +17,7 @@ import {fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, f
 function App() {
 
   const navigate = useNavigate();
+  const { name } = useParams();
 
   const [state, setState] = useState({
     loggedIn: false,
@@ -26,15 +27,13 @@ function App() {
     teamData: null,
     selectedProject: null,
     showEdit: false,
-    handleEditClose,
-    handleEditShow,
     fetchAndSetProjectData,
     fetchEditProject,
     handleProjectClick,
     fetchCreateProject,
     logout,
     fetchData,
-    handleEditProjectClick
+    getLocal
   })
 
  /*  useEffect(() => {
@@ -46,6 +45,37 @@ function App() {
     .then(res => res.json())
     .then(data => data.isLoggedIn ? navigate('/dashboard') : null)
 }, []) */
+useEffect(() => {
+  let userData, projectData, teamData;
+  fetch('/isUserAuth', {
+      headers: {
+          'x-access-token': localStorage.getItem('token')
+      }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.isLoggedIn) return navigate('/login');
+    /* userData = getLocal('userData');
+    projectData = getLocal('projectData');
+    teamData = getLocal('teamData');
+    if (!userData || !projectData || !teamData) {
+      fetchData();
+    } */
+    fetchData();
+  })
+  .then(() => setState({
+    ...state,
+    loggedIn: true
+  }))
+  /* .then(() => setState(state => ({
+    ...state,
+    userData,
+    teamData,
+    projectData,
+    loggedIn: true
+  }))) */
+
+}, [])
 
 async function fetchData() {
 
@@ -132,6 +162,10 @@ async function fetchAndSetTeamData() {
   localStorage.setItem('teamData', JSON.stringify(data));
 }
 
+function getLocal(item) {
+  return JSON.parse(localStorage.getItem(item))
+}
+
 function handleProjectClick(e) {
   const id = e.currentTarget.dataset.projectid;
   const name = e.currentTarget.dataset.name
@@ -141,51 +175,63 @@ function handleProjectClick(e) {
     selectedProject: id
   }));
   localStorage.setItem('selectedProject', id);
-  navigate(`/dashboard/my-projects/${name}/details`);
+  navigate(`/dashboard/project/${name}`);
 }
 
-function handleEditProjectClick(e) {
-  const projectId = e.target.dataset.projectid;
-  setState(state => ({
-    ...state,
-    showEdit: true,
-    selectedProject: projectId
-  }))
-
-}
-function handleEditClose() {
-  setState(state => ({...state, showEdit: false}));
-}
-function handleEditShow() {
-  setState(state => ({...state, showEdit: true}));
-}
   
   return (
     <div className='App'>
+      {state.loggedIn ? (
+        <>
+        <header>
+          <Header userData={state.userData} logout={logout}/>
+        </header>
+        <Sidebar />
+        <div className='content w-auto'>
+          <Routes>
+            <Route path='/'  element={ <Navigate to='/dashboard' /> } />
+            <Route path='/dashboard' element={<Dashboard state={state}/>} />
+            <Route 
+              path='/dashboard/my-tickets' 
+              element={
+                <MyTickets 
+                  getLocal={getLocal}
+                  projectData={state.projectData}
+                  userData={state.userData}
+                  fetchData={fetchData}
+
+                />
+              } 
+            />
+            <Route 
+              path='/dashboard/project/:name' 
+              element={
+                <ProjectDetails 
+                  getLocal={getLocal}
+                  teamData={state.teamData}
+                  projectData={state.projectData}
+                  userData={state.userData}
+                  fetchData={fetchData}
+                  updateTeam={fetchAndSetTeamData}
+                  projectId={state.selectedProject}
+                />
+              } 
+            />
+
+
+          </Routes>
+        </div>
+        </>
+        
+      ): (
         <Routes>
           <Route path='/'  element={ <Navigate to='/login' /> } />
           <Route path='/login'  exact element={ <LogInPage login={login}/> } />
           <Route path='/signup'  exact element={ <SignUpPage /> } />
-          <Route path='/dashboard' element={<Dashboard state={state}/>}>
-              <Route path='my-team' 
-                element={
-                  <MyTeam getData={fetchAndSetTeamData} 
-                  teamData={state.teamData} userData={state.userData}/>
-                } 
-              />
-              <Route path={`my-projects/:projectName/details`} 
-                element={
-                  <ProjectDetails projectData={state.projectData} 
-                  projectId={state.selectedProject}/>
-                } 
-              />
-              <Route path={`my-projects/:projectName/manage-users`}
-                element={
-                  <ManageUsers state={state} />
-                } />
-          </Route>
         </Routes>
+      )}
     </div>
+       
   );
 }
 

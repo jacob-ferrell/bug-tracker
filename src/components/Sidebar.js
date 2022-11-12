@@ -23,21 +23,7 @@ const Sidebar = props => {
                     <i className="fas fa-chart-area fa-fw me-3"></i>My Tickets</Link>
                     <Link to='/dashboard/my-team' className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
                         className="fas fa-users fa-fw me-3"></i><span>My Team</span></Link>
-                    <a href="#" className="list-group-item list-group-item-action py-2 bg-dark text-light ripple"><i
-                        className="fas fa-chart-line fa-fw me-3"></i><span>Analytics</span></a>
-                    <a href="#" className="list-group-item list-group-item-action bg-dark text-light py-2 ripple">
-                    <i className="fas fa-chart-pie fa-fw me-3"></i><span>SEO</span>
-                    </a>
-                    <a href="#" className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
-                        className="fas fa-chart-bar fa-fw me-3"></i><span>Orders</span></a>
-                    <a href="#" className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
-                        className="fas fa-globe fa-fw me-3"></i><span>International</span></a>
-                    <a href="#" className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
-                        className="fas fa-building fa-fw me-3"></i><span>Partners</span></a>
-                    <a href="#" className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
-                        className="fas fa-calendar fa-fw me-3"></i><span>Calendar</span></a>
-                    <a href="#" className="list-group-item list-group-item-action bg-dark text-light py-2 ripple"><i
-                        className="fas fa-users fa-fw me-3"></i><span>Users</span></a>
+                   
 
                 </div>
             </div>

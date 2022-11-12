@@ -19,7 +19,14 @@ const ProjectsTable = props => {
             onClick={props.handleClick}>
                 <td>{i + 1}</td>
                 <td className='text-primary'>
+                    <span 
+                      className='project-name'
+                      data-projectid={id}
+                      data-name={project.name}
+                      onClick={props.handleProjectClick}
+                    >
                     {project.name}
+                    </span>
                 </td>
                 <td>{project.description}</td>
                 <td>{role[0].toUpperCase() + role.slice(1)}</td>

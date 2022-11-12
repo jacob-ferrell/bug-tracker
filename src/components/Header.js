@@ -62,7 +62,7 @@ const Header = props => {
                             My Profile
                         </Dropdown.Item>
                         <Dropdown.Item onClick={props.logout}>
-                            Logout
+                        <i className="fa fa-sign-out" aria-hidden="true"></i>Logout
                         </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>

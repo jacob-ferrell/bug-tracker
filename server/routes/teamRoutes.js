@@ -55,7 +55,7 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
     }
   })
   
-  //add member to team
+  //add user to team
   teamRoutes.route('/addToTeam').post(verifyJWT, async (req, res) => {
     const userToAddId = req.body.userToAdd;
     const userToAddRole = req.body.role || 'admin';

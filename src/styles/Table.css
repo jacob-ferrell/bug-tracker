@@ -13,16 +13,12 @@ td {
     cursor: pointer;
 }
 
-#table thead th{
-    border-bottom: none;
-}
-
-#table table, #table td, #table tr {
-    /* background-color: #343a40; */
-}
-
-.table-project-row .dropdown-toggle::after {
+.content .dropdown-toggle::after {
     display: none;
+}
+
+.project-name {
+    cursor: pointer
 }
 
 #ellipsis {
@@ -31,4 +27,12 @@ td {
     padding-left: 4px;
 }
 
+
+#root table th {
+    border: none;
+}
+
+#root thead {
+    border: none;
+}
 

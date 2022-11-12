@@ -1,15 +1,22 @@
 import Table from './Table';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TicketsTable from './tables/TicketsTable';
+import TeamTable from './tables/TeamTable';
+import AddToProject from './modals/AddToProject';
 
 const ProjectDetails = props => {
 
     const navigate = useNavigate();
+
+    const [showAddMember, setShowAddMember] = useState(false);
+
+
     const projects = props.projectData || JSON.parse(localStorage.getItem('projectData'));
     const projectId = props.projectId || localStorage.getItem('selectedProject');
     const project = projects.find(project => project.project_id == projectId);
+    const users = project.users;
 
-    const handleManageClick = (e) => navigate(`/dashboard/my-projects/${project.name}/manage-users`);
 
     function formatDate(date) {
         date = new Date(date);
@@ -26,29 +33,86 @@ const ProjectDetails = props => {
         return user.name;
     }
 
-
-    useEffect(() => {
-    }, [])
-
     return (
-        <div className='project-details content d-inline-block flex-column'>
-            <div className='details-container'>
-                <h4 className='bg-secondary text-white'>Details for {project.name}</h4>
-                <div className='bg-white'>{project.description}</div>
-            </div>
-            <div className='tables-container d-flex flex-row '>
-                <div className='project-users container-fluid bg-light shadow rounded p-2'>
-                    <h4>Project Users</h4>
-                    <Table users={project.users} type='projectUsers' className='table-projectUsers'/>
-                    <button className='btn btn-primary' onClick={handleManageClick}>Manage Project Users</button>
+        <>
+          {showAddMember &&(
+              <AddToProject 
+                  teamData={props.teamData}
+                  handleClose={() => setShowAddMember(false)} 
+                  show={showAddMember}
+                  updateData={props.fetchData}
+                  users={users}
+                  projectId={props.projectId}
+              />
+          )}
+          <div className='d-flex w-auto'>
+            <div className='p-3 flex-fill'>
+                  <div className='project-tickets bg-light shadow rounded p-2'>
+                      <div className='my-tickets-header d-flex justify-content-between'>
+                          <h5>
+                              Assigned Team Members
+                          </h5>
+                          <button 
+                            className='btn btn-sm btn-primary'
+                            onClick={() => setShowAddMember(true)}
+                          >
+                              Add Member
+                          </button>
+                      </div>
+                          <TeamTable
+                              users={users}
+                              userData={props.userData}
+                          /> 
+                  </div>
+              </div>
+              <div className='p-3 flex-fill'>
+                  <div className='project-tickets bg-light shadow rounded p-2'>
+                      <div className='my-tickets-header d-flex justify-content-between'>
+                          <h5>
+                              {/* {loading &&
+                              <Spinner 
+                              animation='border'
+                              as='span'
+                              size='sm'
+                              role='status'
+                              aria-hidden='true' 
+                              />
+                              }
+                              {loading ? ' Loading Tickets...' : 'Tickets'} */}
+                              Tickets
+                          </h5>
+                          <button 
+                            className='btn btn-sm btn-primary'
+                            onClick={() => setShowAddMember(true)}
+                          >
+                            New Ticket
+                          </button>
+                      </div>
+                      {/* {!loading && ( */}
+                          <TicketsTable
+                              sortBy='project'
+                              projectData={props.projectData}
+                              userData={props.userData}
+                              getLocal={props.getLocal}
+                              handleProjectClick={props.handleProjectClick}
+                              projectId={props.projectId}
+                          /> 
+                      {/* )} */}
+                  </div>
+              </div>
+            
+          </div>
+          <div className='p-3 w-auto'>
+            <div className='project-tickets bg-light shadow rounded p-2'>
+                <div className='my-tickets-header d-flex justify-content-between'>
+                    <h5>
+                        Ticket Details
+                    </h5>
                 </div>
-                <div className='project-tickets'>
-                    <h4>Project Tickets</h4>
-                    <Table className='table-tickets' tickets={project.tickets} type='tickets' getDate={formatDate} getName={nameFromId}/>
-                </div>
             </div>
-           
-        </div>
+          </div>
+        </>
+        
     );
 }
 

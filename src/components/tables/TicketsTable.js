@@ -1,5 +1,6 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Spinner from "react-bootstrap";
 
 const TicketsTable = props => {
 
@@ -9,15 +10,22 @@ const TicketsTable = props => {
                 <th className='text-left' key={heading + i}>{heading}</th>
             );
         });
-    const ticketData = props.ticketData || JSON.parse(localStorage.getItem('ticketData'));
+    const userData = props.userData || props.getLocal('userData');
+    const projectId = props.projectId || localStorage.getItem('selectedProject');
+    let projectData = props.projectData || props.getLocal('projectData');
+    if (props.sortBy == 'project') {
+        projectData = projectData.filter(project => {
+            return project.project_id == projectId;
+        })
+    }
+    const ticketData = projectData.map(project => project.tickets).flat();
     const ticketRows = ticketData
-        
+        .filter(ticket => ticket.creator == userData.user_id)
         .map((ticket, i) => {
         const status = ticket.status;
         const id = ticket._id;
         return (
-            <tr key={ticket.name + i} className='table-ticket-row'
-            onClick={props.handleClick}>
+            <tr key={ticket._id} className='table-ticket-row'>
                 <td>{i + 1}</td>
                 <td className='text-primary'>
                     {ticket.title}

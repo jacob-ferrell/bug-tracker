@@ -32,25 +32,17 @@ const Dashboard = props => {
     }
 
     const {
-        fetchAndSetProjectData,
-        fetchAndSetTeamData,
-        fetchAndSetUserData,
-        fetchEditProject,
         handleProjectClick,
+        fetchAndSetProjectData,
+        fetchEditProject,
         fetchCreateProject,
-        logout,
-        fetchData
-
+        fetchData,
+        getLocal
     } = props.state;
 
-    const userData = props.state.userData 
-        || JSON.parse(localStorage.getItem('userData'));
-    const projectData = props.state.projectData 
-        || JSON.parse(localStorage.getItem('projectData'));
-    const teamData = props.state.teamData 
-        || JSON.parse(localStorage.getItem('teamData'));
-
-
+    const userData = props.state.userData || getLocal('userData');
+    const projectData = props.state.projectData || getLocal('projectData');
+    const teamData = props.state.teamData || getLocal('projectData');
 
     useEffect(() => {
 
@@ -76,11 +68,8 @@ const Dashboard = props => {
 
 
     return (
-        <div className='dashboard'>
-            <header>
-                <Header userData={userData} logout={logout}/>
-            </header>
-            <Sidebar />
+        <>
+
             {showNewProject &&(
               <NewProjectForm 
                   createProject={fetchCreateProject}
@@ -100,7 +89,7 @@ const Dashboard = props => {
                   editProject={fetchEditProject}
               />
             )}
-            <div className='content p-3 w-auto'>
+            <div className='p-3 w-auto'>
                     <div className='projects bg-light shadow rounded p-2'>
                         <div className='projects-header d-flex justify-content-between'>
                             <h5>
@@ -120,15 +109,15 @@ const Dashboard = props => {
                         {!loading && (
                           <ProjectsTable 
                               projectData={projectData}
-                              showEdit={handleEditClick} 
+                              showEdit={handleEditClick}
+                              handleProjectClick={handleProjectClick} 
                           />
                         )}
                 </div>
                
             </div>
 
-            <Outlet />
-        </div>
+            </>
     );
 }
 
