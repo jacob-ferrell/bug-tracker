@@ -24,6 +24,7 @@ const AddToProject = props => {
             </option>
         );
       })
+    
 
 
     const handleSubmitClick = async e => {
@@ -31,7 +32,7 @@ const AddToProject = props => {
         console.log(selectedUser)
         const data = {
             user_id: selectedUser,
-            project_id: props.projectId,
+            project_id: projectId,
             role: 'admin'
         }
         setLoading(true);

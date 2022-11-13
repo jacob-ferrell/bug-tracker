@@ -10,8 +10,11 @@ const NewTicket = props => {
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-
+    const [priority, setPriority] = useState(null);
+    const [type, setType] = useState(null);
     const [checkedUsers, setCheckedUsers] = useState(null);
+
+    
 
     useEffect(() => {
         const projectUsers = {};
@@ -31,22 +34,59 @@ const NewTicket = props => {
         console.log(checkedUsers)
     }
 
-    const users = props.users.map(user => {
+    const users = props.users
+      .filter(user => user.email != props.userData.email)
+      .map(user => {
         return (
-            <div>
-                <input 
+            <div key={user.user_id} className='w-auto'>
+                <Form.Check 
                   type='checkbox'
                   onChange={handleCheckChange}
-                  data-userid={user.user_id} 
+                  data-userid={user.user_id}
+                  label={user.name} 
                 />
-                {user.name}
             </div>
         );
     })
 
+    const priorityLevels = ['High', 'Medium', 'Low'].map(level => {
+      return (
+        <option
+          key={level}
+          value={level}
+          onClick={e => setPriority(e.target.value)}
+        >
+          {level}
+        </option>
+      );
+    })
+    
+    const types = ['Issue', 'Bug Fix', 'Feature Request'].map(type => {
+      return (
+        <option
+          key={type}
+          value={type}
+          onClick={e => setType(e.target.value)}
+        >
+          {type}
+        </option>
+      );
+    })
 
-    const handleSubmitClick = async e => {
+
+    const handleSubmit = async e => {
         e.preventDefault();
+        const users = Object.keys(checkedUsers).filter(user => {
+          return checkedUsers[user]
+        })
+        const ticket = {
+          title,
+          description,
+          users,
+          priority,
+          type
+        }
+        console.log(ticket)
         
     }
 
@@ -57,7 +97,7 @@ const NewTicket = props => {
             <Modal.Title>Create New Ticket</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
+            <Form id='new-project-form' onSubmit={handleSubmit}>
                 <Form.Group className="mb-2" controlId="newTicket.title">
                 <Form.Label>Title</Form.Label>
                 <Form.Control
@@ -65,6 +105,7 @@ const NewTicket = props => {
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     autoFocus
+                    required
                 />
                 </Form.Group>
                 <Form.Group
@@ -76,12 +117,36 @@ const NewTicket = props => {
                     as="textarea" 
                     rows={2}
                     value={description}
-                    onChange={e => setDescription(e.target.value)} 
+                    onChange={e => setDescription(e.target.value)}
+                    required 
                 />
                 </Form.Group>
                 <Form.Label>Assign Users</Form.Label>
-                <div>
+                <div className='overflow-auto border p-2 w-auto'>
                     {users}
+                </div>
+                <div className='d-flex mx-5 justify-content-between'>
+                    <div>
+                      <Form.Label>Priority</Form.Label>
+                      <select
+                        className='form-select form-select-sm'
+                        required
+                        multiple
+                      >
+                        {priorityLevels}
+                      </select>
+                    </div>
+                    <div>
+                      <Form.Label>Type</Form.Label>
+                      <select
+                        className='form-select form-select-sm'
+                        multiple
+                        required
+                      >
+                        {types}
+                      </select>
+                    </div>
+                    
                 </div>
              </Form>
           </Modal.Body>
@@ -89,7 +154,7 @@ const NewTicket = props => {
             <Button variant="secondary" onClick={props.handleClose}>
                 Cancel
             </Button>
-            <Button variant="success" onClick={handleSubmitClick}>
+            <Button variant="success" form='new-project-form' type='submit'>
                 {loading &&
                     <Spinner 
                       animation='border'
