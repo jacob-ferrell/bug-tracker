@@ -4,13 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import TicketsTable from './tables/TicketsTable';
 import TeamTable from './tables/TeamTable';
 import AddToProject from './modals/AddToProject';
+import NewTicket from './modals/NewTicket';
 
 const ProjectDetails = props => {
 
     const navigate = useNavigate();
 
     const [showAddMember, setShowAddMember] = useState(false);
-
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    const [showNewTicket, setShowNewTicket] = useState(false);
 
     const projects = props.projectData || JSON.parse(localStorage.getItem('projectData'));
     const projectId = props.projectId || localStorage.getItem('selectedProject');
@@ -43,6 +45,17 @@ const ProjectDetails = props => {
                   updateData={props.fetchData}
                   users={users}
                   projectId={props.projectId}
+              />
+          )}
+          {showNewTicket &&(
+              <NewTicket 
+                  teamData={props.teamData}
+                  handleClose={() => setShowNewTicket(false)} 
+                  show={showNewTicket}
+                  updateData={props.fetchData}
+                  users={users}
+                  projectId={props.projectId}
+                  userData={props.userData}
               />
           )}
           <div className='d-flex w-auto'>
@@ -83,7 +96,7 @@ const ProjectDetails = props => {
                           </h5>
                           <button 
                             className='btn btn-sm btn-primary'
-                            onClick={() => setShowAddMember(true)}
+                            onClick={() => setShowNewTicket(true)}
                           >
                             New Ticket
                           </button>

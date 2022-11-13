@@ -35,7 +35,7 @@ const NewProjectForm = props => {
           </Modal.Header>
           <Modal.Body>
             <Form>
-                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Group className="mb-3" controlId="new-project-form-name">
                 <Form.Label>Project Name</Form.Label>
                 <Form.Control
                     type="text"
@@ -46,7 +46,7 @@ const NewProjectForm = props => {
                 </Form.Group>
                 <Form.Group
                 className="mb-3"
-                controlId="exampleForm.ControlTextarea1"
+                controlId="new-project-form-description"
                 >
                 <Form.Label>Description</Form.Label>
                 <Form.Control 

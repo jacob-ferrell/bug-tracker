@@ -84,7 +84,7 @@ const AddToProject = props => {
                       aria-hidden='true' 
                     />
                   }
-                  {loading ? ' Saving...' : 'Add To Team'}
+                  {loading ? ' Saving...' : 'Add To Project'}
             </Button>
           </Modal.Footer>
         </Modal>

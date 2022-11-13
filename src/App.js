@@ -35,45 +35,9 @@ function App() {
     fetchData,
     getLocal
   })
-
- /*  useEffect(() => {
-    fetch('/isUserAuth', {
-        headers: {
-            'x-access-token': localStorage.getItem('token')
-        }
-    })
-    .then(res => res.json())
-    .then(data => data.isLoggedIn ? navigate('/dashboard') : null)
-}, []) */
+ 
 useEffect(() => {
-  let userData, projectData, teamData;
-  fetch('/isUserAuth', {
-      headers: {
-          'x-access-token': localStorage.getItem('token')
-      }
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (!data.isLoggedIn) return navigate('/login');
-    /* userData = getLocal('userData');
-    projectData = getLocal('projectData');
-    teamData = getLocal('teamData');
-    if (!userData || !projectData || !teamData) {
-      fetchData();
-    } */
-    fetchData();
-  })
-  .then(() => setState({
-    ...state,
-    loggedIn: true
-  }))
-  /* .then(() => setState(state => ({
-    ...state,
-    userData,
-    teamData,
-    projectData,
-    loggedIn: true
-  }))) */
+  getAuth();
 
 }, [])
 
@@ -92,8 +56,20 @@ async function fetchData() {
     ...state,
     userData,
     projectData,
-    teamData
+    teamData,
+    loggedIn: true
   }))
+}
+
+async function getAuth() {
+  const data = await fetch('/isUserAuth', {
+    headers: {
+        'x-access-token': localStorage.getItem('token')
+    }
+  })
+  const res = await data.json();
+  if (!res.isLoggedIn) return logout();
+  return fetchData();
 }
 
 async function login(user) {
@@ -125,7 +101,8 @@ function logout() {
     ...state,
     userData: null,
     projectData: null,
-    teamData: null
+    teamData: null,
+    loggedIn: false
   }))
   navigate('/login')
 }

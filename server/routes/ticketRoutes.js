@@ -2,6 +2,7 @@ const express = require("express");
 const User = require('../models/user');
 const Project = require('../models/project');
 const Ticket = require('../models/ticket');
+const Comment = require('../models/comment');
 const UserInfo = require('../models/userInfo');
 const ProjectUser = require('../models/projectUser');
 const Team = require('../models/team');

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const ProjectUser = require('./projectUser');
 const { Schema } = mongoose;
 
 const projectSchema = mongoose.Schema({
