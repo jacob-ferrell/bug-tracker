@@ -32,32 +32,24 @@ const Dashboard = props => {
     }
 
     const {
+        projectData,
         handleProjectClick,
         fetchAndSetProjectData,
         fetchEditProject,
         fetchCreateProject,
         fetchData,
+        checkAuth,
+        logout,
         getLocal
     } = props.state;
 
-    const userData = props.state.userData || getLocal('userData');
-    const projectData = props.state.projectData || getLocal('projectData');
-    const teamData = props.state.teamData || getLocal('projectData');
 
     useEffect(() => {
-
         setLoading(true);
-        if (userData && projectData && teamData) return setLoading(false);
-        fetch('/isUserAuth', {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        })
-        .then(res => res.json())
-        .then(data => !data.isLoggedIn ? navigate('/login') : fetchData())
+        if (projectData) return setLoading(false);
+        fetchAndSetProjectData()
         .finally(() => setLoading(false))
-
-    }, [])
+    }, [projectData])
 
 
 
@@ -106,7 +98,7 @@ const Dashboard = props => {
                             </h5>
                             <button onClick={handleNewShow} className='btn btn-primary btn-sm'>New Project</button>
                         </div>
-                        {!loading && (
+                        {projectData && (
                           <ProjectsTable 
                               projectData={projectData}
                               showEdit={handleEditClick}
@@ -114,7 +106,6 @@ const Dashboard = props => {
                           />
                         )}
                 </div>
-               
             </div>
 
             </>

@@ -84,9 +84,13 @@ const NewTicket = props => {
           description,
           users,
           priority,
-          type
+          type,
+          project_id: props.projectId
         }
         console.log(ticket)
+        fetch('/createTicket', {
+          
+        })
         
     }
 

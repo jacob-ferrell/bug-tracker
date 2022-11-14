@@ -25,6 +25,8 @@ const ticketSchema = mongoose.Schema({
         required: true
     },
     comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
+    users: [{type: Schema.Types.ObjectId, ref: 'TicketUser'}],
+
 
 
 }, {timestamps: true});

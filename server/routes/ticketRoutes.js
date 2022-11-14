@@ -2,6 +2,7 @@ const express = require("express");
 const User = require('../models/user');
 const Project = require('../models/project');
 const Ticket = require('../models/ticket');
+const TicketUser = require('../models/ticketUser');
 const Comment = require('../models/comment');
 const UserInfo = require('../models/userInfo');
 const ProjectUser = require('../models/projectUser');
@@ -50,19 +51,32 @@ ticketRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
           } 
           resolve(false);
         })
-    })
+      })
     }
   
   
     try {
       let takenTitle = await getTakenTitle();
   
-      if (takenTitle) return res.json({takenTitle: true});
-  
+      if (takenTitle) return res.json({failed: true, message: 'This project already has a ticket with that name'});
+
+      const ticket = req.body;
+
       let newTicket = new Ticket({
         ...ticket,
+        users: []
       })
       await newTicket.save();
+
+      for (let i in ticket.users) {
+        const newUser = new TicketUser({
+          project_id: ticket.project_id,
+          user_id: ticket.users[i]
+        })
+        await newUser.save();
+        newTicket.users.push(newUser._id);
+        newTicket.save();
+      }
   
       project.tickets.push(newTicket._id);
       await project.save();

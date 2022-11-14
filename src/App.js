@@ -11,13 +11,17 @@ import MyTeam from './components/MyTeam';
 import ProjectDetails from "./components/ProjectDetails";
 import NewProjectForm from "./components/modals/NewProjectForm";
 import ManageUsers from "./components/ManageUsers";
-import {fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, fetchUserData} from './api.js';
+import {fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, fetchUserData, fetchURL} from './api.js';
 
 
 function App() {
 
   const navigate = useNavigate();
   const { name } = useParams();
+
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [loadingTeam, setLoadingTeam] = useState(true);
 
   const [state, setState] = useState({
     loggedIn: false,
@@ -27,6 +31,7 @@ function App() {
     teamData: null,
     selectedProject: null,
     showEdit: false,
+    checkAuth,
     fetchAndSetProjectData,
     fetchEditProject,
     handleProjectClick,
@@ -37,13 +42,38 @@ function App() {
   })
  
 useEffect(() => {
-  getAuth();
+  fetchData();
+
 
 }, [])
 
-async function fetchData() {
+async function fetchData(login = false) {
 
-  const userData = await fetchUserData();
+  if (!login) {
+    const userData = await fetchURL('/isUserAuth')
+    if (!userData.isLoggedIn) return logout();
+    setState(state => ({
+      ...state,
+      userData,
+      loggedIn: true
+    }))
+  }
+
+  const projectData = await fetchURL('/getProjectData');
+  setState(state => ({
+    ...state,
+    projectData,
+  }))
+
+  const teamData = await fetchURL('/getTeamMembers');
+
+  setState(state => ({
+    ...state,
+    projectData,
+    teamData,
+    loggedIn: true
+  }))
+  /* const userData = await fetchUserData();
   localStorage.setItem('userData', JSON.stringify(userData));
 
   const projectData = await fetchProjectData();
@@ -58,29 +88,24 @@ async function fetchData() {
     projectData,
     teamData,
     loggedIn: true
-  }))
+  })) */
 }
 
-async function getAuth() {
-  const data = await fetch('/isUserAuth', {
-    headers: {
-        'x-access-token': localStorage.getItem('token')
-    }
-  })
-  const res = await data.json();
+async function checkAuth() {
+  const res = await fetchURL('/isUserAuth');
   if (!res.isLoggedIn) return logout();
-  return fetchData();
 }
 
 async function login(user) {
-  const data = await fetch('/login', {
+  console.log(user)
+  const res = await fetchURL('/login', user);
+  /* const data = await fetch('/login', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(user)
-  })
-  const res = await data.json();
+  }) */
   if(res.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
@@ -88,6 +113,7 @@ async function login(user) {
     loggedIn: true
   }));
   localStorage.setItem('token', res.token);
+  fetchData(true);
   navigate('/dashboard');
 }
 
@@ -108,29 +134,17 @@ function logout() {
 }
 
 async function fetchAndSetProjectData() {
-  const data = await fetchProjectData();
-  console.log(data);
+  const data = await fetchURL('/getProjectData');
   if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
     projectData: data
   }));
-  localStorage.setItem('projectData', JSON.stringify(data));
-}
-
-async function fetchAndSetUserData() {
-  const data = await fetchUserData();
-  if(data.isLoggedIn == false) return logout();
-  setState(state => ({
-    ...state,
-    loggedIn: true,
-    userData: data
-  }));
-  localStorage.setItem('userData', JSON.stringify(data));
+  //localStorage.setItem('projectData', JSON.stringify(data));
 }
 
 async function fetchAndSetTeamData() {
-  const data = await fetchTeamData();
+  const data = await fetchURL('getTeamMembers');
   if(data.isLoggedIn == false) return logout();
   setState(state => ({
     ...state,
@@ -160,10 +174,15 @@ function handleProjectClick(e) {
     <div className='App'>
       {state.loggedIn ? (
         <>
-        <header>
-          <Header userData={state.userData} logout={logout}/>
-        </header>
-        <Sidebar />
+        {state.userData && 
+          (<>
+            <header>
+              <Header userData={state.userData} logout={logout}/>
+            </header>
+            <Sidebar />
+          </>
+          )
+        }
         <div className='content w-auto'>
           <Routes>
             <Route path='/'  element={ <Navigate to='/dashboard' /> } />

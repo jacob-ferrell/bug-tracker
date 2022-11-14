@@ -121,6 +121,10 @@ userRoutes.route('/login').post(async (req, res) => {
     if (!userToAdd) return res.json({failed: true});
     return res.json({...userToAdd._doc})
   })
+  //fetch user data necessary to render dashboard (user info, projects)
+  userRoutes.route('/initialize').get(verifyJWT, async (req, res) => {
+    
+  })
 
   module.exports = userRoutes;
 
