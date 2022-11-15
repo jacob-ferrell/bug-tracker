@@ -52,8 +52,8 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
       user.team = newTeam._id;
       await user.save();
       return res.json({
-        ...user._doc,
-        team_id: newTeam._id,
+        email: user.email,
+        user_id: req.user.id,
         name: user.firstName + ' ' + user.lastName,
         role: teamMember.role
       });

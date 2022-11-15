@@ -16,10 +16,9 @@ const CreateTeam = props => {
             name,
         }
         setLoading(true)
-        const res = await fetchURL('/createTeam', team)
-        const teamId = await res.team_id;
-        props.updateData([res]);
-        props.updateUser({...props.userData, team: teamId});
+        const res = await fetchURL('/createTeam', team);
+        const newMember = await {...res};
+        props.updateData([newMember]);
         setLoading(false);
         props.handleClose();
     }

@@ -22,7 +22,7 @@ const NewProjectForm = props => {
             description,
         }
         setLoading(true)
-        const res = await fetchURL('/createProject', project)
+        const res = await fetchURL('/createProject', project);
         const newProject = await res.project;
         console.log(newProject);
         props.updateData([...props.projectData, newProject]);

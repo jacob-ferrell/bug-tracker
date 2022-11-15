@@ -17,12 +17,16 @@ const MyTeam = props => {
             setNoTeam(true);
             return setLoading(false);
         }
+        console.log(teamData)
+        if (teamData.length) {
+            setNoTeam(false);
+            return setLoading(false);
+        }
         fetchURL('/getTeamMembers')
         .then(res => props.updateData(res))
-        .then(res => console.log(res))
         .finally(() => setLoading(false))
 
-    }, [props.teamData?.length])
+    }, [props.teamData])
     return (
         <> 
           {showCreateTeam &&(

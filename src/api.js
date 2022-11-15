@@ -11,7 +11,7 @@ async function fetchURL(url, data = null) {
     const res = await fetch(url, {...req})
     const json = await res.json();
     if (json.failed) alert(json.message);
-    console.log(url);
+    console.log(url, json);
     return json;
 }
 const req = {
