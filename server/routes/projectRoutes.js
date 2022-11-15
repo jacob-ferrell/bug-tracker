@@ -55,7 +55,7 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     try {
       let takenName = await getTakenName();
   
-      if (takenName) return res.json({takenName})
+      if (takenName) return res.json({failed: true, message: 'You already have a project with that name'});
   
       const user = await UserInfo.findOne({user_id: req.user.id});
   
@@ -78,10 +78,21 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
         user.projects.push(newProject._id);
         user.save();
       })
-      return res.json({takenName})
+      return res.json({
+        project: {
+          name: newProject.name,
+          description: newProject.description,
+          project_id: newProject._id,
+          role: 'admin',
+          tickets: [],
+          users: [req.user.id],
+          createdAt: newProject.createdAt
+        }, 
+        message: 'Success'
+      });
     } catch (err) {
       console.log(err);
-      return res.json({message: 'Failed to create project'});
+      return res.json({failed: true, message: 'Failed to create project'});
     }
   })
 
@@ -109,12 +120,21 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     }
     try {
       const takenName = await getTakenName();
-      if (takenName) return res.json({takenName});
+      if (takenName) return res.json({failed: true, message: 'You already have a project with that name'});
+
       const toEdit = await Project.findById(projectId);
       toEdit.name = project.name;
       toEdit.description = project.description;
       await toEdit.save();
-      return res.json({takenName});
+
+      const projectUser = await ProjectUser.findOne({project_id: toEdit._id, user_id: req.user.id});
+      const role = projectUser.role;
+      return res.json({
+        project: {
+          ...toEdit._doc,
+          role
+        }
+      });
     } catch (err) {
       console.log(err);
     }
@@ -152,7 +172,8 @@ projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
                 name: project.name,
                 project_id: project._id,
                 tickets: project.tickets,
-                description: project.description
+                description: project.description,
+                createdAt: project.createdAt
             }
         });
         for (let i in projects) {

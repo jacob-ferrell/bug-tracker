@@ -2,6 +2,7 @@ import '../styles/Dashboard.css';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import { fetchURL } from '../api';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MyTickets from './MyTickets';
@@ -32,7 +33,6 @@ const Dashboard = props => {
     }
 
     const {
-        projectData,
         handleProjectClick,
         fetchAndSetProjectData,
         fetchEditProject,
@@ -43,13 +43,17 @@ const Dashboard = props => {
         getLocal
     } = props.state;
 
+    const projectData = props.projectData;
+
 
     useEffect(() => {
         setLoading(true);
         if (projectData) return setLoading(false);
-        fetchAndSetProjectData()
+        fetchURL('/getProjectData')
+        .then(res => props.updateData(res))
         .finally(() => setLoading(false))
-    }, [projectData])
+
+    }, [props.projectData?.length])
 
 
 
@@ -67,22 +71,22 @@ const Dashboard = props => {
                   createProject={fetchCreateProject}
                   handleClose={handleNewClose} 
                   show={showNewProject}
-                  updateData={fetchAndSetProjectData}
-                  projectData={projectData}
+                  updateData={props.updateData}
+                  projectData={props.projectData}
               />
             )}
             {showEdit && (
               <EditProjectForm 
                   handleClose={handleEditClose}
                   show={showEdit}
-                  updateData={fetchAndSetProjectData}
+                  updateData={props.updateData}
                   projectData={projectData}
                   projectId={selectedProject}
                   editProject={fetchEditProject}
               />
             )}
-            <div className='p-3 w-auto'>
-                    <div className='projects bg-light shadow rounded p-2'>
+            <div className='p-3 w-auto h-auto'>
+                    <div id='projects' className='projects bg-light shadow rounded p-2'>
                         <div className='projects-header d-flex justify-content-between'>
                             <h5>
                               {loading &&
@@ -102,13 +106,13 @@ const Dashboard = props => {
                           <ProjectsTable 
                               projectData={projectData}
                               showEdit={handleEditClick}
-                              handleProjectClick={handleProjectClick} 
+                              handleProjectClick={handleProjectClick}
                           />
                         )}
                 </div>
             </div>
 
-            </>
+        </>
     );
 }
 

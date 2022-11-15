@@ -27,7 +27,7 @@ async function fetchCreateProject(project) {
         body: JSON.stringify(project)
     })
     const res = await fetchData.json();
-    if (res.takenName) return alert('You already have a project with that name');
+    if (res.failed) return alert(res.message);
   }
 
   async function fetchEditProject(project) {

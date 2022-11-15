@@ -66,3 +66,8 @@ body {
     width: 100%;
     background-color: rgb(161, 161, 161);
 }
+
+#projects-table-container {
+  max-height: 800px;
+  overflow: scroll;
+}

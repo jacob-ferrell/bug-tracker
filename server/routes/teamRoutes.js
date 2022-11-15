@@ -34,24 +34,32 @@ function verifyJWT (req, res, next) {
 //create new team
 teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
     const team = req.body;
-    const user = await UserInfo.findOne({user_id: req.body.creator});
+    team.creator = req.user.id;
     try {
-      let newTeam = new Team({...team});
+      const user = await UserInfo.findOne({user_id: req.body.creator});
+
+      const newTeam = new Team({...team});
       newTeam.members.push(req.body.creator);
-      newTeam.save(team => {
-        let teamMember = new TeamMember({
-          user_id: req.body.creator,
-          team_id: newTeam._id,
-          role: 'admin'
-        })
-        teamMember.save();
-      });
-      user.team= newTeam._id;
+      await newTeam.save();
+
+      const teamMember = new TeamMember({
+        user_id: req.user.id,
+        team_id: newTeam._id,
+        role: 'admin'
+      })
+      teamMember.save();
+
+      user.team = newTeam._id;
       await user.save();
-      return res.json({success: true});
+      return res.json({
+        ...user._doc,
+        team_id: newTeam._id,
+        name: user.firstName + ' ' + user.lastName,
+        role: teamMember.role
+      });
     } catch(err) {
       console.log(err);
-      return res.json({success: false});
+      return res.json({failed: true, message: 'Failed to create team'});
     }
   })
   
@@ -90,6 +98,7 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
   teamRoutes.route('/getTeamMembers').get(verifyJWT, async (req, res) => {
     try {
       const user = await UserInfo.findOne({user_id: req.user.id});
+      if (!user.team) return res.json({noTeam: true})
       const teamId = user.team;
       const teamMembers = await TeamMember.find({team_id: teamId});
       let memberData = teamMembers.map(e => {

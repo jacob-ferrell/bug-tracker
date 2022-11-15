@@ -19,18 +19,14 @@ function App() {
   const navigate = useNavigate();
   const { name } = useParams();
 
-  const [loadingUser, setLoadingUser] = useState(true);
-  const [loadingProjects, setLoadingProjects] = useState(true);
-  const [loadingTeam, setLoadingTeam] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [projectData, setProjectData] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [teamData, setTeamData] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const [state, setState] = useState({
-    loggedIn: false,
-    userData: null,
-    projectData: null,
-    selectedProject: null,
-    teamData: null,
-    selectedProject: null,
-    showEdit: false,
+
     checkAuth,
     fetchAndSetProjectData,
     fetchEditProject,
@@ -47,48 +43,22 @@ useEffect(() => {
 
 }, [])
 
-async function fetchData(login = false) {
 
-  if (!login) {
+async function fetchData() {
+
+  if (!loggedIn) {
     const userData = await fetchURL('/isUserAuth')
     if (!userData.isLoggedIn) return logout();
-    setState(state => ({
-      ...state,
-      userData,
-      loggedIn: true
-    }))
+    setLoggedIn(true);
+    setUserData(userData);
   }
 
   const projectData = await fetchURL('/getProjectData');
-  setState(state => ({
-    ...state,
-    projectData,
-  }))
+  setProjectData([...projectData]);
 
   const teamData = await fetchURL('/getTeamMembers');
-
-  setState(state => ({
-    ...state,
-    projectData,
-    teamData,
-    loggedIn: true
-  }))
-  /* const userData = await fetchUserData();
-  localStorage.setItem('userData', JSON.stringify(userData));
-
-  const projectData = await fetchProjectData();
-  localStorage.setItem('projectData', JSON.stringify(projectData));
-
-  const teamData = await fetchTeamData();
-  localStorage.setItem('teamData', JSON.stringify(teamData));
-
-  setState(state => ({
-    ...state,
-    userData,
-    projectData,
-    teamData,
-    loggedIn: true
-  })) */
+  setTeamData(teamData);
+  setLoggedIn(true);
 }
 
 async function checkAuth() {
@@ -97,50 +67,26 @@ async function checkAuth() {
 }
 
 async function login(user) {
-  console.log(user)
   const res = await fetchURL('/login', user);
-  /* const data = await fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify(user)
-  }) */
   if(res.isLoggedIn == false) return logout();
-  setState(state => ({
-    ...state,
-    userData: res.userData,
-    loggedIn: true
-  }));
+  setUserData(res.userData);
+  setLoggedIn(true);
   localStorage.setItem('token', res.token);
-  fetchData(true);
+  fetchData();
   navigate('/dashboard');
 }
 
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('selectedProject');
-  localStorage.removeItem('userData');
-  localStorage.removeItem('teamData');
-  localStorage.removeItem('projectData');
-  setState(state => ({
-    ...state,
-    userData: null,
-    projectData: null,
-    teamData: null,
-    loggedIn: false
-  }))
+  setLoggedIn(false);
   navigate('/login')
 }
 
 async function fetchAndSetProjectData() {
   const data = await fetchURL('/getProjectData');
   if(data.isLoggedIn == false) return logout();
-  setState(state => ({
-    ...state,
-    projectData: data
-  }));
-  //localStorage.setItem('projectData', JSON.stringify(data));
+  setProjectData([...data]);
 }
 
 async function fetchAndSetTeamData() {
@@ -161,10 +107,7 @@ function handleProjectClick(e) {
   const id = e.currentTarget.dataset.projectid;
   const name = e.currentTarget.dataset.name
     .toLowerCase().replace(' ', '-');
-  setState(state => ({
-    ...state,
-    selectedProject: id
-  }));
+  setSelectedProject(id);
   localStorage.setItem('selectedProject', id);
   navigate(`/dashboard/project/${name}`);
 }
@@ -172,12 +115,12 @@ function handleProjectClick(e) {
   
   return (
     <div className='App'>
-      {state.loggedIn ? (
+      {loggedIn ? (
         <>
-        {state.userData && 
+        {userData && 
           (<>
             <header>
-              <Header userData={state.userData} logout={logout}/>
+              <Header userData={userData} logout={logout}/>
             </header>
             <Sidebar />
           </>
@@ -186,16 +129,36 @@ function handleProjectClick(e) {
         <div className='content w-auto'>
           <Routes>
             <Route path='/'  element={ <Navigate to='/dashboard' /> } />
-            <Route path='/dashboard' element={<Dashboard state={state}/>} />
+            <Route 
+              path='/dashboard' 
+              element={
+                <Dashboard 
+                  state={state} 
+                  updateData={data => setProjectData(data)} 
+                  projectData={projectData}
+                />
+              } 
+            />
             <Route 
               path='/dashboard/my-tickets' 
               element={
                 <MyTickets 
                   getLocal={getLocal}
-                  projectData={state.projectData}
-                  userData={state.userData}
+                  projectData={projectData}
+                  userData={userData}
                   fetchData={fetchData}
-
+                />
+              } 
+            />
+            <Route 
+              path='/dashboard/my-team' 
+              element={
+                <MyTeam 
+                  getLocal={getLocal}
+                  teamData={teamData}
+                  userData={userData}
+                  updateData={data => setTeamData(data)}
+                  updateUser={data => setUserData(data)}
                 />
               } 
             />
@@ -204,12 +167,12 @@ function handleProjectClick(e) {
               element={
                 <ProjectDetails 
                   getLocal={getLocal}
-                  teamData={state.teamData}
-                  projectData={state.projectData}
-                  userData={state.userData}
+                  teamData={teamData}
+                  projectData={projectData}
+                  userData={userData}
                   fetchData={fetchData}
                   updateTeam={fetchAndSetTeamData}
-                  projectId={state.selectedProject}
+                  projectId={selectedProject}
                 />
               } 
             />

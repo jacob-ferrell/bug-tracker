@@ -1,7 +1,11 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useEffect } from 'react';
 
 const ProjectsTable = props => {
+
+    useEffect(() => {
+        console.log('table mount')
+    }, [props.projectData])
 
     const headings = ['', 'Project', 'Description', 'My Role', /* 'Open Tickets', */ '']
         .map((heading, i) => {
@@ -9,8 +13,10 @@ const ProjectsTable = props => {
                 <th className='text-left' key={heading + i}>{heading}</th>
             );
         });
-    const projectData = props.projectData || JSON.parse(localStorage.getItem('projectData'));
-    const projectRows = projectData.map((project, i) => {
+    const projectData = props.projectData;
+    const projectRows = projectData
+      .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))
+      .map((project, i) => {
         const role = project.role;
         /* const openTickets = getOpenTickets(project); */
         const id = project.project_id;
@@ -53,16 +59,19 @@ const ProjectsTable = props => {
     }
 
     return (
-        <table className='table table-hover table-sm mt-2'>
-            <thead>
-                <tr>
-                  {headings}
-                </tr>
-            </thead>
-            <tbody>
-                {projectRows}
-            </tbody>
-        </table>
+        <div id='projects-table-container' className='overflow-auto h-auto'>
+            <table className='table table-hover table-sm mt-2'>
+              <thead>
+                  <tr>
+                    {headings}
+                  </tr>
+              </thead>
+              <tbody>
+                  {projectRows}
+              </tbody>
+            </table>
+        </div>
+        
     );
 }
 

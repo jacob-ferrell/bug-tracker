@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import {fetchURL} from '../../api';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -11,10 +12,12 @@ const EditProjectForm = props => {
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const projects = props.projectData;
+    const projectId = props.projectId;
+    const project = projects.find(project => project.project_id == projectId);
+
     useState(() => {
-            const projects = props.projectData || JSON.parse(localStorage.getItem('projectData'));
-            const projectId = props.projectId;
-            const project = projects.find(project => project.project_id == projectId);
+            
             setName(project.name);
             setDescription(project.description);
     }, [])
@@ -26,8 +29,10 @@ const EditProjectForm = props => {
             description
         }
         setLoading(true);
-        await props.editProject(project);
-        await props.updateData();
+        const res = await fetchURL('/editProject', project);
+        const edited = res.project;
+        const cur = props.projectData.filter(project => project.project_id != projectId);
+        props.updateData([...cur, edited]);
         setLoading(false);
         props.handleClose();
     }
