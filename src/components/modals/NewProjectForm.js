@@ -4,31 +4,38 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { fetchURL } from '../../api';
+import { useMutation } from 'react-query';
 
 const NewProjectForm = props => {
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [loading, setLoading] = useState(false);
+    const queryClient = props.queryClient;
 
+    const addProject = project => fetchURL('/createProject', project);
 
-    const handleNameChange = e => setName(e.target.value);
-    const handleDescriptionChange = e => setDescription(e.target.value);
-
-    const handleSubmitClick = async e => {
-        e.preventDefault();
-        const project = {
-            name,
-            description,
+    const mutation = useMutation(addProject, {
+      onMutate: async newProject => {
+        await queryClient.cancelQueries('projects');
+        const previousProjects = queryClient.getQueryData('projects');
+        await queryClient.setQueryData("projects", oldQueryData => [
+          ...oldQueryData, 
+          {id: oldQueryData?.length + 1, ...newProject, role: 'admin'}
+        ])
+        return {
+          previousProjects,
         }
-        setLoading(true)
-        const res = await fetchURL('/createProject', project);
-        const newProject = await res.project;
-        console.log(newProject);
-        props.updateData([...props.projectData, newProject]);
-        setLoading(false);
+      },
+      onError: async (error, project, context) => {
+        queryClient.setQueryData('projects', context.previousProjects)
+        alert(error + 'an error occurred');
+      },
+      onSettled: () => {
+        // queryClient.invalidateQueries('projects');
         props.handleClose();
-    }
+      }
+
+    })
 
     return (
         
@@ -43,7 +50,7 @@ const NewProjectForm = props => {
                 <Form.Control
                     type="text"
                     value={name}
-                    onChange={handleNameChange}
+                    onChange={e => setName(e.target.value)}
                     autoFocus
                 />
                 </Form.Group>
@@ -56,7 +63,7 @@ const NewProjectForm = props => {
                     as="textarea" 
                     rows={3}
                     value={description}
-                    onChange={handleDescriptionChange} 
+                    onChange={e => setDescription(e.target.value)} 
                 />
                 </Form.Group>
             </Form>
@@ -65,8 +72,8 @@ const NewProjectForm = props => {
             <Button variant="secondary" onClick={props.handleClose}>
                 Cancel
             </Button>
-            <Button variant="primary" onClick={handleSubmitClick}>
-                {loading &&
+            <Button variant="primary" onClick={() => mutation.mutate({name, description})}>
+                {mutation.isLoading &&
                     <Spinner 
                       animation='border'
                       as='span'
@@ -75,7 +82,7 @@ const NewProjectForm = props => {
                       aria-hidden='true' 
                     />
                   }
-                  {loading ? ' Saving...' : 'Submit'}
+                  {mutation.isLoading ? ' Saving...' : 'Submit'}
             </Button>
           </Modal.Footer>
         </Modal>

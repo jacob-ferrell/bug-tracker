@@ -1,11 +1,12 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useEffect } from 'react';
+import { useQuery } from "react-query";
+import {fetchURL} from '../../api';
 
 const ProjectsTable = props => {
 
-    useEffect(() => {
-        console.log('table mount')
-    }, [props.projectData])
+    const projectData = props.projectData;
+
 
     const headings = ['', 'Project', 'Description', 'My Role', /* 'Open Tickets', */ '']
         .map((heading, i) => {
@@ -13,7 +14,6 @@ const ProjectsTable = props => {
                 <th className='text-left' key={heading + i}>{heading}</th>
             );
         });
-    const projectData = props.projectData;
     const projectRows = projectData
       .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))
       .map((project, i) => {
@@ -59,6 +59,7 @@ const ProjectsTable = props => {
     }
 
     return (
+
         <div id='projects-table-container' className='overflow-auto h-auto'>
             <table className='table table-hover table-sm mt-2'>
               <thead>

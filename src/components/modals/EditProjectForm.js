@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import { useMutation } from 'react-query';
 import {fetchURL} from '../../api';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -10,11 +11,43 @@ const EditProjectForm = props => {
     
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [loading, setLoading] = useState(false);
+
+    const queryClient = props.queryClient;
+
+    const editProject = project => fetchURL('/editProject', project);
 
     const projects = props.projectData;
     const projectId = props.projectId;
     const project = projects.find(project => project.project_id == projectId);
+
+    const mutation = useMutation(editProject, {
+      onMutate: async newProject => {
+        await queryClient.cancelQueries('projects');
+        const previousProjects = queryClient.getQueryData('projects');
+        await queryClient.setQueryData("projects", oldQueryData => {
+          const oldProject = oldQueryData.find(project => project.project_id == projectId);
+          const filtered = oldQueryData.filter(project => project.project_id != projectId);
+          return [
+            ...filtered,
+            {...oldProject, ...newProject, id: oldQueryData?.length + 1}
+          ]
+        })
+        return {
+          previousProjects,
+        }
+      },
+      onError: async (error, project, context) => {
+        queryClient.setQueryData('projects', context.previousProjects)
+        alert(error + 'an error occurred');
+      },
+      onSettled: () => {
+        // queryClient.invalidateQueries('projects');
+        props.handleClose();
+      }
+
+    })
+
+    
 
     useState(() => {
             
@@ -22,28 +55,14 @@ const EditProjectForm = props => {
             setDescription(project.description);
     }, [])
 
-    const handleSubmit = async e => {
+    const handleSubmit = e => {
         const project = {
             project_id: props.projectId,
             name,
             description
         }
-        setLoading(true);
-        const res = await fetchURL('/editProject', project);
-        const edited = res.project;
-        const cur = props.projectData.filter(project => project.project_id != projectId);
-        props.updateData([...cur, edited]);
-        setLoading(false);
-        props.handleClose();
+        mutation.mutate(project);
     }
-
-    
-
-
-    const handleNameChange = e => setName(e.target.value);
-    const handleDescriptionChange = e => setDescription(e.target.value);
-
-  
 
     return (
         
@@ -58,7 +77,7 @@ const EditProjectForm = props => {
                 <Form.Control
                     type="text"
                     value={name}
-                    onChange={handleNameChange}
+                    onChange={e => setName(e.target.value)}
                     autoFocus
                 />
                 </Form.Group>
@@ -71,7 +90,7 @@ const EditProjectForm = props => {
                     as="textarea" 
                     rows={3}
                     value={description}
-                    onChange={handleDescriptionChange} 
+                    onChange={e => setDescription(e.target.value)} 
                 />
                 </Form.Group>
             </Form>
@@ -81,7 +100,7 @@ const EditProjectForm = props => {
                 Cancel
             </Button>
             <Button variant="primary" onClick={handleSubmit}>
-                  {loading &&
+                  {mutation.isLoading &&
                     <Spinner 
                       animation='border'
                       as='span'
@@ -90,7 +109,7 @@ const EditProjectForm = props => {
                       aria-hidden='true' 
                     />
                   }
-                  {loading ? ' Saving...' : 'Submit'}
+                  {mutation.isLoading ? ' Saving...' : 'Submit'}
 
             </Button>
           </Modal.Footer>

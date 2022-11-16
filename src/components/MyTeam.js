@@ -2,31 +2,22 @@ import { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { fetchURL } from '../api';
 import CreateTeam from './modals/CreateTeam';
+import { useQuery } from 'react-query';
 
 const MyTeam = props => {
 
-    const [noTeam, setNoTeam] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [showCreateTeam, setShowCreateTeam] = useState(false);
 
-    const teamData = props.teamData;
+    const fetchTeam = async () => {
+        return await fetchURL('/getTeamMembers');
+    }
 
-    useEffect(() => {
-        setLoading(true);
-        if (teamData?.noTeam) {
-            setNoTeam(true);
-            return setLoading(false);
-        }
-        console.log(teamData)
-        if (teamData.length) {
-            setNoTeam(false);
-            return setLoading(false);
-        }
-        fetchURL('/getTeamMembers')
-        .then(res => props.updateData(res))
-        .finally(() => setLoading(false))
+    const {data, isLoading, status} = useQuery('team', fetchTeam);
+    
+    const teamData = data;
 
-    }, [props.teamData])
+
+    
     return (
         <> 
           {showCreateTeam &&(
@@ -43,7 +34,7 @@ const MyTeam = props => {
               <div id='team' className='team bg-light shadow rounded p-2'>
                   <div className='team-header d-flex justify-content-between'>
                       <h5>
-                          {loading &&
+                          {isLoading &&
                           <Spinner 
                           animation='border'
                           as='span'
@@ -52,13 +43,13 @@ const MyTeam = props => {
                           aria-hidden='true' 
                           />
                           }
-                          {loading ? ' Loading Team...' : 'My Team'}
+                          {isLoading ? ' Loading Team...' : 'My Team'}
                       </h5>
-                      {!noTeam && (
+                      {!teamData?.noTeam && (
                           <button onClick={() => null} className='btn btn-primary btn-sm'>Add Member</button>
                       )}
                   </div>
-                  {noTeam && (<div className='d-flex flex-column justify-content-center'>
+                  {teamData?.noTeam && (<div className='d-flex flex-column justify-content-center'>
                       <span className='text-center'>
                         You are not part of a team.  You can create a team, 
                         or you must wait for another user to add you to theirs

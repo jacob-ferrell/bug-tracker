@@ -1,30 +1,26 @@
 import '../styles/Dashboard.css';
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useState } from 'react';
 import { fetchURL } from '../api';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import MyTickets from './MyTickets';
-import MyTeam from './MyTeam';
 import ProjectsTable from './tables/ProjectsTable';
 import NewProjectForm from './modals/NewProjectForm';
 import EditProjectForm from './modals/EditProjectForm';
 import { Spinner } from 'react-bootstrap';
+import { useQuery } from 'react-query';
 
 const Dashboard = props => {
 
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
     const [showNewProject, setShowNewProject] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
 
-    const handleNewClose = () => setShowNewProject(false);
-    const handleNewShow = () => setShowNewProject(true);
-    const handleEditClose = () => setShowEdit(false);
-    const handleEditShow = () => setShowEdit(true);
+    const fetchProjects = async () => {
+        return await fetchURL('/getProjectData');
+    }
+
+    const {data, isLoading, refetch} = useQuery('projects', fetchProjects);
     
+
     const handleEditClick = e => {
         const projectId = e.target.dataset.projectid;
         console.log(projectId)
@@ -32,28 +28,7 @@ const Dashboard = props => {
         setShowEdit(true);
     }
 
-    const {
-        handleProjectClick,
-        fetchAndSetProjectData,
-        fetchEditProject,
-        fetchCreateProject,
-        fetchData,
-        checkAuth,
-        logout,
-        getLocal
-    } = props.state;
 
-    const projectData = props.projectData;
-
-
-    useEffect(() => {
-        setLoading(true);
-        if (projectData) return setLoading(false);
-        fetchURL('/getProjectData')
-        .then(res => props.updateData(res))
-        .finally(() => setLoading(false))
-
-    }, [props.projectData?.length])
 
 
 
@@ -68,28 +43,26 @@ const Dashboard = props => {
 
             {showNewProject &&(
               <NewProjectForm 
-                  createProject={fetchCreateProject}
-                  handleClose={handleNewClose} 
+                  handleClose={() => setShowNewProject(false)} 
                   show={showNewProject}
-                  updateData={props.updateData}
-                  projectData={props.projectData}
+                  refetch={refetch}
+                  queryClient={props.queryClient}
               />
             )}
             {showEdit && (
               <EditProjectForm 
-                  handleClose={handleEditClose}
+                  handleClose={() => setShowEdit(false)}
                   show={showEdit}
-                  updateData={props.updateData}
-                  projectData={projectData}
+                  projectData={data}
                   projectId={selectedProject}
-                  editProject={fetchEditProject}
+                  queryClient={props.queryClient}
               />
             )}
             <div className='p-3 w-auto h-auto'>
                     <div id='projects' className='projects bg-light shadow rounded p-2'>
                         <div className='projects-header d-flex justify-content-between'>
                             <h5>
-                              {loading &&
+                              {isLoading &&
                                 <Spinner 
                                 animation='border'
                                 as='span'
@@ -98,15 +71,15 @@ const Dashboard = props => {
                                 aria-hidden='true' 
                                 />
                               }
-                              {loading ? ' Loading Projects...' : 'Projects'}
+                              {isLoading ? ' Loading Projects...' : 'Projects'}
                             </h5>
-                            <button onClick={handleNewShow} className='btn btn-primary btn-sm'>New Project</button>
+                            <button onClick={() => setShowNewProject(true)} className='btn btn-primary btn-sm'>New Project</button>
                         </div>
-                        {projectData && (
+                        {!isLoading && (
                           <ProjectsTable 
-                              projectData={projectData}
                               showEdit={handleEditClick}
-                              handleProjectClick={handleProjectClick}
+                              handleProjectClick={props.handleProjectClick}
+                              projectData={data}
                           />
                         )}
                 </div>

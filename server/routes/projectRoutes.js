@@ -31,6 +31,7 @@ const verifyJWT = (req, res, next) => {
 //create new project
 projectRoutes.route('/createProject').post(verifyJWT, async (req, res) => {
     const project = req.body;
+    delete project.id;
     project.creator = req.user.id;
   
     const getTakenName = async () => {

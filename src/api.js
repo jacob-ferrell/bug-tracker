@@ -14,56 +14,9 @@ async function fetchURL(url, data = null) {
     console.log(url, json);
     return json;
 }
-const req = {
-    headers: {
-        'x-access-token': localStorage.getItem('token')
-    },
-};
-
-async function fetchCreateProject(project) {
-    const fetchData = await fetch('/createProject', {
-        ...req,
-        method: 'POST',
-        body: JSON.stringify(project)
-    })
-    const res = await fetchData.json();
-    if (res.failed) return alert(res.message);
-  }
-
-  async function fetchEditProject(project) {
-    const fetchData = await fetch('/editProject', {
-        ...req,
-        method: 'POST',
-        body: JSON.stringify(project)
-    })
-    const res = await fetchData.json();
-    if (res.takenName) return alert('You already have a project with that name');
-  }
-  
-  async function fetchTeamData() {
-    try {
-        const fetchData = await fetch('/getTeamMembers', {...req})
-        const res = await fetchData.json();
-        return res;
-    } catch(err) {
-        console.log(err);
-    }
-  }
-
-  const fetchUserData = async () => {
-    try {
-        const fetchData = await fetch('/isUserAuth', {...req})
-        const res = await fetchData.json();
-        return res;
-    } catch(err) {
-        console.log(err);
-    }
+const fetchProjects = async () => {
+    return await fetchURL('/getProjectData');
 }
 
-async function fetchProjectData() {
-  const fetchData = await fetch('/getProjectData', {...req})
-  const res = await fetchData.json();
-  return res;
-}
 
-export {fetchURL, fetchProjectData, fetchEditProject, fetchCreateProject, fetchTeamData, fetchUserData};
+export {fetchURL };
