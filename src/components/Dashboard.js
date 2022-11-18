@@ -18,7 +18,9 @@ const Dashboard = props => {
         return await fetchURL('/getProjectData');
     }
 
-    const {data, isLoading, refetch} = useQuery('projects', fetchProjects);
+    //const {data, isLoading, refetch} = useQuery('projects', fetchProjects);
+    const projectData = useQuery('projects', fetchProjects);
+    const {data, isLoading, refetch} = projectData
     
 
     const handleEditClick = e => {
@@ -45,7 +47,6 @@ const Dashboard = props => {
               <NewProjectForm 
                   handleClose={() => setShowNewProject(false)} 
                   show={showNewProject}
-                  refetch={refetch}
                   queryClient={props.queryClient}
               />
             )}
