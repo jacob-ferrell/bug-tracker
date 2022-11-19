@@ -1,6 +1,8 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { fetchProjects } from "../../api";
+import uniqid from 'uniqid';
+
 
 const TicketsTable = (props) => {
   const headings = ["", "Ticket Title", "Description", "Status", ""].map(
@@ -29,7 +31,7 @@ const TicketsTable = (props) => {
       const status = ticket.status;
       const id = ticket._id;
       return (
-        <tr key={ticket._id} className="table-ticket-row">
+        <tr key={uniqid()} className="table-ticket-row">
           <td>{i + 1}</td>
           <td className="text-primary">{ticket.title}</td>
           <td>{ticket.description}</td>

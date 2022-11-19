@@ -96,7 +96,7 @@ const NewTicket = (props) => {
       alert(error + "an error occurred");
     },
     onSettled: () => {
-      queryClient.invalidateQueries('projects');
+      //queryClient.invalidateQueries('projects');
       props.handleClose();
     },
   });
