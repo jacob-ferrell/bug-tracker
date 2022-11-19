@@ -18,5 +18,9 @@ const fetchProjects = async () => {
     return await fetchURL('/getProjectData');
 }
 
+const fetchTeam = async () => {
+    return await fetchURL('/getTeamMembers');
+}
 
-export {fetchURL };
+
+export {fetchURL, fetchTeam, fetchProjects };

@@ -5,7 +5,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: {staleTime: Infinity}}
+});
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
