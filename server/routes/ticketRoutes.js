@@ -64,6 +64,7 @@ ticketRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
 
       let newTicket = new Ticket({
         ...ticket,
+        creator: req.user.id,
         users: []
       })
       await newTicket.save();
@@ -75,7 +76,7 @@ ticketRoutes.route('/createTicket').post( verifyJWT, async (req, res) => {
         })
         await newUser.save();
         newTicket.users.push(newUser._id);
-        newTicket.save();
+        await newTicket.save();
       }
   
       project.tickets.push(newTicket._id);

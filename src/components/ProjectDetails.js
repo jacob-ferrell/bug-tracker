@@ -50,10 +50,10 @@ const ProjectDetails = (props) => {
           teamData={team.data}
           handleClose={() => setShowNewTicket(false)}
           show={showNewTicket}
-          updateData={props.fetchData}
           users={getProjectUsers()}
           projectId={projectId}
           userData={props.userData}
+          queryClient={props.queryClient}
         />
       )}
       <div className="d-flex w-auto">
