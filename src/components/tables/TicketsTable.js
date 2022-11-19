@@ -33,7 +33,7 @@ const TicketsTable = (props) => {
       return (
         <tr key={uniqid()} className="table-ticket-row">
           <td>{i + 1}</td>
-          <td className="text-primary">{ticket.title}</td>
+          <td className="text-primary ticket-title">{ticket.title}</td>
           <td>{ticket.description}</td>
           <td>{status[0].toUpperCase() + status.slice(1)}</td>
           <td className="ellipsis text-center">
