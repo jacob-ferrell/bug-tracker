@@ -26,7 +26,6 @@ function App(props) {
 
   const { data, isLoading, refetch } = useQuery("user", fetchUser);
 
-
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [state, setState] = useState({
@@ -86,16 +85,17 @@ function App(props) {
               <Route
                 path="/dashboard/my-team"
                 element={
-                  <MyTeam
-                    userData={data}
-                    queryClient={props.queryClient}
-                  />
+                  <MyTeam userData={data} queryClient={props.queryClient} />
                 }
               />
               <Route
                 path="/dashboard/project/:name"
                 element={
-                  <ProjectDetails userData={data} projectId={selectedProject} />
+                  <ProjectDetails
+                    userData={data}
+                    projectId={selectedProject}
+                    queryClient={props.queryClient}
+                  />
                 }
               />
             </Routes>

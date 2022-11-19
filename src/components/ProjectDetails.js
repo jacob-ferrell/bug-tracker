@@ -13,15 +13,12 @@ const ProjectDetails = (props) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
 
-  let users, project;
-
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
 
   const team = useQuery("team", fetchTeam);
 
   const getProjectUsers = () => {
-    console.log(projects);
     return projects.data.find((project) => project.project_id == projectId)
       .users;
   };
@@ -34,12 +31,7 @@ const ProjectDetails = (props) => {
     return month + "/" + day + "/" + year;
   }
 
-  function nameFromId(id) {
-    const user = project.users.find((user) => {
-      return user.user_id == id;
-    });
-    return user.name;
-  }
+
 
   return (
     <>
@@ -48,9 +40,9 @@ const ProjectDetails = (props) => {
           teamData={team.data}
           handleClose={() => setShowAddMember(false)}
           show={showAddMember}
-          updateData={props.fetchData}
           users={getProjectUsers()}
           projectId={props.projectId}
+          queryClient={props.queryClient}
         />
       )}
       {showNewTicket && (
@@ -79,10 +71,7 @@ const ProjectDetails = (props) => {
               )}
             </div>
             {!projects.isLoading && (
-              <TeamTable
-                users={getProjectUsers()}
-                userData={props.userData}
-              />
+              <TeamTable users={getProjectUsers()} userData={props.userData} />
             )}
           </div>
         </div>

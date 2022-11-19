@@ -1,14 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "react-query";
+import { fetchURL, fetchTeam } from "../../api";
+import { useMutation } from "react-query";
 import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
 const AddToProject = (props) => {
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  
+  let userToAdd;
 
-  const projectId = props.projectId || localStorage.getItem("selectedProject");
+  const queryClient = props.queryClient;
+  const projectId = props.projectId || localStorage.getItem('selectedProject');
+
   const currentMembers = props.users.map((user) => user.user_id);
   const availableMembers = props.teamData
     .filter((user) => !currentMembers.includes(user.user_id))
@@ -24,32 +30,59 @@ const AddToProject = (props) => {
       );
     });
 
+  const addToProject = () =>
+    fetchURL("/addMemberToProject", {
+      user_id: userToAdd.user_id,
+      project_id: projectId,
+      role: "admin",
+    });
+
+  const mutation = useMutation(addToProject, {
+    onMutate: async (newMember) => {
+      await queryClient.cancelQueries("projects");
+      const previousProjects = queryClient.getQueryData("projects");
+      await queryClient.setQueryData("projects", (oldQueryData) => {
+        console.log(oldQueryData, projectId, userToAdd)
+        const project = oldQueryData.find(
+          (project) => project.project_id == projectId
+        );
+        project.users = [
+          ...project.users,
+          { id: project?.users?.length + 1, ...newMember },
+        ];
+        const filtered = oldQueryData.filter(
+          (project) => project.project_id != projectId
+        );
+        return [...filtered, project];
+      });
+      return {
+        previousProjects,
+      };
+    },
+    onError: async (error, project, context) => {
+      queryClient.setQueryData("projects", context.previousProjects);
+      alert(error + "an error occurred");
+    },
+    onSettled: () => {
+      // queryClient.invalidateQueries('team');
+      props.handleClose();
+    },
+  });
+
   const handleSubmitClick = async (e) => {
-    e.preventDefault();
-    console.log(selectedUser);
+    //e.preventDefault();
+    console.log(selectedUser, props.teamData)
+    const member = props.teamData.find((member) => member.user_id == selectedUser);
+    console.log(member)
+    userToAdd = member;
     const data = {
       user_id: selectedUser,
       project_id: projectId,
       role: "admin",
     };
     setLoading(true);
-    fetch("/addMemberToProject", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        "x-access-token": localStorage.getItem("token"),
-      },
-      body: JSON.stringify(data),
-    })
-      .then(() => props.updateData())
-      .then(() => setLoading(false))
-      .then(() => props.handleClose());
-
-    /* setLoading(true)
-        props.createProject(project)
-        .then(() => props.updateData())
-        .then(() => setLoading(false))
-        .then(() => props.handleClose()); */
+    mutation.mutate({...userToAdd})
+    setLoading(false);
   };
 
   return (
