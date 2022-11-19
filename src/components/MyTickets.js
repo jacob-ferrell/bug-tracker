@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
 import TicketsTable from "./tables/TicketsTable";
 import { Spinner } from "react-bootstrap";
 import { fetchProjects } from "../api";

@@ -4,3 +4,8 @@ html, body, #root, .App, .dashboard{
 
 }
 
+.green-check {
+    font-size: 1.5rem;
+    color: green;
+}
+

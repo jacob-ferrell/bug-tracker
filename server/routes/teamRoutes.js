@@ -65,8 +65,8 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
   
   //add user to team
   teamRoutes.route('/addToTeam').post(verifyJWT, async (req, res) => {
-    const userToAddId = req.body.userToAdd;
-    const userToAddRole = req.body.role || 'admin';
+    const userToAddId = req.body.user_id;
+    const userToAddRole = req.body.role;
     try {
       const userToAdd = await UserInfo.findOne({user_id: userToAddId});    
       const teamMemberToAdd = await TeamMember.findOne({user_id: userToAddId});
@@ -88,8 +88,9 @@ teamRoutes.route('/createTeam').post(verifyJWT, async (req, res) => {
       await userToAdd.save();
       team.members.push(userToAdd._id);
       await team.save();
-      return response.json({success: true});
+      return res.json({success: true});
     } catch(err) {
+      res.json({failed: true, message: 'Failed to add member'});
       console.log(err);  
     }
   })

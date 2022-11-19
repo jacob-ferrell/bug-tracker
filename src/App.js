@@ -17,7 +17,7 @@ import Header from "./components/Header";
 import MyTickets from "./components/MyTickets";
 import MyTeam from "./components/MyTeam";
 import ProjectDetails from "./components/ProjectDetails";
-import { fetchURL } from "./api.js";
+import { fetchURL, fetchTeam, fetchUser } from "./api.js";
 
 function App(props) {
   const navigate = useNavigate();
@@ -26,16 +26,13 @@ function App(props) {
 
   const { data, isLoading, refetch } = useQuery("user", fetchUser);
 
+
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [state, setState] = useState({
     handleProjectClick,
     logout,
   });
-
-  async function fetchUser() {
-    return await fetchURL("/isUserAuth");
-  }
 
   async function login(user) {
     const res = await fetchURL("/login", user);
@@ -88,15 +85,17 @@ function App(props) {
               />
               <Route
                 path="/dashboard/my-team"
-                element={<MyTeam userData={data} />}
+                element={
+                  <MyTeam
+                    userData={data}
+                    queryClient={props.queryClient}
+                  />
+                }
               />
               <Route
                 path="/dashboard/project/:name"
                 element={
-                  <ProjectDetails
-                    userData={data}
-                    projectId={selectedProject}
-                  />
+                  <ProjectDetails userData={data} projectId={selectedProject} />
                 }
               />
             </Routes>
