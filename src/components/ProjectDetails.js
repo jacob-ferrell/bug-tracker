@@ -58,57 +58,61 @@ const ProjectDetails = (props) => {
           queryClient={props.queryClient}
         />
       )}
-      <div className="d-flex w-auto">
-        <div className="p-3 flex-fill">
-          <div className="project-tickets bg-light shadow rounded p-2">
-            <div className="my-tickets-header d-flex justify-content-between">
-              <h5>Assigned Team Members</h5>
+      <div className="p-2 w-auto bg-light shadow rounded m-3">
+      <h5 className="w-auto border-bottom pb-3">Project Details</h5>
+
+        <div className="d-flex w-auto">
+          <div className="p-3 flex-even">
+            <div className="project-members bg-light shadow rounded p-2 border">
+              <div className="my-tickets-header d-flex justify-content-between">
+                <h5>Assigned Team Members</h5>
+                {!projects.isLoading && (
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => setShowAddMember(true)}
+                  >
+                    Add Member
+                  </button>
+                )}
+              </div>
               {!projects.isLoading && (
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() => setShowAddMember(true)}
-                >
-                  Add Member
-                </button>
+                <TeamTable users={getProjectUsers()} userData={props.userData} />
               )}
             </div>
-            {!projects.isLoading && (
-              <TeamTable users={getProjectUsers()} userData={props.userData} />
-            )}
           </div>
-        </div>
-        <div className="p-3 flex-fill">
-          <div className="project-tickets bg-light shadow rounded p-2">
-            <div className="my-tickets-header d-flex justify-content-between">
-              <h5>
-                {/* {loading &&
-                              <Spinner 
-                              animation='border'
-                              as='span'
-                              size='sm'
-                              role='status'
-                              aria-hidden='true' 
-                              />
-                              }
-                              {loading ? ' Loading Tickets...' : 'Tickets'} */}
-                Tickets
-              </h5>
-              <button
-                className="btn btn-sm btn-primary"
-                onClick={() => setShowNewTicket(true)}
-              >
-                New Ticket
-              </button>
+          <div className="p-3 flex-even">
+            <div className="project-tickets bg-light shadow rounded p-2 border">
+              <div className="my-tickets-header d-flex justify-content-between">
+                <h5>
+                  {/* {loading &&
+                                <Spinner
+                                animation='border'
+                                as='span'
+                                size='sm'
+                                role='status'
+                                aria-hidden='true'
+                                />
+                                }
+                                {loading ? ' Loading Tickets...' : 'Tickets'} */}
+                  Tickets
+                </h5>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => setShowNewTicket(true)}
+                >
+                  New Ticket
+                </button>
+              </div>
+              {!projects.isLoading && (
+                <TicketsTable
+                  sortBy="project"
+                  projectData={projects.data}
+                  userData={props.userData}
+                  handleClick={handleTicketClick}
+                  projectId={props.projectId}
+                />
+              )}
             </div>
-            {!projects.isLoading && (
-              <TicketsTable
-                sortBy="project"
-                projectData={projects.data}
-                userData={props.userData}
-                handleClick={handleTicketClick}
-                projectId={props.projectId}
-              />
-            )}
           </div>
         </div>
       </div>

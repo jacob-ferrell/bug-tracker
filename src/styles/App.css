@@ -13,3 +13,7 @@ html, body, #root, .App, .dashboard{
     outline: none;
 }
 
+.flex-even {
+    flex: 1;
+}
+

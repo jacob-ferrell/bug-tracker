@@ -7,6 +7,7 @@ const ProjectUser = require("../models/projectUser");
 const Team = require("../models/team");
 const TeamMember = require("../models/teamMember");
 const jwt = require("jsonwebtoken");
+const TicketUser = require("../models/ticketUser");
 
 const projectRoutes = express.Router();
 
@@ -211,6 +212,13 @@ projectRoutes.route("/getProjectData").get(verifyJWT, async (req, res) => {
               id: creator.user_id,
               name: creator.firstName + " " + creator.lastName,
             };
+            const users = [];
+            for (let i in ticket.users) {
+              const id = ticket.users[i];
+              const ticketUser = await TicketUser.findById(id);
+              users.push(ticketUser.user_id);
+            }
+            ticket.users = users;
           }
 
           project.tickets = tickets;
