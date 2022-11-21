@@ -8,29 +8,17 @@ const Team = require("../models/team");
 const TeamMember = require("../models/teamMember");
 const jwt = require("jsonwebtoken");
 const TicketUser = require("../models/ticketUser");
+const auth = require('../verifyJWT');
 
 const projectRoutes = express.Router();
 
-const verifyJWT = (req, res, next) => {
-  const token = req.headers["x-access-token"]?.split(" ")[1];
-  if (!token) {
-    return res.json({ message: "Incorrect Token Given", isLoggedIn: false });
-  }
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err)
-      return res.json({
-        isLoggedIn: false,
-        message: "Failed To Authenticate",
-      });
-    req.user = {};
-    req.user.id = decoded.id;
-    req.user.email = decoded.email;
-    next();
-  });
-};
-
 //create new project
-projectRoutes.route("/createProject").post(verifyJWT, async (req, res) => {
+projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
+  if (req.user.team.role != "admin")
+    return res.json({
+      failed: true,
+      message: "Only Team Admins can create new projects",
+    });
   const project = req.body;
   delete project.id;
   project.creator = req.user.id;
@@ -105,7 +93,7 @@ projectRoutes.route("/createProject").post(verifyJWT, async (req, res) => {
 });
 
 //edit project
-projectRoutes.route("/editProject").post(verifyJWT, async (req, res) => {
+projectRoutes.route("/editProject").post(auth.verifyJWT, async (req, res) => {
   const project = req.body;
   const projectId = project.project_id;
   const getTakenName = async () => {
@@ -158,7 +146,7 @@ projectRoutes.route("/editProject").post(verifyJWT, async (req, res) => {
 });
 
 //add team member to project
-projectRoutes.route("/addMemberToProject").post(verifyJWT, async (req, res) => {
+projectRoutes.route("/addMemberToProject").post(auth.verifyJWT, async (req, res) => {
   try {
     const user = await UserInfo.findOne({ user_id: req.body.user_id });
     user.projects.push(req.body.project_id);
@@ -177,7 +165,7 @@ projectRoutes.route("/addMemberToProject").post(verifyJWT, async (req, res) => {
 });
 
 //get all project data for user
-projectRoutes.route("/getProjectData").get(verifyJWT, async (req, res) => {
+projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
   try {
     UserInfo.findOne({ user_id: req.user.id })
       .populate("projects")

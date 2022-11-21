@@ -1,7 +1,7 @@
 import "../styles/Dashboard.css";
 import React from "react";
 import { useState } from "react";
-import { fetchURL } from "../api";
+import { fetchProjects, fetchTeam } from "../api";
 import ProjectsTable from "./tables/ProjectsTable";
 import NewProjectForm from "./modals/NewProjectForm";
 import EditProjectForm from "./modals/EditProjectForm";
@@ -13,13 +13,8 @@ const Dashboard = (props) => {
   const [showEdit, setShowEdit] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const fetchProjects = async () => {
-    return await fetchURL("/getProjectData");
-  };
-
-  //const {data, isLoading, refetch} = useQuery('projects', fetchProjects);
-  const projectData = useQuery("projects", fetchProjects, {staleTime: Infinity});
-  const { data, isLoading, refetch } = projectData;
+  const { data, isLoading, refetch } = useQuery("projects", fetchProjects);
+  const team = useQuery('team', fetchTeam);
 
   const handleEditClick = (e) => {
     const projectId = e.target.dataset.projectid;
@@ -68,7 +63,7 @@ const Dashboard = (props) => {
               New Project
             </button>
           </div>
-          {!isLoading && (
+          { !!data?.length && (
             <ProjectsTable
               showEdit={handleEditClick}
               handleProjectClick={props.handleProjectClick}

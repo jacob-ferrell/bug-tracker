@@ -13,26 +13,9 @@ const { response } = require("express");
 const dotenv = require("dotenv").config({
   path: path.resolve(__dirname, "../config.env"),
 });
+const auth = require('../verifyJWT');
 
 const userRoutes = express.Router();
-
-const verifyJWT = (req, res, next) => {
-  const token = req.headers["x-access-token"]?.split(" ")[1];
-  if (!token) {
-    return res.json({ message: "Incorrect Token Given", isLoggedIn: false });
-  }
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err)
-      return res.json({
-        isLoggedIn: false,
-        message: "Failed To Authenticate",
-      });
-    req.user = {};
-    req.user.id = decoded.id;
-    req.user.email = decoded.email;
-    next();
-  });
-};
 
 //create new users
 userRoutes.route("/signup").post(async (req, res) => {
@@ -104,7 +87,7 @@ userRoutes.route("/login").post(async (req, res) => {
 });
 
 //if user is authorized, respond with all user data
-userRoutes.route("/isUserAuth").get(verifyJWT, (req, res) => {
+userRoutes.route("/isUserAuth").get(auth.verifyJWT, (req, res) => {
   try {
     UserInfo.findOne({ user_id: req.user.id }).then((userData) => {
       if (!userData) return res.json({ isLoggedIn: false });
@@ -116,7 +99,7 @@ userRoutes.route("/isUserAuth").get(verifyJWT, (req, res) => {
 });
 
 //find a user by email and return user_id
-userRoutes.route("/findUser").post(verifyJWT, async (req, res) => {
+userRoutes.route("/findUser").post(auth.verifyJWT, async (req, res) => {
   const userToAdd = await UserInfo.findOne({ email: req.body.email });
   if (!userToAdd) {
     return res.json({ failed: true, message: "Failed to find user" });
@@ -124,6 +107,6 @@ userRoutes.route("/findUser").post(verifyJWT, async (req, res) => {
   return res.json({ ...userToAdd._doc });
 });
 //fetch user data necessary to render dashboard (user info, projects)
-userRoutes.route("/initialize").get(verifyJWT, async (req, res) => {});
+userRoutes.route("/initialize").get(auth.verifyJWT, async (req, res) => {});
 
 module.exports = userRoutes;

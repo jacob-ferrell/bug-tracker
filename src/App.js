@@ -54,7 +54,7 @@ function App(props) {
 
   return (
     <div className="App">
-      {data?.isLoggedIn ? (
+      {!isLoading && data.isLoggedIn ? (
         <>
           <header>
             <Header userData={data} logout={logout} />
@@ -98,7 +98,7 @@ function App(props) {
         </>
       ) : (
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/login" />} />
           <Route path="/login" exact element={<LogInPage login={login} />} />
           <Route path="/signup" exact element={<SignUpPage />} />
         </Routes>

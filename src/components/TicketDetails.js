@@ -73,6 +73,7 @@ const TicketDetails = (props) => {
 
   const comments = props.comments
     .filter((comment) => comment.ticket_id == props.ticketId)
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .map((comment) => {
       return <Comment comment={comment} key={uniqid()} />;
     });
@@ -84,7 +85,7 @@ const TicketDetails = (props) => {
     console.log(project.users, ticket.users)
     console.log(assignedDevs)
     return assignedDevs.map((dev) => {
-      return <span>{dev.name}</span>;
+      return <span key={uniqid()}>{dev.name}</span>;
     });
   };
 

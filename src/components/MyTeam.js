@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { Spinner } from "react-bootstrap";
-import { fetchURL } from "../api";
 import CreateTeam from "./modals/CreateTeam";
 import AddToTeam from "./modals/AddToTeam";
 import { useQuery } from "react-query";
-import { fetchTeam } from "../api";
+import { fetchTeam, fetchURL } from "../api";
 import TeamTable from "./tables/TeamTable";
 
 const MyTeam = (props) => {
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [showAddToTeam, setShowAddToTeam] = useState(false);
 
-  const team = useQuery('team', fetchTeam);
+  const team = useQuery("team", fetchTeam);
   const teamData = team.data;
+
+  const handleLeaveClick = async (e) => {
+    await fetchURL("/leaveTeam");
+    props.queryClient.invalidateQueries();
+  };
 
   return (
     <>
@@ -49,16 +53,24 @@ const MyTeam = (props) => {
               )}
               {team.isLoading ? " Loading Team..." : "My Team"}
             </h5>
-            {props.userData?.team && (
-              <button
-                onClick={() => setShowAddToTeam(true)}
-                className="btn btn-primary btn-sm"
-              >
-                Add Member
-              </button>
+            {!team.data?.noTeam && (
+              <div className="d-flex">
+                <button
+                  onClick={() => setShowAddToTeam(true)}
+                  className="btn btn-primary btn-sm"
+                >
+                  Add Member
+                </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={handleLeaveClick}
+                >
+                  Leave Team
+                </button>
+              </div>
             )}
           </div>
-          {!props.userData?.team ? (
+          {team.data?.noTeam ? (
             <div className="d-flex flex-column justify-content-center">
               <span className="text-center">
                 You are not part of a team. You can create a team, or you must
@@ -72,8 +84,13 @@ const MyTeam = (props) => {
               </button>
             </div>
           ) : !team.isLoading ? (
-            <TeamTable users={teamData} userData={props.userData}/>
-          ): null}
+            <TeamTable
+              users={teamData}
+              queryClient={props.queryClient}
+              userData={props.userData}
+              type='myteam'
+            />
+          ) : null}
         </div>
       </div>
     </>
@@ -81,4 +98,3 @@ const MyTeam = (props) => {
 };
 
 export default MyTeam;
-

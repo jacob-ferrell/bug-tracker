@@ -15,29 +15,12 @@ const { response } = require("express");
 const dotenv = require("dotenv").config({
   path: path.resolve(__dirname, "../config.env"),
 });
+const auth = require('../verifyJWT');
 
 const ticketRoutes = express.Router();
 
-const verifyJWT = (req, res, next) => {
-  const token = req.headers["x-access-token"]?.split(" ")[1];
-  if (!token) {
-    return res.json({ message: "Incorrect Token Given", isLoggedIn: false });
-  }
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err)
-      return res.json({
-        isLoggedIn: false,
-        message: "Failed To Authenticate",
-      });
-    req.user = {};
-    req.user.id = decoded.id;
-    req.user.email = decoded.email;
-    next();
-  });
-};
-
 //create new ticket
-ticketRoutes.route("/createTicket").post(verifyJWT, async (req, res) => {
+ticketRoutes.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
   const ticket = req.body;
   const project = await Project.findById(ticket.project_id);
 
@@ -98,7 +81,7 @@ ticketRoutes.route("/createTicket").post(verifyJWT, async (req, res) => {
 });
 
 //get all tickets associated with user's projects
-ticketRoutes.route("/getTickets").get(verifyJWT, async (req, res) => {
+ticketRoutes.route("/getTickets").get(auth.verifyJWT, async (req, res) => {
   const getProjectIds = async () => {
     return new Promise((resolve) => {
       ProjectUser.find({ user_id: req.user.id }).exec((err, projUsers) => {
@@ -129,7 +112,7 @@ ticketRoutes.route("/getTickets").get(verifyJWT, async (req, res) => {
 });
 
 //create new comment
-ticketRoutes.route("/createComment").post(verifyJWT, async (req, res) => {
+ticketRoutes.route("/createComment").post(auth.verifyJWT, async (req, res) => {
   try {
     const comment = new Comment({
       ...req.body,
@@ -149,7 +132,7 @@ ticketRoutes.route("/createComment").post(verifyJWT, async (req, res) => {
 });
 
 //get all comments for all tickets for a given project
-ticketRoutes.route("/getComments").post(verifyJWT, async (req, res) => {
+ticketRoutes.route("/getComments").post(auth.verifyJWT, async (req, res) => {
   const projectId = req.body.project_id;
 
   try {

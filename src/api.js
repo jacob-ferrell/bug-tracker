@@ -1,3 +1,5 @@
+
+
 async function fetchURL(url, data = null) {
   const req = {
     headers: {
@@ -12,6 +14,7 @@ async function fetchURL(url, data = null) {
   const json = await res.json();
   if (json.failed) alert(json.message);
   console.log(url, json);
+  if (json.isLoggedIn == false) logout();
   return json;
 }
 const fetchProjects = async () => {
@@ -25,5 +28,10 @@ const fetchTeam = async () => {
 const fetchUser = async () => {
   return await fetchURL("/isUserAuth");
 };
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("selectedProject");
+}
 
 export { fetchURL, fetchTeam, fetchProjects, fetchUser };
