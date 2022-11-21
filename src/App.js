@@ -7,7 +7,7 @@ import {
   Navigate,
   useParams,
 } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { useQuery } from "react-query";
 import LogInPage from "./components/LogInPage";
 import SignUpPage from "./components/SignUpPage";
@@ -19,6 +19,7 @@ import MyTeam from "./components/MyTeam";
 import ProjectDetails from "./components/ProjectDetails";
 import { fetchURL, fetchTeam, fetchUser } from "./api.js";
 
+
 function App(props) {
   const navigate = useNavigate();
 
@@ -27,11 +28,6 @@ function App(props) {
   const { data, isLoading, refetch } = useQuery("user", fetchUser);
 
   const [selectedProject, setSelectedProject] = useState(null);
-
-  const [state, setState] = useState({
-    handleProjectClick,
-    logout,
-  });
 
   async function login(user) {
     const res = await fetchURL("/login", user);
@@ -71,7 +67,6 @@ function App(props) {
                 path="/dashboard"
                 element={
                   <Dashboard
-                    state={state}
                     handleProjectClick={handleProjectClick}
                     logout={logout}
                     queryClient={props.queryClient}

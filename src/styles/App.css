@@ -9,3 +9,7 @@ html, body, #root, .App, .dashboard{
     color: green;
 }
 
+#root .btn:focus {
+    outline: none;
+}
+

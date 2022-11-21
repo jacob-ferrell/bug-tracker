@@ -1,10 +1,11 @@
 import Table from "./Table";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchTeam, fetchProjects } from "../api";
+import { fetchTeam, fetchProjects, fetchURL } from "../api";
 import TicketsTable from "./tables/TicketsTable";
 import TeamTable from "./tables/TeamTable";
 import AddToProject from "./modals/AddToProject";
+import TicketDetails from "./TicketDetails";
 import NewTicket from "./modals/NewTicket";
 import { useQuery } from "react-query";
 
@@ -15,23 +16,24 @@ const ProjectDetails = (props) => {
 
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
+  const comments = useQuery("comments", fetchComments);
+
+  async function fetchComments() {
+    return await fetchURL('/getComments', {project_id: projectId});
+  }
 
   const team = useQuery("team", fetchTeam);
+
+  const handleTicketClick = (e) => {
+    const id = e.currentTarget.dataset.ticketid;
+    console.log(id);
+    setSelectedTicket(id);
+  };
 
   const getProjectUsers = () => {
     return projects.data.find((project) => project.project_id == projectId)
       .users;
   };
-
-  function formatDate(date) {
-    date = new Date(date);
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    const day = date.getDate();
-    return month + "/" + day + "/" + year;
-  }
-
-
 
   return (
     <>
@@ -103,20 +105,20 @@ const ProjectDetails = (props) => {
                 sortBy="project"
                 projectData={projects.data}
                 userData={props.userData}
-                handleProjectClick={props.handleProjectClick}
+                handleClick={handleTicketClick}
                 projectId={props.projectId}
               />
             )}
           </div>
         </div>
       </div>
-      <div className="p-3 w-auto">
-        <div className="project-tickets bg-light shadow rounded p-2">
-          <div className="my-tickets-header d-flex justify-content-between">
-            <h5>Ticket Details</h5>
-          </div>
-        </div>
-      </div>
+      {!comments.isLoading && (
+        <TicketDetails
+          projectId={projectId}
+          ticketId={selectedTicket}
+          comments={comments.data}
+        />
+      )}
     </>
   );
 };
