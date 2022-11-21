@@ -10,7 +10,7 @@ const Comment = (props) => {
         <span className="font-weight-bold">{comment.creator.name}</span>
         {' - '}
         <span>{formatDate(comment.createdAt)}</span>
-        {' - '}
+        {' @ '}
         <span>{formatTime(comment.createdAt)}</span>
       </div>
       <div className="pl-2 text-secondary">{comment.content}</div>
@@ -19,3 +19,4 @@ const Comment = (props) => {
 };
 
 export default Comment;
+

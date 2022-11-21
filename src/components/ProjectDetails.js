@@ -117,6 +117,8 @@ const ProjectDetails = (props) => {
           projectId={projectId}
           ticketId={selectedTicket}
           comments={comments.data}
+          queryClient={props.queryClient}
+          userData={props.userData}
         />
       )}
     </>

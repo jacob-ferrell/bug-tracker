@@ -140,6 +140,8 @@ ticketRoutes.route("/createComment").post(verifyJWT, async (req, res) => {
     const ticket = await Ticket.findById(req.body.ticket_id);
     ticket.comments.push(comment._id);
     await ticket.save();
+
+    return res.json({success: true})
   } catch (err) {
     console.log(err);
     return res.json({ failed: true, message: "Failed to create comment" });
