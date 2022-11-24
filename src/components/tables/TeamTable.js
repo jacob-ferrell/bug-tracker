@@ -1,7 +1,15 @@
+import { useState } from "react";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 import { fetchURL } from "../../api";
+import Warning from "../modals/Warning";
 
 const TeamTable = (props) => {
+
+  const [showWarning, setShowWarning] = useState(false);
+  const [message, setMessage] = useState('');
+  const [url, setURL] = useState(null);
+  const [user, setUser] = useState(null);
+
   const headings = ["Name", "Email", "Role", ""].map((heading, i) => {
     return (
       <th className="text-left" key={heading + i}>
@@ -14,16 +22,24 @@ const TeamTable = (props) => {
   ));
 
   const removeFromTeam = async (e) => {
-    const user = e.target.dataset.user;
-    await fetchURL("/removeFromTeam", { user });
-    props.queryClient.invalidateQueries();
+    const userId = e.target.dataset.user;
+    const name = props.users.find(user => user.user_id == userId).name
+    setUser(userId);
+    setMessage(`Are you sure you want to remove ${name} from the team?`);
+    setURL('/removeFromTeam');
+    setShowWarning(true);
+    /* await fetchURL("/removeFromTeam", { user });
+    props.queryClient.invalidateQueries({queryKey: ['team']});   */
   };
 
   const changeTeamRole = async e => {
     const user = e.target.dataset.user;
     await fetchURL("/changeRole", { user });
-    props.queryClient.invalidateQueries();
+    props.queryClient.invalidateQueries({queryKey: ['team']});
+    
   }
+
+
 
   const teamRows = props.users
     .filter((member) => member.email != props.userData.email)
@@ -54,12 +70,24 @@ const TeamTable = (props) => {
     });
 
   return (
-    <table className="table table-hover table-sm mt-2">
-      <thead>
-        <tr>{headings}</tr>
-      </thead>
-      <tbody>{teamRows}</tbody>
-    </table>
+    <>
+    {showWarning && (
+        <Warning
+          close={() => setShowWarning(false)}
+          show={showWarning}
+          message={message}
+          url={url}
+          user={user}
+          queryClient={props.queryClient}
+        />
+      )}
+      <table className="table table-hover table-sm mt-2">
+        <thead>
+          <tr>{headings}</tr>
+        </thead>
+        <tbody>{teamRows}</tbody>
+      </table>
+    </>
   );
 };
 
