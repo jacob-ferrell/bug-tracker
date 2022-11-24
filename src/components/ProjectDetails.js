@@ -19,7 +19,7 @@ const ProjectDetails = (props) => {
   const comments = useQuery("comments", fetchComments);
 
   async function fetchComments() {
-    return await fetchURL('/getComments', {project_id: projectId});
+    return await fetchURL("/getComments", { project_id: projectId });
   }
 
   const team = useQuery("team", fetchTeam);
@@ -33,6 +33,13 @@ const ProjectDetails = (props) => {
   const getProjectUsers = () => {
     return projects.data.find((project) => project.project_id == projectId)
       .users;
+  };
+
+  const hasAuth = () => {
+    const role = projects.data.find(
+      (user) => user.user_id == props.userData.user_id
+    ).role;
+    return role != "developer";
   };
 
   return (
@@ -59,7 +66,7 @@ const ProjectDetails = (props) => {
         />
       )}
       <div className="p-2 w-auto bg-light shadow rounded m-3">
-      <h5 className="w-auto border-bottom pb-3">Project Details</h5>
+        <h5 className="w-auto border-bottom pb-3">Project Details</h5>
 
         <div className="d-flex w-auto">
           <div className="p-3 flex-even">
@@ -76,7 +83,11 @@ const ProjectDetails = (props) => {
                 )}
               </div>
               {!projects.isLoading && (
-                <TeamTable users={getProjectUsers()} userData={props.userData} />
+                <TeamTable
+                  users={getProjectUsers()}
+                  userData={props.userData}
+                  hasAuth={hasAuth}
+                />
               )}
             </div>
           </div>

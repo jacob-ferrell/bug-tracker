@@ -58,6 +58,7 @@ teamRoutes.route("/addToTeam").post(auth.verifyJWT, async (req, res) => {
     });
   const userToAddId = req.body.user_id;
   const userToAddRole = req.body.role;
+  console.log(userToAddRole);
   try {
     const userToAdd = await UserInfo.findOne({ user_id: userToAddId });
     const teamMemberToAdd = await TeamMember.findOne({ user_id: userToAddId });
@@ -101,9 +102,7 @@ teamRoutes.route("/leaveTeam").get(auth.verifyJWT, async (req, res) => {
       return res.json({ success: true });
     }
     const team = await Team.findById(teamId);
-    team.members = team.members.filter(
-      (userId) => userId != req.user.id
-    );
+    team.members = team.members.filter((userId) => userId != req.user.id);
     await team.save();
     return res.json({ success: true });
   } catch (err) {
@@ -128,13 +127,28 @@ teamRoutes.route("/removeFromTeam").post(auth.verifyJWT, async (req, res) => {
     team.members = team.members.filter((userId) => userId != toRemove);
     await team.save();
 
-    const user = await UserInfo.findOne({user_id: toRemove});
+    const user = await UserInfo.findOne({ user_id: toRemove });
     user.team = undefined;
     await user.save();
-    return res.json({success: true});
+    return res.json({ success: true });
   } catch (err) {
     console.log(err);
     res.json({ failed: true, message: "Failed to remove user from team" });
+  }
+});
+
+//change other user's role in team
+teamRoutes.route("/changeTeamRole").post(auth.verifyJWT, async (req, res) => {
+  const userId = req.body.user;
+  const newRole = req.body.role;
+  try {
+    const member = await TeamMember.findOne({ user_id: userId });
+    member.role = newRole;
+    await member.save();
+    return res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.json({ failed: true, message: "Failed to change role" });
   }
 });
 

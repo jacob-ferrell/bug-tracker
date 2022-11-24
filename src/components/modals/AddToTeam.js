@@ -5,6 +5,7 @@ import { Modal, Button, Spinner, Form } from "react-bootstrap";
 
 const AddToTeam = (props) => {
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const [foundUser, setFoundUser] = useState("");
   const [userToAdd, setUserToAdd] = useState({});
   const [searching, setSearching] = useState(false);
@@ -12,7 +13,7 @@ const AddToTeam = (props) => {
   const queryClient = props.queryClient;
 
   const addToTeam = () =>
-    fetchURL("/addToTeam", { user_id: foundUser, role: "admin" });
+    fetchURL("/addToTeam", { user_id: foundUser, role });
 
   const mutation = useMutation(addToTeam, {
     onMutate: async (newMember) => {
@@ -36,11 +37,11 @@ const AddToTeam = (props) => {
     },
   });
 
-  const concatNames = () => userToAdd.firstName + ' ' + userToAdd.lastName;
+  const concatNames = () => userToAdd.firstName + " " + userToAdd.lastName;
 
   const handleFindClick = async (e) => {
     if (foundUser) {
-      mutation.mutate({ ...userToAdd, name: concatNames(), role: "admin" });
+      mutation.mutate({ ...userToAdd, name: concatNames(), role });
     }
     setSearching(true);
 
@@ -75,9 +76,21 @@ const AddToTeam = (props) => {
           </Form.Group>
         </Form>
         {foundUser ? (
-          <div>
-            <span className="green-check">✓</span>User successfully found
-          </div>
+          <>
+            <div>
+              <span className="green-check">✓</span>User successfully found
+            </div>
+            <div className="ml-3">
+              <span className="mr-1">Assign User's Role:</span>
+              <Form.Select defaultValue='' onChange={(e) => setRole(e.target.value)}>
+                <option disabled value="">
+                  -- select a role --
+                </option>
+                <option value="developer">Developer</option>
+                <option value="admin">Admin</option>
+              </Form.Select>
+            </div>
+          </>
         ) : (
           <br></br>
         )}
@@ -86,7 +99,11 @@ const AddToTeam = (props) => {
         <Button variant="secondary" onClick={props.handleClose}>
           Cancel
         </Button>
-        <Button variant="success" onClick={handleFindClick}>
+        <Button
+          disabled={foundUser && !role}
+          variant="success"
+          onClick={handleFindClick}
+        >
           {searching && (
             <Spinner
               animation="border"

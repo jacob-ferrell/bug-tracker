@@ -2,18 +2,17 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { fetchURL, fetchTeam } from "../../api";
 import { useMutation } from "react-query";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Spinner from "react-bootstrap/Spinner";
+import { Modal, Button, Spinner, Form } from "react-bootstrap";
 
 const AddToProject = (props) => {
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  
+  const [role, setRole] = useState("");
+
   let userToAdd;
 
   const queryClient = props.queryClient;
-  const projectId = props.projectId || localStorage.getItem('selectedProject');
+  const projectId = props.projectId || localStorage.getItem("selectedProject");
 
   const currentMembers = props.users.map((user) => user.user_id);
   const availableMembers = props.teamData
@@ -34,7 +33,7 @@ const AddToProject = (props) => {
     fetchURL("/addMemberToProject", {
       user_id: userToAdd.user_id,
       project_id: projectId,
-      role: "admin",
+      role,
     });
 
   const mutation = useMutation(addToProject, {
@@ -42,13 +41,13 @@ const AddToProject = (props) => {
       await queryClient.cancelQueries("projects");
       const previousProjects = queryClient.getQueryData("projects");
       await queryClient.setQueryData("projects", (oldQueryData) => {
-        console.log(oldQueryData, projectId, userToAdd)
+        console.log(oldQueryData, projectId, userToAdd);
         const project = oldQueryData.find(
           (project) => project.project_id == projectId
         );
         project.users = [
           ...project.users,
-          { id: project?.users?.length + 1, ...newMember },
+          { id: project?.users?.length + 1, ...newMember, role },
         ];
         const filtered = oldQueryData.filter(
           (project) => project.project_id != projectId
@@ -71,17 +70,12 @@ const AddToProject = (props) => {
 
   const handleSubmitClick = async (e) => {
     //e.preventDefault();
-    console.log(selectedUser, props.teamData)
-    const member = props.teamData.find((member) => member.user_id == selectedUser);
-    console.log(member)
+    const member = props.teamData.find(
+      (member) => member.user_id == selectedUser
+    );
     userToAdd = member;
-    const data = {
-      user_id: selectedUser,
-      project_id: projectId,
-      role: "admin",
-    };
     setLoading(true);
-    mutation.mutate({...userToAdd})
+    mutation.mutate({ ...userToAdd });
     setLoading(false);
   };
 
@@ -99,12 +93,24 @@ const AddToProject = (props) => {
         >
           {availableMembers}
         </select>
+        <span>Assign a project role to the user:</span>
+        <Form.Select defaultValue="" onChange={(e) => setRole(e.target.value)}>
+          <option disabled value="">
+            -- select a role --
+          </option>
+          <option value="developer">Developer</option>
+          <option value="project-manager">Project Manager</option>
+        </Form.Select>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={props.handleClose}>
           Cancel
         </Button>
-        <Button variant="success" onClick={handleSubmitClick}>
+        <Button
+          variant="success"
+          disabled={!selectedUser || !role}
+          onClick={handleSubmitClick}
+        >
           {loading && (
             <Spinner
               animation="border"

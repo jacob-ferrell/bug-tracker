@@ -18,6 +18,13 @@ const MyTeam = (props) => {
     props.queryClient.invalidateQueries();
   };
 
+  const hasAuth = () => {
+    return (
+      teamData.find((user) => user.user_id == props.userData.user_id).role ==
+      "admin"
+    );
+  };
+
   return (
     <>
       {showCreateTeam && (
@@ -55,12 +62,14 @@ const MyTeam = (props) => {
             </h5>
             {!team.data?.noTeam && (
               <div className="d-flex">
-                <button
-                  onClick={() => setShowAddToTeam(true)}
-                  className="btn btn-primary btn-sm"
-                >
-                  Add Member
-                </button>
+                {hasAuth() && (
+                  <button
+                    onClick={() => setShowAddToTeam(true)}
+                    className="btn btn-primary btn-sm"
+                  >
+                    Add Member
+                  </button>
+                )}
                 <button
                   className="btn btn-danger btn-sm"
                   onClick={handleLeaveClick}
@@ -88,7 +97,8 @@ const MyTeam = (props) => {
               users={teamData}
               queryClient={props.queryClient}
               userData={props.userData}
-              type='myteam'
+              type="myteam"
+              hasAuth={hasAuth}
             />
           ) : null}
         </div>
