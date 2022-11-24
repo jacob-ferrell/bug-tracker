@@ -141,6 +141,11 @@ teamRoutes.route("/removeFromTeam").post(auth.verifyJWT, async (req, res) => {
 teamRoutes.route("/changeTeamRole").post(auth.verifyJWT, async (req, res) => {
   const userId = req.body.user;
   const newRole = req.body.role;
+  if (req.user.team.role !== "admin")
+    return res.json({
+      failed: true,
+      message: "Only Admins can change roles within the team",
+    });
   try {
     const member = await TeamMember.findOne({ user_id: userId });
     member.role = newRole;
