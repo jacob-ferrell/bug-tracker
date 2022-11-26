@@ -1,10 +1,13 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { useEffect } from "react";
+import Warning from "../modals/Warning";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchURL } from "../../api";
 
 const ProjectsTable = (props) => {
   const projectData = props.projectData;
+  const [showWarning, setShowWarning] = useState(false);
+  const [project, setProject] = useState(false);
 
   const headings = [
     "",
@@ -19,6 +22,11 @@ const ProjectsTable = (props) => {
       </th>
     );
   });
+
+  const handleDeleteClick = (e) => {
+    setProject(e.target.dataset.projectid);
+    setShowWarning(true);
+  };
   const projectRows = projectData
     .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))
     .map((project, i) => {
@@ -46,7 +54,19 @@ const ProjectsTable = (props) => {
               <Dropdown.Item data-projectid={id} onClick={props.showEdit}>
                 Edit Project
               </Dropdown.Item>
-              <Dropdown.Item>View Details</Dropdown.Item>
+              <Dropdown.Item
+                data-projectid={id}
+                data-name={project.name}
+                onClick={props.handleProjectClick}
+              >
+                View Details
+              </Dropdown.Item>
+              <Dropdown.Item
+                data-projectid={id}
+                onClick={handleDeleteClick}
+              >
+                Delete Project
+              </Dropdown.Item>
             </DropdownButton>
           </td>
         </tr>
@@ -61,14 +81,30 @@ const ProjectsTable = (props) => {
   }
 
   return (
-    <div id="projects-table-container" className="overflow-auto h-auto">
-      <table className="table table-hover table-sm mt-2">
-        <thead>
-          <tr>{headings}</tr>
-        </thead>
-        <tbody>{projectRows}</tbody>
-      </table>
-    </div>
+    <>
+      {showWarning && (
+        <Warning
+          close={() => setShowWarning(false)}
+          show={showWarning}
+          message={{
+            body: "Are you sure you want to delete this project?  All data for this project will be lost.",
+            heading: "Warning!",
+          }}
+          url={"/deleteProject"}
+          hideRole={true}
+          queryClient={props.queryClient}
+          project={project}
+        />
+      )}
+      <div id="projects-table-container" className="overflow-auto h-auto">
+        <table className="table table-hover table-sm mt-2">
+          <thead>
+            <tr>{headings}</tr>
+          </thead>
+          <tbody>{projectRows}</tbody>
+        </table>
+      </div>
+    </>
   );
 };
 

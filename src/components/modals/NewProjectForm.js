@@ -30,7 +30,7 @@ const NewProjectForm = (props) => {
       alert(error + "an error occurred");
     },
     onSettled: () => {
-      // queryClient.invalidateQueries('projects');
+      queryClient.invalidateQueries();
       props.handleClose();
     },
   });

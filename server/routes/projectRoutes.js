@@ -234,4 +234,17 @@ projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
   }
 });
 
+//delete project
+projectRoutes.route("/deleteProject").post(auth.verifyJWT, async (req, res) => {
+try {
+  await Project.deleteOne({_id: req.body.project_id});
+  await ProjectUser.deleteMany({project_id: req.body.project_id});
+  return res.json({success: true});
+} catch (err) {
+  console.log(err)
+  return res.json({failed: true, message: 'There was an error while deleting the project'})
+}
+})
+
+
 module.exports = projectRoutes;

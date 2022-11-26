@@ -82,8 +82,6 @@ const TicketDetails = (props) => {
     const assignedDevs = project.users.filter((user) => {
       return ticket.users.includes(user.user_id);
     });
-    console.log(project.users, ticket.users)
-    console.log(assignedDevs)
     return assignedDevs.map((dev) => {
       return <span key={uniqid()}>{dev.name}</span>;
     });

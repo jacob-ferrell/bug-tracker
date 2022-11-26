@@ -91,7 +91,7 @@ userRoutes.route("/isUserAuth").get(auth.verifyJWT, (req, res) => {
   try {
     UserInfo.findOne({ user_id: req.user.id }).then((userData) => {
       if (!userData) return res.json({ isLoggedIn: false });
-      res.json({ isLoggedIn: true, ...userData._doc });
+      res.json({ isLoggedIn: true, ...userData._doc, team: {...req.user.team} });
     });
   } catch (err) {
     console.log(err);

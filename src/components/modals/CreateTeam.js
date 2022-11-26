@@ -11,15 +11,11 @@ const CreateTeam = props => {
     const [loading, setLoading] = useState(false);
 
     const handleSubmitClick = async e => {
-        e.preventDefault();
         const team = {
             name,
         }
-        setLoading(true)
-        const res = await fetchURL('/createTeam', team);
-        const newMember = await {...res};
-        props.updateData([newMember]);
-        setLoading(false);
+        await fetchURL('/createTeam', team);
+        props.queryClient.invalidateQueries();
         props.handleClose();
     }
 

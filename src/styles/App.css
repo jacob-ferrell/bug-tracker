@@ -11,6 +11,7 @@ html, body, #root, .App, .dashboard{
 
 #root .btn:focus {
     outline: none;
+    box-shadow: none;
 }
 
 .flex-even {

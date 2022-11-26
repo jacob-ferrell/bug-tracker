@@ -2,12 +2,12 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import { fetchURL } from "../../api";
 
-const Warning = ({ user, url, message, queryClient, show, close }) => {
+const Warning = ({ hideRole, user, url, message, queryClient, show, close, project }) => {
   const [role, setRole] = useState("");
 
   const handleConfirmClick = async (e) => {
-    await fetchURL(url, { user, role });
-    queryClient.invalidateQueries({ queryKey: ["team"] });
+    await fetchURL(url, { user, role, project_id: project });
+    queryClient.invalidateQueries();
     close();
   };
 
@@ -18,13 +18,18 @@ const Warning = ({ user, url, message, queryClient, show, close }) => {
       </Modal.Header>
       <Modal.Body>
         {message.body}
-        <Form.Select defaultValue="" onChange={(e) => setRole(e.target.value)}>
-          <option disabled value="">
-            -- select a role --
-          </option>
-          <option value="developer">Developer</option>
-          <option value="project-manager">Admin</option>
-        </Form.Select>
+        {!hideRole && (
+          <Form.Select
+            defaultValue=""
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option disabled value="">
+              -- select a role --
+            </option>
+            <option value="developer">Developer</option>
+            <option value="project-manager">Admin</option>
+          </Form.Select>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={close}>

@@ -68,6 +68,7 @@ const Dashboard = (props) => {
               showEdit={handleEditClick}
               handleProjectClick={props.handleProjectClick}
               projectData={data}
+              queryClient={props.queryClient}
             />
           )}
         </div>

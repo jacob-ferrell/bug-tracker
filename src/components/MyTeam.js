@@ -33,8 +33,7 @@ const MyTeam = (props) => {
           show={showCreateTeam}
           teamData={teamData}
           userData={props.userData}
-          updateData={props.updateData}
-          updateUser={props.updateUser}
+          queryClient={props.queryClient}
         />
       )}
       {showAddToTeam && (

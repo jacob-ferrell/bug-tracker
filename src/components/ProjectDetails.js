@@ -13,6 +13,9 @@ const ProjectDetails = (props) => {
   const [showAddMember, setShowAddMember] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [project, setProject] = useState(null);
 
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
@@ -30,10 +33,10 @@ const ProjectDetails = (props) => {
     setSelectedTicket(id);
   };
 
-  const getProjectUsers = () => {
-    return projects.data.find((project) => project.project_id == projectId)
-      .users;
-  };
+  const getProjectUsers = () => getProject().users;
+
+  const getProject = () =>
+    projects.data.find((project) => project.project_id == projectId);
 
   const hasAuth = () => {
     const role = projects.data.find(
@@ -67,7 +70,12 @@ const ProjectDetails = (props) => {
       )}
       <div className="p-2 w-auto bg-light shadow rounded m-3">
         <h5 className="w-auto border-bottom pb-3">Project Details</h5>
-
+        {!projects.isLoading && (
+          <div className="p-2 bg-light shadow rounded m-3 d-flex">
+            <div className="mr-3">Project Name: {getProject().name}</div>
+            <div>Project Description: {getProject().description}</div>
+          </div>
+        )}
         <div className="d-flex w-auto">
           <div className="p-3 flex-even">
             <div className="project-members bg-light shadow rounded p-2 border">
@@ -82,7 +90,7 @@ const ProjectDetails = (props) => {
                   </button>
                 )}
               </div>
-              {!projects.isLoading && (
+              {(!projects.isLoading && getProjectUsers().length>1) && (
                 <TeamTable
                   users={getProjectUsers()}
                   userData={props.userData}
