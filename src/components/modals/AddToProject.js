@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { fetchURL, fetchTeam } from "../../api";
+import { fetchURL, fetchTeam, fetchUser } from "../../api";
 import { useMutation } from "react-query";
 import { Modal, Button, Spinner, Form } from "react-bootstrap";
 
@@ -8,6 +8,7 @@ const AddToProject = (props) => {
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [role, setRole] = useState("");
+  const {data} = useQuery("user", fetchUser);
 
   let userToAdd;
 
@@ -16,7 +17,11 @@ const AddToProject = (props) => {
 
   const currentMembers = props.users.map((user) => user.user_id);
   const availableMembers = props.teamData
-    .filter((user) => !currentMembers.includes(user.user_id))
+    .filter(
+      (user) =>
+        !currentMembers.includes(user.user_id) &&
+        user.user_id != data.user_id
+    )
     .map((user, i) => {
       return (
         <option
@@ -82,7 +87,7 @@ const AddToProject = (props) => {
   return (
     <Modal show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Add Member To Project</Modal.Title>
+        <Modal.Title>Add Team Member To Project</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         Select a team member to add to this project
@@ -98,6 +103,7 @@ const AddToProject = (props) => {
           <option disabled value="">
             -- select a role --
           </option>
+          <option value="tester">Tester</option>
           <option value="developer">Developer</option>
           <option value="project-manager">Project Manager</option>
         </Form.Select>

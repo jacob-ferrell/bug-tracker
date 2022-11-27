@@ -12,11 +12,9 @@ import { useQuery } from "react-query";
 const ProjectDetails = (props) => {
   const [showAddMember, setShowAddMember] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ticketToEdit, setTicketToEdit] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
-  const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
-  const [project, setProject] = useState(null);
-
+  const [edit, setEdit] = useState(false);
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const comments = useQuery("comments", fetchComments);
@@ -31,6 +29,15 @@ const ProjectDetails = (props) => {
     const id = e.currentTarget.dataset.ticketid;
     console.log(id);
     setSelectedTicket(id);
+  };
+
+  const handleEditClick = (e) => {
+    const ticketId = e.target.dataset.ticketid;
+    setTicketToEdit(() =>
+      getProject().tickets.find((ticket) => ticket._id == ticketId)
+    );
+
+    setShowNewTicket(true);
   };
 
   const getProjectUsers = () => getProject().users;
@@ -66,13 +73,13 @@ const ProjectDetails = (props) => {
           projectId={projectId}
           userData={props.userData}
           queryClient={props.queryClient}
+          ticket={ticketToEdit}
         />
       )}
       <div className="p-2 w-auto bg-light shadow rounded m-3">
-        <h5 className="w-auto border-bottom pb-3">Project Details</h5>
+        <h5 className="w-auto border-bottom pb-3">{getProject().name}</h5>
         {!projects.isLoading && (
           <div className="p-2 bg-light shadow rounded m-3 d-flex">
-            <div className="mr-3">Project Name: {getProject().name}</div>
             <div>Project Description: {getProject().description}</div>
           </div>
         )}
@@ -90,11 +97,13 @@ const ProjectDetails = (props) => {
                   </button>
                 )}
               </div>
-              {(!projects.isLoading && getProjectUsers().length>1) && (
+              {!projects.isLoading && getProjectUsers().length > 0 && (
                 <TeamTable
                   users={getProjectUsers()}
                   userData={props.userData}
                   hasAuth={hasAuth}
+                  getProject={getProject}
+                  queryClient={props.queryClient}
                 />
               )}
             </div>
@@ -117,7 +126,10 @@ const ProjectDetails = (props) => {
                 </h5>
                 <button
                   className="btn btn-sm btn-primary"
-                  onClick={() => setShowNewTicket(true)}
+                  onClick={() => {
+                    setTicketToEdit(null);
+                    setShowNewTicket(true);
+                  }}
                 >
                   New Ticket
                 </button>
@@ -129,6 +141,7 @@ const ProjectDetails = (props) => {
                   userData={props.userData}
                   handleClick={handleTicketClick}
                   projectId={props.projectId}
+                  handleEditClick={handleEditClick}
                 />
               )}
             </div>

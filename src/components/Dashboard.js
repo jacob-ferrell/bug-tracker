@@ -1,7 +1,7 @@
 import "../styles/Dashboard.css";
 import React from "react";
 import { useState } from "react";
-import { fetchProjects, fetchTeam } from "../api";
+import { fetchProjects, fetchTeam, fetchUser } from "../api";
 import ProjectsTable from "./tables/ProjectsTable";
 import NewProjectForm from "./modals/NewProjectForm";
 import EditProjectForm from "./modals/EditProjectForm";
@@ -15,6 +15,7 @@ const Dashboard = (props) => {
 
   const { data, isLoading, refetch } = useQuery("projects", fetchProjects);
   const team = useQuery('team', fetchTeam);
+  const user = useQuery('user', fetchUser);
 
   const handleEditClick = (e) => {
     const projectId = e.target.dataset.projectid;
@@ -59,6 +60,7 @@ const Dashboard = (props) => {
             <button
               onClick={() => setShowNewProject(true)}
               className="btn btn-primary btn-sm"
+              disabled={user.data.team.role !== 'admin'}
             >
               New Project
             </button>

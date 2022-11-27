@@ -27,7 +27,7 @@ const Warning = ({ hideRole, user, url, message, queryClient, show, close, proje
               -- select a role --
             </option>
             <option value="developer">Developer</option>
-            <option value="project-manager">Admin</option>
+            <option value="admin">Admin</option>
           </Form.Select>
         )}
       </Modal.Body>

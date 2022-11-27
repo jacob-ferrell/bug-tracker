@@ -8,7 +8,8 @@ const Team = require("../models/team");
 const TeamMember = require("../models/teamMember");
 const jwt = require("jsonwebtoken");
 const TicketUser = require("../models/ticketUser");
-const auth = require('../verifyJWT');
+const auth = require("../verifyJWT");
+const team = require("../models/team");
 
 const projectRoutes = express.Router();
 
@@ -57,16 +58,17 @@ projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
 
     const newProject = new Project({
       ...project,
+      team: req.user.team.team_id,
     });
 
-    const projectUser = new ProjectUser({
+    /* const projectUser = new ProjectUser({
       user_id: req.user.id,
       project_id: newProject._id,
       role: "admin",
     });
     await projectUser.save();
 
-    newProject.users.push(projectUser._id);
+    newProject.users.push(projectUser._id); */
 
     newProject.save((err) => {
       if (err) return;
@@ -74,18 +76,12 @@ projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
       user.projects.push(newProject._id);
       user.save();
     });
-    return res.json({
-      project: {
-        name: newProject.name,
-        description: newProject.description,
-        project_id: newProject._id,
-        role: "admin",
-        tickets: [],
-        users: [req.user.id],
-        createdAt: newProject.createdAt,
-      },
-      message: "Success",
-    });
+
+    const team = await Team.findById(req.user.team.team_id);
+    team.projects.push(newProject._id);
+    await team.save();
+
+    return res.json({ message: "Success" });
   } catch (err) {
     console.log(err);
     return res.json({ failed: true, message: "Failed to create project" });
@@ -146,23 +142,47 @@ projectRoutes.route("/editProject").post(auth.verifyJWT, async (req, res) => {
 });
 
 //add team member to project
-projectRoutes.route("/addMemberToProject").post(auth.verifyJWT, async (req, res) => {
-  try {
-    const user = await UserInfo.findOne({ user_id: req.body.user_id });
-    user.projects.push(req.body.project_id);
-    await user.save();
+projectRoutes
+  .route("/addMemberToProject")
+  .post(auth.verifyJWT, async (req, res) => {
+    try {
+      const user = await UserInfo.findOne({ user_id: req.body.user_id });
+      user.projects.push(req.body.project_id);
+      await user.save();
 
-    const projectUser = new ProjectUser({ ...req.body });
-    await projectUser.save();
+      const projectUser = new ProjectUser({ ...req.body });
+      await projectUser.save();
 
-    const project = await Project.findById(req.body.project_id);
-    project.users.push(projectUser._id);
-    await project.save();
-    return res.json({ success: true });
-  } catch (err) {
-    console.log(err);
-  }
-});
+      const project = await Project.findById(req.body.project_id);
+      project.users.push(projectUser._id);
+      await project.save();
+      return res.json({ success: true });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+//remove team member from project
+projectRoutes
+  .route("/removeFromProject")
+  .post(auth.verifyJWT, async (req, res) => {
+    const userId = req.body.user;
+    const projectId = req.body.project;
+    try {
+      const project = await Project.findById(projectId);
+      project.users = project.users.filter((user) => user != userId);
+      await project.save();
+
+      await ProjectUser.deleteOne({ project_id: projectId, user_id: userId });
+      return res.json({ success: true });
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        failed: true,
+        message: "There was an error while removing the user from the project",
+      });
+    }
+  });
 
 //get all project data for user
 projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
@@ -186,7 +206,7 @@ projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
             user_id: req.user.id,
             project_id: project.project_id,
           });
-          project.role = projectUser.role;
+          project.role = projectUser?.role || req.user.team.role;
 
           const tickets = await Ticket.find({
             _id: { $in: project.tickets },
@@ -203,8 +223,8 @@ projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
             const users = [];
             for (let i in ticket.users) {
               const id = ticket.users[i];
-              const ticketUser = await TicketUser.findById(id);
-              users.push(ticketUser.user_id);
+              //const ticketUser = await TicketUser.findById(id);
+              users.push(id);
             }
             ticket.users = users;
           }
@@ -236,15 +256,20 @@ projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
 
 //delete project
 projectRoutes.route("/deleteProject").post(auth.verifyJWT, async (req, res) => {
-try {
-  await Project.deleteOne({_id: req.body.project_id});
-  await ProjectUser.deleteMany({project_id: req.body.project_id});
-  return res.json({success: true});
-} catch (err) {
-  console.log(err)
-  return res.json({failed: true, message: 'There was an error while deleting the project'})
-}
-})
-
+  try {
+    await Project.deleteOne({ _id: req.body.project_id });
+    await ProjectUser.deleteMany({ project_id: req.body.project_id });
+    const team = await Team.findById(req.user.team.team_id);
+    team.projects = team.projects.filter((e) => e != req.body.project_id);
+    await team.save();
+    return res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.json({
+      failed: true,
+      message: "There was an error while deleting the project",
+    });
+  }
+});
 
 module.exports = projectRoutes;

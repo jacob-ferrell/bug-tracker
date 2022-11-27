@@ -15,7 +15,7 @@ const { response } = require("express");
 const dotenv = require("dotenv").config({
   path: path.resolve(__dirname, "../config.env"),
 });
-const auth = require('../verifyJWT');
+const auth = require("../verifyJWT");
 
 const ticketRoutes = express.Router();
 
@@ -80,6 +80,27 @@ ticketRoutes.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
   }
 });
 
+//edit ticket
+ticketRoutes.route("/editTicket").post(auth.verifyJWT, async (req, res) => {
+  try {
+    const newTicket = req.body.ticket;
+    delete newTicket.creator;
+    const ticketToEdit = await Ticket.findById(req.body.ticket._id);
+    const keys = Object.keys(newTicket);
+    for (let i in keys) {
+      ticketToEdit[keys[i]] = newTicket[keys[i]];
+    }
+    await ticketToEdit.save();
+    return res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.json({
+      failed: true,
+      message: "There was an error while editing this ticket",
+    });
+  }
+});
+
 //get all tickets associated with user's projects
 ticketRoutes.route("/getTickets").get(auth.verifyJWT, async (req, res) => {
   const getProjectIds = async () => {
@@ -124,7 +145,7 @@ ticketRoutes.route("/createComment").post(auth.verifyJWT, async (req, res) => {
     ticket.comments.push(comment._id);
     await ticket.save();
 
-    return res.json({success: true})
+    return res.json({ success: true });
   } catch (err) {
     console.log(err);
     return res.json({ failed: true, message: "Failed to create comment" });
@@ -145,16 +166,18 @@ ticketRoutes.route("/getComments").post(auth.verifyJWT, async (req, res) => {
           if (ticket.comments.length) {
             for (let i in ticket.comments) {
               const comment = { ...ticket.comments[i]._doc };
-              const creator = await UserInfo.findOne({user_id: comment.creator});
+              const creator = await UserInfo.findOne({
+                user_id: comment.creator,
+              });
               comment.creator = {
                 id: creator.user_id,
-                name: creator.firstName + ' ' + creator.lastName
-              }
+                name: creator.firstName + " " + creator.lastName,
+              };
               comments.push(comment);
             }
           }
         }
-        return res.json([...comments])
+        return res.json([...comments]);
       });
   } catch (err) {
     console.log(err);

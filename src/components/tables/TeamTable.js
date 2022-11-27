@@ -49,7 +49,12 @@ const TeamTable = (props) => {
     setShowWarning(true);
   };
 
-  const removeFromProject = async (e) => {};
+  const removeFromProject = async (e) => {
+    const user = e.target.dataset.user;
+    const project = props.getProject().project_id;
+    await fetchURL('/removeFromProject', {user, project});
+    props.queryClient.invalidateQueries();
+  };
 
   const changeProjectRole = async (e) => {};
 

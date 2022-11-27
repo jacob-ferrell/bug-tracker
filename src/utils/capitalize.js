@@ -1,4 +1,4 @@
 export function capitalize(str) {
     const capital = (str) => str[0].toUpperCase() + str.slice(1);
-    return str.split('-').map(capital).join(' ');
+    return str.toLowerCase().replace(/\s/g, '-').split('-').map(capital).join(' ');
 }

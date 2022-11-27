@@ -9,19 +9,32 @@ import Spinner from "react-bootstrap/Spinner";
 const NewTicket = (props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState(null);
-  const [type, setType] = useState(null);
-  const [checkedUsers, setCheckedUsers] = useState(null);
+  const [priority, setPriority] = useState("");
+  const [type, setType] = useState("");
+  const [status, setStatus] = useState("");
+  const [checkedUsers, setCheckedUsers] = useState({});
 
   let newTicket;
   const queryClient = props.queryClient;
 
   useEffect(() => {
+    const ticket = props.ticket;
     const projectUsers = {};
     props.users.forEach((user) => {
-      projectUsers[user.user_id] = false;
+      projectUsers[user.user_id] = ticket?.users?.includes(user.user_id);
     });
-    setCheckedUsers({ ...projectUsers });
+    setCheckedUsers(() => ({ ...projectUsers }));
+    if (!ticket) return;
+    const title = ticket.title;
+    setTitle(title);
+    const description = ticket.description;
+    setDescription(description);
+    const priority = ticket.priority;
+    setPriority(priority);
+    const status = ticket.status;
+    setStatus(status);
+    const type = ticket.type;
+    setType(type);
   }, []);
 
   const handleCheckChange = (e) => {
@@ -43,6 +56,7 @@ const NewTicket = (props) => {
             onChange={handleCheckChange}
             data-userid={user.user_id}
             label={user.name}
+            defaultChecked={checkedUsers?.[user.user_id]}
           />
         </div>
       );
@@ -60,10 +74,26 @@ const NewTicket = (props) => {
     );
   });
 
-  const types = ["Issue", "Bug Fix", "Feature Request"].map((type) => {
+  const types = ["Issue", "Bug Fix", "Feature Request"].map((typeText) => {
     return (
-      <option key={type} value={type} onClick={(e) => setType(e.target.value)}>
-        {type}
+      <option
+        key={typeText}
+        value={typeText}
+        onClick={(e) => setType(e.target.value)}
+      >
+        {typeText}
+      </option>
+    );
+  });
+
+  const statuses = ["Open", "In Progress", "Closed"].map((statusText) => {
+    return (
+      <option
+        key={statusText}
+        value={statusText.toLowerCase()}
+        onClick={(e) => setStatus(e.target.value)}
+      >
+        {statusText}
       </option>
     );
   });
@@ -96,7 +126,7 @@ const NewTicket = (props) => {
       alert(error + "an error occurred");
     },
     onSettled: () => {
-      queryClient.invalidateQueries('projects');
+      queryClient.invalidateQueries("projects");
       props.handleClose();
     },
   });
@@ -113,16 +143,33 @@ const NewTicket = (props) => {
       priority,
       type,
       project_id: props.projectId,
-      status: 'open',
-      creator: props.userData.user_id
+      status: "open",
+      creator: props.userData.user_id,
     };
-    mutation.mutate({ ...newTicket });
+    console.log(newTicket);
+    if (!props.ticket) return mutation.mutate({ ...newTicket });
+    const edited = {
+      ...newTicket,
+      ...props.ticket,
+      title,
+      description,
+      users,
+      priority,
+      type,
+      status: status.toLowerCase(),
+    };
+    console.log(edited);
+    await fetchURL("/editTicket", { ticket: edited });
+    queryClient.invalidateQueries('projects');
+    props.handleClose();
   };
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Create New Ticket</Modal.Title>
+        <Modal.Title>
+          {!props.ticket ? "Create New Ticket" : "Edit Ticket"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form id="new-project-form" onSubmit={handleSubmit}>
@@ -149,15 +196,47 @@ const NewTicket = (props) => {
           <Form.Label>Assign Users</Form.Label>
           <div className="overflow-auto border p-2 w-auto">{users}</div>
           <div className="d-flex mx-5 justify-content-between">
+            {props.ticket && (
+              <div>
+                <Form.Label>Status</Form.Label>
+                <select
+                  defaultValue={status}
+                  className="form-select form-select-sm"
+                  onChange={(e) => setStatus(e.target.value)}
+                  required
+                  //multiple
+                >
+                  {statuses}
+                </select>
+              </div>
+            )}
             <div>
               <Form.Label>Priority</Form.Label>
-              <select className="form-select form-select-sm" required multiple>
+              <select
+                value={priority}
+                className="form-select form-select-sm"
+                onChange={(e) => setPriority(e.target.value)}
+                required
+                //multiple
+              >
+                <option disabled value="">
+                  -- Select Priority --
+                </option>
                 {priorityLevels}
               </select>
             </div>
             <div>
               <Form.Label>Type</Form.Label>
-              <select className="form-select form-select-sm" multiple required>
+              <select
+                value={type}
+                className="form-select form-select-sm"
+                onChange={(e) => setType(e.target.value)}
+                //multiple
+                required
+              >
+                <option disabled value="">
+                  -- Select Type --
+                </option>
                 {types}
               </select>
             </div>
@@ -178,7 +257,11 @@ const NewTicket = (props) => {
               aria-hidden="true"
             />
           )}
-          {mutation.isLoading ? " Saving..." : "Create Ticket"}
+          {mutation.isLoading
+            ? " Saving..."
+            : !props.ticket
+            ? "Create Ticket"
+            : "Submit Edit"}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -2,6 +2,7 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { fetchProjects } from "../../api";
 import uniqid from "uniqid";
+import { capitalize } from "../../utils/capitalize";
 
 const TicketsTable = (props) => {
   const headings = ["", "Ticket Title", "Description", "Status", ""].map(
@@ -30,7 +31,6 @@ const TicketsTable = (props) => {
       (ticket) => ticket.creator.id == userData.user_id
     );
   }
-  console.log(ticketData);
   const ticketRows = ticketData.map((ticket, i) => {
     const status = ticket.status;
     const id = ticket._id;
@@ -47,10 +47,10 @@ const TicketsTable = (props) => {
           </span>
         </td>
         <td>{ticket.description}</td>
-        <td>{status[0].toUpperCase() + status.slice(1)}</td>
+        <td>{capitalize(status)}</td>
         <td className="ellipsis text-center">
           <DropdownButton variant="light" id="ellipsis" title="⠇">
-            <Dropdown.Item data-ticketid={id} onClick={props.showEdit}>
+            <Dropdown.Item data-ticketid={id} onClick={props.handleEditClick}>
               Edit ticket
             </Dropdown.Item>
             <Dropdown.Item>View Details</Dropdown.Item>

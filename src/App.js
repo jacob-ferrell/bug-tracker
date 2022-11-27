@@ -68,7 +68,6 @@ function App(props) {
                 element={
                   <Dashboard
                     handleProjectClick={handleProjectClick}
-                    logout={logout}
                     queryClient={props.queryClient}
                   />
                 }
