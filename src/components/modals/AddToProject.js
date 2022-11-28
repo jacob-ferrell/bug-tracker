@@ -1,26 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { fetchURL, fetchTeam, fetchUser } from "../../api";
 import { useMutation } from "react-query";
 import { Modal, Button, Spinner, Form } from "react-bootstrap";
 
 const AddToProject = (props) => {
-  const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [role, setRole] = useState("");
-  const {data} = useQuery("user", fetchUser);
+  const { data } = useQuery("user", fetchUser);
 
   let userToAdd;
 
   const queryClient = props.queryClient;
   const projectId = props.projectId || localStorage.getItem("selectedProject");
 
+  useEffect(() => {
+    if (props.member) setRole(props.member.role);
+  }, []);
+
   const currentMembers = props.users.map((user) => user.user_id);
   const availableMembers = props.teamData
     .filter(
       (user) =>
-        !currentMembers.includes(user.user_id) &&
-        user.user_id != data.user_id
+        !currentMembers.includes(user.user_id) && user.user_id != data.user_id
     )
     .map((user, i) => {
       return (
@@ -74,32 +76,58 @@ const AddToProject = (props) => {
   });
 
   const handleSubmitClick = async (e) => {
-    //e.preventDefault();
+    if (props.member) {
+      console.log(props.member);
+      const res = await fetchURL("/changeProjectRole", { ...props.member, role });
+      if (res.failed) return;
+      queryClient.setQueryData("projects", (prev) => {
+        const project = {
+          ...prev.find(
+            (project) => project.project_id === props.member.project
+          ),
+        };
+        const user = project.users.find(
+          (user) => user.user_id === props.member.user
+        );
+        user.role = role;
+        project.id = prev.length + 1;
+        return [
+          ...prev.filter((project) => project.project_id !== props.project),
+          project
+        ];
+      });
+      queryClient.invalidateQueries();
+      return props.handleClose();
+    }
     const member = props.teamData.find(
       (member) => member.user_id == selectedUser
     );
     userToAdd = member;
-    setLoading(true);
     mutation.mutate({ ...userToAdd });
-    setLoading(false);
   };
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Add Team Member To Project</Modal.Title>
+        <Modal.Title>
+          {!props.member ? "Add Team Member To Project" : "Change User's Role"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Select a team member to add to this project
-        <select
-          className="form-select form-select-sm"
-          multiple
-          aria-label="add team member"
-        >
-          {availableMembers}
-        </select>
+        {!props.member && (
+          <>
+            {"Select a team member to add to this project"}
+            <select
+              className="form-select form-select-sm"
+              multiple
+              aria-label="add team member"
+            >
+              {availableMembers}
+            </select>
+          </>
+        )}
         <span>Assign a project role to the user:</span>
-        <Form.Select defaultValue="" onChange={(e) => setRole(e.target.value)}>
+        <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
           <option disabled value="">
             -- select a role --
           </option>
@@ -114,10 +142,10 @@ const AddToProject = (props) => {
         </Button>
         <Button
           variant="success"
-          disabled={!selectedUser || !role}
+          disabled={!props.member ? !selectedUser || !role : !role}
           onClick={handleSubmitClick}
         >
-          {loading && (
+          {mutation.isLoading && (
             <Spinner
               animation="border"
               as="span"
@@ -126,7 +154,11 @@ const AddToProject = (props) => {
               aria-hidden="true"
             />
           )}
-          {loading ? " Saving..." : "Add To Project"}
+          {mutation.isLoading
+            ? " Saving..."
+            : !props.member
+            ? "Add To Project"
+            : "Change Role"}
         </Button>
       </Modal.Footer>
     </Modal>

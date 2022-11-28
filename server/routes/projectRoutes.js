@@ -173,13 +173,58 @@ projectRoutes
       project.users = project.users.filter((user) => user != userId);
       await project.save();
 
-      await ProjectUser.deleteOne({ project_id: projectId, user_id: userId });
+      await ProjectUser.deleteMany({ project_id: projectId, user_id: userId });
+
+      const user = await UserInfo.findOne({ user_id: userId });
+      user.projects = user.projects.filter((project) => project != projectId);
+      await user.save();
       return res.json({ success: true });
     } catch (err) {
       console.log(err);
       return res.json({
         failed: true,
         message: "There was an error while removing the user from the project",
+      });
+    }
+  });
+
+//change project user's role
+projectRoutes
+  .route("/changeProjectRole")
+  .post(auth.verifyJWT, async (req, res) => {
+    const userId = req.body.user;
+    const projectId = req.body.project;
+
+    try {
+      if (req.user.team.role !== "admin") {
+        const user = await ProjectUser.findOne({
+          project_id: projectId,
+          user_id: req.user.id,
+        });
+        if (user.role !== "project-manager") {
+          return res.json({
+            failed: true,
+            message: "You have insufficient priveleges to perform this action",
+          });
+        }
+      }
+
+      const projectUser = await ProjectUser.findOne({
+        project_id: projectId,
+        user_id: userId,
+      });
+      console.log(projectUser);
+      projectUser.role = req.body.role;
+      await projectUser.save();
+      console.log(req.body.role)
+      console.log(projectUser);
+
+      return res.json({ success: true });
+    } catch (err) {
+      console.log(err);
+      res.json({
+        failed: true,
+        message: "There was an error while changing the user's project role",
       });
     }
   });

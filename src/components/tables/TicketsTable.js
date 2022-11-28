@@ -17,6 +17,7 @@ const TicketsTable = (props) => {
   const userData = props.userData;
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const projects = useQuery("projects", fetchProjects);
+  const order = ["open", "in progress", "closed"];
   let projectData = projects.data;
   if (props.sortBy == "project") {
     projectData = projectData.filter((project) => {
@@ -31,34 +32,36 @@ const TicketsTable = (props) => {
       (ticket) => ticket.creator.id == userData.user_id
     );
   }
-  const ticketRows = ticketData.map((ticket, i) => {
-    const status = ticket.status;
-    const id = ticket._id;
-    return (
-      <tr key={uniqid()} className="table-ticket-row">
-        <td>{i + 1}</td>
-        <td>
-          <span
-            className="text-primary ticket-title"
-            onClick={props.handleClick}
-            data-ticketid={id}
-          >
-            {ticket.title}
-          </span>
-        </td>
-        <td>{ticket.description}</td>
-        <td>{capitalize(status)}</td>
-        <td className="ellipsis text-center">
-          <DropdownButton variant="light" id="ellipsis" title="⠇">
-            <Dropdown.Item data-ticketid={id} onClick={props.handleEditClick}>
-              Edit ticket
-            </Dropdown.Item>
-            <Dropdown.Item>View Details</Dropdown.Item>
-          </DropdownButton>
-        </td>
-      </tr>
-    );
-  });
+  const ticketRows = ticketData
+    .sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status))
+    .map((ticket, i) => {
+      const status = ticket.status;
+      const id = ticket._id;
+      return (
+        <tr key={uniqid()} className="table-ticket-row">
+          <td>{i + 1}</td>
+          <td>
+            <span
+              className="text-primary ticket-title"
+              onClick={props.handleClick}
+              data-ticketid={id}
+            >
+              {ticket.title}
+            </span>
+          </td>
+          <td>{ticket.description}</td>
+          <td>{capitalize(status)}</td>
+          <td className="ellipsis text-center">
+            <DropdownButton variant="light" id="ellipsis" title="⠇">
+              <Dropdown.Item data-ticketid={id} onClick={props.handleEditClick}>
+                Edit ticket
+              </Dropdown.Item>
+              <Dropdown.Item>View Details</Dropdown.Item>
+            </DropdownButton>
+          </td>
+        </tr>
+      );
+    });
 
   return (
     <table className="table table-hover table-sm mt-2">

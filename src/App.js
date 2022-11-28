@@ -1,13 +1,12 @@
 import "./styles/App.css";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   useNavigate,
   Navigate,
   useParams,
 } from "react-router-dom";
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import LogInPage from "./components/LogInPage";
 import SignUpPage from "./components/SignUpPage";

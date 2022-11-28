@@ -14,10 +14,15 @@ const ProjectDetails = (props) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
-  const [edit, setEdit] = useState(false);
+  const [memberToEdit, setMemberToEdit] = useState(null);
+  const [project, setProject] = useState(null);
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const comments = useQuery("comments", fetchComments);
+
+  useEffect(() => {
+    comments.refetch();
+  }, [projectId])
 
   async function fetchComments() {
     return await fetchURL("/getComments", { project_id: projectId });
@@ -42,8 +47,16 @@ const ProjectDetails = (props) => {
 
   const getProjectUsers = () => getProject().users;
 
-  const getProject = () =>
-    projects.data.find((project) => project.project_id == projectId);
+  const getProject = () => {
+    if (!project) {
+      const project = projects.data.find(
+        (project) => project.project_id == projectId
+      );
+      setProject(project);
+      return project;
+    }
+    return project;
+  };
 
   const hasAuth = () => {
     const role = projects.data.find(
@@ -62,6 +75,7 @@ const ProjectDetails = (props) => {
           users={getProjectUsers()}
           projectId={props.projectId}
           queryClient={props.queryClient}
+          member={memberToEdit}
         />
       )}
       {showNewTicket && (
@@ -74,13 +88,15 @@ const ProjectDetails = (props) => {
           userData={props.userData}
           queryClient={props.queryClient}
           ticket={ticketToEdit}
+          role={getProject().role}
         />
       )}
       <div className="p-2 w-auto bg-light shadow rounded m-3">
         <h5 className="w-auto border-bottom pb-3">{getProject().name}</h5>
         {!projects.isLoading && (
-          <div className="p-2 bg-light shadow rounded m-3 d-flex">
+          <div className="p-2 bg-light shadow rounded m-3 d-flex-column">
             <div>Project Description: {getProject().description}</div>
+            <div>My Role: {getProject().role}</div>
           </div>
         )}
         <div className="d-flex w-auto">
@@ -91,7 +107,13 @@ const ProjectDetails = (props) => {
                 {!projects.isLoading && (
                   <button
                     className="btn btn-sm btn-primary"
-                    onClick={() => setShowAddMember(true)}
+                    onClick={() => {
+                      setShowAddMember(true);
+                      setMemberToEdit(null);
+                    }}
+                    disabled={
+                      !["admin", "project-manager"].includes(getProject().role)
+                    }
                   >
                     Add Member
                   </button>
@@ -104,6 +126,8 @@ const ProjectDetails = (props) => {
                   hasAuth={hasAuth}
                   getProject={getProject}
                   queryClient={props.queryClient}
+                  showEdit={() => setShowAddMember(true)}
+                  setMember={(member) => setMemberToEdit(member)}
                 />
               )}
             </div>
@@ -130,6 +154,11 @@ const ProjectDetails = (props) => {
                     setTicketToEdit(null);
                     setShowNewTicket(true);
                   }}
+                  disabled={
+                    !["admin", "project-manager", "tester"].includes(
+                      getProject().role
+                    )
+                  }
                 >
                   New Ticket
                 </button>

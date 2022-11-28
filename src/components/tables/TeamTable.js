@@ -56,7 +56,17 @@ const TeamTable = (props) => {
     props.queryClient.invalidateQueries();
   };
 
-  const changeProjectRole = async (e) => {};
+  const changeProjectRole = async (e) => {
+    const user = e.target.dataset.user;
+    const role = e.target.dataset.role;
+    const project = props.getProject().project_id;
+    props.setMember({
+      user,
+      project,
+      role
+    })
+    props.showEdit();
+  };
 
   const teamRows = props.users
     .filter((member) => member.email != props.userData.email)
@@ -79,6 +89,7 @@ const TeamTable = (props) => {
                 </Dropdown.Item>
                 <Dropdown.Item
                   data-user={member.user_id}
+                  data-role={member.role}
                   onClick={
                     props.type == "myteam" ? changeTeamRole : changeProjectRole
                   }

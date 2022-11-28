@@ -84,6 +84,7 @@ ticketRoutes.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
 ticketRoutes.route("/editTicket").post(auth.verifyJWT, async (req, res) => {
   try {
     const newTicket = req.body.ticket;
+    console.log(newTicket)
     delete newTicket.creator;
     const ticketToEdit = await Ticket.findById(req.body.ticket._id);
     const keys = Object.keys(newTicket);

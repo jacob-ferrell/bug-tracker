@@ -47,7 +47,9 @@ const NewTicket = (props) => {
   };
 
   const users = props.users
-    .filter((user) => user.email != props.userData.email)
+    .filter(
+      (user) => user.email != props.userData.email && user.role === "developer"
+    )
     .map((user) => {
       return (
         <div key={user.user_id} className="w-auto">
@@ -146,7 +148,6 @@ const NewTicket = (props) => {
       status: "open",
       creator: props.userData.user_id,
     };
-    console.log(newTicket);
     if (!props.ticket) return mutation.mutate({ ...newTicket });
     const edited = {
       ...newTicket,
@@ -158,9 +159,8 @@ const NewTicket = (props) => {
       type,
       status: status.toLowerCase(),
     };
-    console.log(edited);
     await fetchURL("/editTicket", { ticket: edited });
-    queryClient.invalidateQueries('projects');
+    queryClient.invalidateQueries("projects");
     props.handleClose();
   };
 
@@ -193,8 +193,12 @@ const NewTicket = (props) => {
               required
             />
           </Form.Group>
-          <Form.Label>Assign Users</Form.Label>
-          <div className="overflow-auto border p-2 w-auto">{users}</div>
+          {props.role !== "tester" && (
+            <>
+              <Form.Label>Assign Developers</Form.Label>
+              <div className="overflow-auto border p-2 w-auto">{users}</div>
+            </>
+          )}
           <div className="d-flex mx-5 justify-content-between">
             {props.ticket && (
               <div>
