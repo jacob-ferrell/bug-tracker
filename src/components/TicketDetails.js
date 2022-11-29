@@ -27,7 +27,7 @@ const TicketDetails = (props) => {
     );
     setProject(project);
     setTicket(ticket);
-  }, [props.ticketId]);
+  }, [props.ticketId, data]);
 
   const addComment = () => fetchURL("/createComment", comment);
 

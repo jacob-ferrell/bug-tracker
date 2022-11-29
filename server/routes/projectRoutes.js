@@ -302,10 +302,12 @@ projectRoutes.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
 //delete project
 projectRoutes.route("/deleteProject").post(auth.verifyJWT, async (req, res) => {
   try {
-    await Project.deleteOne({ _id: req.body.project_id });
-    await ProjectUser.deleteMany({ project_id: req.body.project_id });
+    const project = req.body.project_id;
+    await Project.deleteOne({ _id: project});
+    await ProjectUser.deleteMany({ project_id: project });
+    await Ticket.deleteMany({project_id: project});
     const team = await Team.findById(req.user.team.team_id);
-    team.projects = team.projects.filter((e) => e != req.body.project_id);
+    team.projects = team.projects.filter((e) => e != project);
     await team.save();
     return res.json({ success: true });
   } catch (err) {

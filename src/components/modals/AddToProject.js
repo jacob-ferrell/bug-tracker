@@ -78,14 +78,16 @@ const AddToProject = (props) => {
   const handleSubmitClick = async (e) => {
     if (props.member) {
       console.log(props.member);
-      const res = await fetchURL("/changeProjectRole", { ...props.member, role });
+      const res = await fetchURL("/changeProjectRole", {
+        ...props.member,
+        role,
+      });
       if (res.failed) return;
-      queryClient.setQueryData("projects", (prev) => {
-        const project = {
-          ...prev.find(
-            (project) => project.project_id === props.member.project
-          ),
-        };
+     /*  queryClient.setQueryData("projects", (prev) => {
+        const project = prev.find(
+          (project) => project.project_id === props.member.project
+        );
+
         const user = project.users.find(
           (user) => user.user_id === props.member.user
         );
@@ -93,10 +95,10 @@ const AddToProject = (props) => {
         project.id = prev.length + 1;
         return [
           ...prev.filter((project) => project.project_id !== props.project),
-          project
+          project,
         ];
-      });
-      queryClient.invalidateQueries();
+      }); */
+      queryClient.invalidateQueries('projects');
       return props.handleClose();
     }
     const member = props.teamData.find(

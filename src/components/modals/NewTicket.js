@@ -39,9 +39,9 @@ const NewTicket = (props) => {
 
   const handleCheckChange = (e) => {
     const userId = e.target.dataset.userid;
-    setCheckedUsers((state) => ({
-      ...state,
-      [userId]: !state[userId],
+    setCheckedUsers((prev) => ({
+      ...prev,
+      [userId]: !prev[userId],
     }));
     console.log(checkedUsers);
   };
@@ -55,10 +55,11 @@ const NewTicket = (props) => {
         <div key={user.user_id} className="w-auto">
           <Form.Check
             type="checkbox"
-            onChange={handleCheckChange}
+            //onChange={handleCheckChange}
+            onClick={handleCheckChange}
             data-userid={user.user_id}
             label={user.name}
-            defaultChecked={checkedUsers?.[user.user_id]}
+            defaultChecked={checkedUsers[user.user_id]}
           />
         </div>
       );
@@ -138,6 +139,7 @@ const NewTicket = (props) => {
     const users = Object.keys(checkedUsers).filter((user) => {
       return checkedUsers[user];
     });
+    console.log(checkedUsers, users)
     newTicket = {
       title,
       description,
@@ -160,7 +162,8 @@ const NewTicket = (props) => {
       status: status.toLowerCase(),
     };
     await fetchURL("/editTicket", { ticket: edited });
-    queryClient.invalidateQueries("projects");
+    //props.refetch();
+    queryClient.invalidateQueries('projects');
     props.handleClose();
   };
 

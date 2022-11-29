@@ -23,7 +23,6 @@ const ticketRoutes = express.Router();
 ticketRoutes.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
   const ticket = req.body;
   const project = await Project.findById(ticket.project_id);
-
   const getTakenTitle = async () => {
     return new Promise((resolve) => {
       Project.findById(ticket.project_id)
@@ -43,6 +42,21 @@ ticketRoutes.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
   };
 
   try {
+    if (req.user.team.role !== "admin") {
+      const projectUser = await ProjectUser.findOne({
+        project_id: ticket.project_id,
+        user_id: req.user.id,
+      });
+      if (projectUser.role === 'developer') {
+        return res.json({
+          failed: true,
+          message: 'Developers cannot submit new tickets'
+        })
+      }
+      if (projectUser.role !== 'project-manager') {
+        ticket.users = [];
+      }
+    }
     let takenTitle = await getTakenTitle();
 
     if (takenTitle)
@@ -84,9 +98,10 @@ ticketRoutes.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
 ticketRoutes.route("/editTicket").post(auth.verifyJWT, async (req, res) => {
   try {
     const newTicket = req.body.ticket;
-    console.log(newTicket)
+    delete newTicket.__v;
+    console.log(newTicket);
     delete newTicket.creator;
-    const ticketToEdit = await Ticket.findById(req.body.ticket._id);
+    const ticketToEdit = await Ticket.findById(newTicket._id);
     const keys = Object.keys(newTicket);
     for (let i in keys) {
       ticketToEdit[keys[i]] = newTicket[keys[i]];

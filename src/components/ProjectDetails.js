@@ -15,14 +15,13 @@ const ProjectDetails = (props) => {
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState(null);
-  const [project, setProject] = useState(null);
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const comments = useQuery("comments", fetchComments);
 
   useEffect(() => {
     comments.refetch();
-  }, [projectId])
+  }, [projectId]);
 
   async function fetchComments() {
     return await fetchURL("/getComments", { project_id: projectId });
@@ -32,7 +31,6 @@ const ProjectDetails = (props) => {
 
   const handleTicketClick = (e) => {
     const id = e.currentTarget.dataset.ticketid;
-    console.log(id);
     setSelectedTicket(id);
   };
 
@@ -48,13 +46,9 @@ const ProjectDetails = (props) => {
   const getProjectUsers = () => getProject().users;
 
   const getProject = () => {
-    if (!project) {
-      const project = projects.data.find(
-        (project) => project.project_id == projectId
-      );
-      setProject(project);
-      return project;
-    }
+    const project = projects.data.find(
+      (project) => project.project_id == projectId
+    );
     return project;
   };
 
@@ -89,6 +83,7 @@ const ProjectDetails = (props) => {
           queryClient={props.queryClient}
           ticket={ticketToEdit}
           role={getProject().role}
+          refetch={projects.refetch}
         />
       )}
       <div className="p-2 w-auto bg-light shadow rounded m-3">
@@ -135,19 +130,7 @@ const ProjectDetails = (props) => {
           <div className="p-3 flex-even">
             <div className="project-tickets bg-light shadow rounded p-2 border">
               <div className="my-tickets-header d-flex justify-content-between">
-                <h5>
-                  {/* {loading &&
-                                <Spinner
-                                animation='border'
-                                as='span'
-                                size='sm'
-                                role='status'
-                                aria-hidden='true'
-                                />
-                                }
-                                {loading ? ' Loading Tickets...' : 'Tickets'} */}
-                  Tickets
-                </h5>
+                <h5>Tickets</h5>
                 <button
                   className="btn btn-sm btn-primary"
                   onClick={() => {
@@ -184,6 +167,7 @@ const ProjectDetails = (props) => {
           comments={comments.data}
           queryClient={props.queryClient}
           userData={props.userData}
+          getProject={getProject}
         />
       )}
     </>
