@@ -1,18 +1,11 @@
 const express = require("express");
 const User = require("../models/user");
 const Project = require("../models/project");
-const Ticket = require("../models/ticket");
 const UserInfo = require("../models/userInfo");
 const ProjectUser = require("../models/projectUser");
-const Team = require("../models/team");
-const TeamMember = require("../models/teamMember");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const { response } = require("express");
-const dotenv = require("dotenv").config({
-  path: path.resolve(__dirname, "../config.env"),
-});
+
 const auth = require("../verifyJWT");
 
 const userRoutes = express.Router();
@@ -141,7 +134,6 @@ userRoutes.route("/findUser").post(auth.verifyJWT, async (req, res) => {
   }
   return res.json({ ...userToAdd._doc });
 });
-//fetch user data necessary to render dashboard (user info, projects)
-userRoutes.route("/initialize").get(auth.verifyJWT, async (req, res) => {});
+
 
 module.exports = userRoutes;

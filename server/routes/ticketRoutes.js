@@ -1,20 +1,10 @@
 const express = require("express");
-const User = require("../models/user");
 const Project = require("../models/project");
 const Ticket = require("../models/ticket");
 const TicketUser = require("../models/ticketUser");
 const Comment = require("../models/comment");
 const UserInfo = require("../models/userInfo");
 const ProjectUser = require("../models/projectUser");
-const Team = require("../models/team");
-const TeamMember = require("../models/teamMember");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const path = require("path");
-const { response } = require("express");
-const dotenv = require("dotenv").config({
-  path: path.resolve(__dirname, "../config.env"),
-});
 const auth = require("../verifyJWT");
 
 const ticketRoutes = express.Router();
