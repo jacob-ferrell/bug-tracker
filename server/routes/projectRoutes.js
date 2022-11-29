@@ -10,11 +10,11 @@ const jwt = require("jsonwebtoken");
 const TicketUser = require("../models/ticketUser");
 const auth = require("../verifyJWT");
 const team = require("../models/team");
-
+ 
 const projectRoutes = express.Router();
 
 //create new project
-projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
+/* projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
   if (req.user.team.role != "admin")
     return res.json({
       failed: true,
@@ -59,7 +59,7 @@ projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
     const newProject = new Project({
       ...project,
       team: req.user.team.team_id,
-    });
+    }); */
 
     /* const projectUser = new ProjectUser({
       user_id: req.user.id,
@@ -70,7 +70,7 @@ projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
 
     newProject.users.push(projectUser._id); */
 
-    newProject.save((err) => {
+/*     newProject.save((err) => {
       if (err) return;
 
       user.projects.push(newProject._id);
@@ -86,10 +86,10 @@ projectRoutes.route("/createProject").post(auth.verifyJWT, async (req, res) => {
     console.log(err);
     return res.json({ failed: true, message: "Failed to create project" });
   }
-});
+}); */
 
 //edit project
-projectRoutes.route("/editProject").post(auth.verifyJWT, async (req, res) => {
+/* projectRoutes.route("/editProject").post(auth.verifyJWT, async (req, res) => {
   const project = req.body;
   const projectId = project.project_id;
   const getTakenName = async () => {
@@ -139,7 +139,7 @@ projectRoutes.route("/editProject").post(auth.verifyJWT, async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-});
+}); */
 
 //add team member to project
 projectRoutes

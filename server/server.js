@@ -6,7 +6,8 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require("./models/user.js");
-
+const projectRoutes = require('./routes/project/projectRoutes');
+console.log(projectRoutes)
 const app = express();
 
 const dbURI = 
@@ -17,7 +18,11 @@ const dbURI =
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //app.use(require('./routes/record'));
-app.use(require('./routes/projectRoutes'));
+//Object.keys(projectRoutes).forEach(route => app.use(projectRoutes[route]));
+projectRoutes.forEach(route => app.use(require(`./routes/project/${route}`)))
+/* app.use(require('./routes/project/createProject'));
+app.use(require('./routes/project/editProject')); */
+//app.use(require('./routes/projectRoutes'));
 app.use(require('./routes/teamRoutes'));
 app.use(require('./routes/ticketRoutes'));
 app.use(require('./routes/userRoutes'));
