@@ -75,7 +75,15 @@ const TicketDetails = (props) => {
     .filter((comment) => comment.ticket_id == props.ticketId)
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .map((comment) => {
-      return <Comment project={project} comment={comment} key={uniqid()} />;
+      return (
+        <Comment
+          ticketId={props.ticketId}
+          queryClient={queryClient}
+          project={project}
+          comment={comment}
+          key={uniqid()}
+        />
+      );
     });
 
   const getAssignedDevs = () => {

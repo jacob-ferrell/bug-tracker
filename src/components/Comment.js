@@ -1,7 +1,7 @@
 import { formatDate } from "../utils/formatDate";
 import { formatTime } from "../utils/formatTime";
 import { useQuery } from "react-query";
-import { fetchUser } from "../api";
+import { fetchURL, fetchUser } from "../api";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
 const Comment = (props) => {
@@ -11,6 +11,15 @@ const Comment = (props) => {
   const isCreator = () => user.data.user_id === comment.creator.id;
   const hasAuth = () =>
     ["admin", "project-manager"].includes(props.project.role);
+
+  const deleteComment = async (e) => {
+    await fetchURL('/deleteComment', {
+      comment: props.comment._id,
+      project: props.project.project_id,
+      ticket: props.ticketId
+    });
+    props.queryClient.invalidateQueries();
+  }
 
   return (
     <div className="bg-light border shadow rounded p-2 mt-2">
@@ -29,7 +38,7 @@ const Comment = (props) => {
                 Edit
               </Dropdown.Item>
             )}
-            <Dropdown.Item>Delete</Dropdown.Item>
+            <Dropdown.Item onClick={deleteComment}>Delete</Dropdown.Item>
           </DropdownButton>
         )}
       </div>
