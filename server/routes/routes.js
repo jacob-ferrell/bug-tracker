@@ -22,6 +22,7 @@ module.exports = {
     "createComment",
     "getComments",
     "getTickets",
+    "deleteComment",
   ],
   user: ["findUser", "isUserAuth", "login", "signUp"],
 };

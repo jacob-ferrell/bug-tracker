@@ -3,5 +3,6 @@ module.exports = [
     'editTicket',
     'createComment',
     'getComments',
-    'getTickets'
+    'getTickets',
+    'deleteComment'
 ]

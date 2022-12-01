@@ -46,6 +46,8 @@ deleteComment.route("/deleteComment").post(auth.verifyJWT, async (req, res) => {
 
     await comment.deleteOne({_id: commentId});
 
+    return res.json({success: true})
+
   } catch (err) {
     console.log(err);
     res.json({
@@ -54,3 +56,5 @@ deleteComment.route("/deleteComment").post(auth.verifyJWT, async (req, res) => {
     });
   }
 });
+
+module.exports = deleteComment;
