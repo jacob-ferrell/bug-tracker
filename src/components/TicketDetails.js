@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "react-query";
 import { useEffect, useState } from "react";
-import { fetchProjects, fetchURL, fetchUser } from "../api";
+import { fetchProjects, fetchURL } from "../api";
 import { formatDate } from "../utils/formatDate";
 import { capitalize } from "../utils/capitalize";
 import { Spinner } from "react-bootstrap";
@@ -9,7 +9,6 @@ import uniqid from "uniqid";
 
 const TicketDetails = (props) => {
   const { data, isLoading } = useQuery("projects", fetchProjects);
-  const user = useQuery("user", fetchUser);
   const [ticket, setTicket] = useState(null);
   const [project, setProject] = useState(null);
   const [commentContent, setCommentContent] = useState("");
@@ -46,7 +45,6 @@ const TicketDetails = (props) => {
             createdAt: new Date(),
             creator: {
               name: firstName + " " + lastName,
-              id: user.data.user_id
             },
           },
         ];
@@ -77,7 +75,7 @@ const TicketDetails = (props) => {
     .filter((comment) => comment.ticket_id == props.ticketId)
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .map((comment) => {
-      return <Comment comment={comment} key={uniqid()} role={project?.role}/>;
+      return <Comment project={project} comment={comment} key={uniqid()} />;
     });
 
   const getAssignedDevs = () => {
@@ -150,23 +148,19 @@ const TicketDetails = (props) => {
             <div className="comments flex-even bg-light border shadow rounded p-2">
               <h6 className="border-bottom pb-3">Comments</h6>
               <div className="d-flex">
-                {ticket.status !== "closed" && (
-                  <>
-                    <input
-                      value={commentContent}
-                      onChange={(e) => setCommentContent(e.target.value)}
-                      className="form-control"
-                      placeholder="Enter Comment"
-                    ></input>
-                    <button
-                      className="btn btn-info btn-sm"
-                      onClick={handleCommentClick}
-                      disabled={!commentContent}
-                    >
-                      Comment
-                    </button>
-                  </>
-                )}
+                <input
+                  value={commentContent}
+                  onChange={(e) => setCommentContent(e.target.value)}
+                  className="form-control"
+                  placeholder="Enter Comment"
+                ></input>
+                <button
+                  className="btn btn-info btn-sm"
+                  onClick={handleCommentClick}
+                  disabled={!commentContent}
+                >
+                  Comment
+                </button>
               </div>
               {comments}
             </div>

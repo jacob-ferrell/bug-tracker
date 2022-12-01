@@ -9,8 +9,8 @@ const isUserAuth = express.Router();
 
 isUserAuth.route("/isUserAuth").get(auth.verifyJWT, async (req, res) => {
     const userId = req.user.id;
-    const teamId = req.user.team.team_id;
-    const role = req.user.team.role;
+    const teamId = req.user.team?.team_id;
+    const role = req.user.team?.role;
   
     try {
       const user = await UserInfo.findOne({ user_id: userId });

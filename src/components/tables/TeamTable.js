@@ -113,7 +113,6 @@ const TeamTable = (props) => {
           url={url}
           user={user}
           queryClient={props.queryClient}
-          hideRole={url === '/removeFromTeam'}
         />
       )}
       <table className="table table-hover table-sm mt-2">
