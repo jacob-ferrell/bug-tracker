@@ -16,5 +16,27 @@
 
 ### Role Descriptions
   #### Team Roles
-- ##### Admin
-- #### Project Roles
+##### Admin
+- Capable of adding/removing users to/from the team as well as changing their roles within the team.
+- Can create, edit and delete projects
+- Within projects, have full Project Manager permissions (See Project Manager below)
+-
+
+
+ #### Project Roles
+ ##### Project Manager
+ - Can edit/create/delete tickets
+ - Can add/remove other team members to the project and assign their roles
+ - Can change user's roles within the project
+ - Can resolve tickets by updating their status to 'Closed' (Only Project Manager's may do this)
+ - Can assign/unassign Developers to tickets
+ - Can delete comments
+ ##### Tester
+ - Can create new tickets
+ - Can edit tickets they have created, however they cannot change ticket status or assigned developers
+ - Can comment on tickets they have created to provide further clarification
+ - Can edit/delete comments they have made
+ ##### Developer
+ - Can comment on tickets to which they are assigned to ask questions/update the team on their progress
+ - Can edit/delete comments they have made
+
