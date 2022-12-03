@@ -8,6 +8,7 @@ import AddToProject from "./modals/AddToProject";
 import TicketDetails from "./TicketDetails";
 import NewTicket from "./modals/NewTicket";
 import { useQuery } from "react-query";
+import { capitalize } from "../utils/capitalize";
 
 const ProjectDetails = (props) => {
   const [showAddMember, setShowAddMember] = useState(false);
@@ -91,7 +92,7 @@ const ProjectDetails = (props) => {
         {!projects.isLoading && (
           <div className="p-2 bg-light shadow rounded m-3 d-flex-column">
             <div>Project Description: {getProject().description}</div>
-            <div>My Role: {getProject().role}</div>
+            <div>My Role: {capitalize(getProject().role)}</div>
           </div>
         )}
         <div className="d-flex w-auto">
@@ -154,6 +155,7 @@ const ProjectDetails = (props) => {
                   handleClick={handleTicketClick}
                   projectId={props.projectId}
                   handleEditClick={handleEditClick}
+                  role={getProject().role}
                 />
               )}
             </div>

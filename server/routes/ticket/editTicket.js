@@ -6,25 +6,33 @@ const editTicket = express.Router();
 
 //edit ticket
 editTicket.route("/editTicket").post(auth.verifyJWT, async (req, res) => {
-    try {
-      const newTicket = req.body.ticket;
-      delete newTicket.__v;
-      console.log(newTicket);
-      delete newTicket.creator;
-      const ticketToEdit = await Ticket.findById(newTicket._id);
-      const keys = Object.keys(newTicket);
-      for (let i in keys) {
-        ticketToEdit[keys[i]] = newTicket[keys[i]];
-      }
-      await ticketToEdit.save();
-      return res.json({ success: true });
-    } catch (err) {
-      console.log(err);
+  try {
+    const newTicket = req.body.ticket;
+    delete newTicket.__v;
+    delete newTicket.creator;
+    const ticketToEdit = await Ticket.findById(newTicket._id);
+    if (
+      !["admin", "project-manager"].includes(req.user.team.role) ||
+      ticketToEdit.creator !== req.user.id
+    ) {
       return res.json({
         failed: true,
-        message: "There was an error while editing this ticket",
+        message: "You do not have permission to edit this ticket",
       });
     }
-  });
+    const keys = Object.keys(newTicket);
+    for (let i in keys) {
+      ticketToEdit[keys[i]] = newTicket[keys[i]];
+    }
+    await ticketToEdit.save();
+    return res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.json({
+      failed: true,
+      message: "There was an error while editing this ticket",
+    });
+  }
+});
 
-  module.exports = editTicket;
+module.exports = editTicket;

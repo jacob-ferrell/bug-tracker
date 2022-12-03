@@ -30,6 +30,8 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
     };
   
     try {
+      console.log(ticket)
+
       if (req.user.team.role !== "admin") {
         const projectUser = await ProjectUser.findOne({
           project_id: ticket.project_id,
@@ -53,7 +55,6 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
           message: "This project already has a ticket with that name",
         });
   
-      const ticket = req.body;
   
       let newTicket = new Ticket({
         ...ticket,

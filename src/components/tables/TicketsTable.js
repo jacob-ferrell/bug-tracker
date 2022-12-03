@@ -17,6 +17,12 @@ const TicketsTable = (props) => {
   const userData = props.userData;
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const projects = useQuery("projects", fetchProjects);
+  const canEdit = (role, ticketCreator) => {
+    return (
+      ["admin", "project-manager"].includes(role) ||
+      ticketCreator === userData.user_id
+    );
+  };
   const order = ["open", "in progress", "closed"];
   let projectData = projects.data;
   if (props.sortBy == "project") {
@@ -53,9 +59,14 @@ const TicketsTable = (props) => {
           <td>{capitalize(status)}</td>
           <td className="ellipsis text-center">
             <DropdownButton variant="light" id="ellipsis" title="⠇">
-              <Dropdown.Item data-ticketid={id} onClick={props.handleEditClick}>
-                Edit ticket
-              </Dropdown.Item>
+              {canEdit(props.role, ticket.creator.id) ? (
+                <Dropdown.Item
+                  data-ticketid={id}
+                  onClick={props.handleEditClick}
+                >
+                  Edit Ticket
+                </Dropdown.Item>
+              ) : null}
               <Dropdown.Item>View Details</Dropdown.Item>
             </DropdownButton>
           </td>
