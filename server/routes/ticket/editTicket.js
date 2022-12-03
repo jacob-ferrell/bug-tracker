@@ -11,10 +11,8 @@ editTicket.route("/editTicket").post(auth.verifyJWT, async (req, res) => {
     delete newTicket.__v;
     delete newTicket.creator;
     const ticketToEdit = await Ticket.findById(newTicket._id);
-    if (
-      !["admin", "project-manager"].includes(req.user.team.role) ||
-      ticketToEdit.creator !== req.user.id
-    ) {
+    const role = await auth.getRole(req.user, ticketToEdit.project_id);
+    if (!auth.verifyRole(role) && ticketToEdit.creator !== req.user.id) {
       return res.json({
         failed: true,
         message: "You do not have permission to edit this ticket",

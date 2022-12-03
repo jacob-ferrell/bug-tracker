@@ -1,8 +1,10 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useQuery } from "react-query";
+import { useState, useEffect } from "react";
 import { fetchProjects } from "../../api";
 import uniqid from "uniqid";
 import { capitalize } from "../../utils/capitalize";
+import { Form } from "react-bootstrap";
 
 const TicketsTable = (props) => {
   const headings = ["", "Ticket Title", "Description", "Status", ""].map(
@@ -33,9 +35,18 @@ const TicketsTable = (props) => {
 
   let ticketData = projectData.map((project) => project.tickets).flat();
 
+  useEffect(() => {
+      projects.refetch();
+  }, [props.filterByAssigned]);
+
   if (props.sortBy == "creator") {
     ticketData = ticketData.filter(
       (ticket) => ticket.creator.id == userData.user_id
+    );
+  }
+  if (props.filterByAssigned) {
+    ticketData = ticketData.filter((ticket) =>
+      ticket.users.includes(userData.user_id)
     );
   }
   const ticketRows = ticketData
@@ -75,12 +86,18 @@ const TicketsTable = (props) => {
     });
 
   return (
-    <table className="table table-hover table-sm mt-2">
-      <thead>
-        <tr>{headings}</tr>
-      </thead>
-      <tbody>{ticketRows}</tbody>
-    </table>
+    <>
+      {!projects.isLoading ? (
+        <table className="table table-hover table-sm mt-2">
+          <thead>
+            <tr>{headings}</tr>
+          </thead>
+          <tbody>{ticketRows}</tbody>
+        </table>
+      ) : (
+        <span>Loading...</span>
+      )}
+    </>
   );
 };
 

@@ -9,7 +9,8 @@ const userInfoSchema = mongoose.Schema({
     firstName: String,
     lastName: String,
     projects: [{type: Schema.Types.ObjectId, ref: 'Project'}],
-    team: {type: Schema.Types.ObjectId, ref: 'Team'}
+    team: {type: Schema.Types.ObjectId, ref: 'Team'},
+    notifications: [{type: Schema.Types.ObjectId, ref: 'Notification'}]
     
 }, {timestamps: true});
 

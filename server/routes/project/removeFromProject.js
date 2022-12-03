@@ -12,6 +12,12 @@ removeFromProject
     const userId = req.body.user;
     const projectId = req.body.project;
     try {
+      const role = await auth.getRole(req.user, projectId);
+      if (!auth.verifyRole(role))
+        return res.json({
+          failed: true,
+          message: "You do not have permission to add users to the project",
+        });
       const project = await Project.findById(projectId);
       project.users = project.users.filter((user) => user != userId);
       await project.save();

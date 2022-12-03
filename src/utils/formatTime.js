@@ -13,3 +13,4 @@ export function formatTime(date) {
 
   return hours + ":" + minutes + end;
 }
+

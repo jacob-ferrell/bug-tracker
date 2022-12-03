@@ -48,7 +48,6 @@ const AddToProject = (props) => {
       await queryClient.cancelQueries("projects");
       const previousProjects = queryClient.getQueryData("projects");
       await queryClient.setQueryData("projects", (oldQueryData) => {
-        console.log(oldQueryData, projectId, userToAdd);
         const project = oldQueryData.find(
           (project) => project.project_id == projectId
         );

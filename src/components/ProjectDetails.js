@@ -1,6 +1,7 @@
 import Table from "./Table";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Form } from "react-bootstrap";
 import { fetchTeam, fetchProjects, fetchURL } from "../api";
 import TicketsTable from "./tables/TicketsTable";
 import TeamTable from "./tables/TeamTable";
@@ -16,6 +17,7 @@ const ProjectDetails = (props) => {
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState(null);
+  const [filterByAssigned, setFilterByAssigned] = useState(false);
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const comments = useQuery("comments", fetchComments);
@@ -132,6 +134,15 @@ const ProjectDetails = (props) => {
             <div className="project-tickets bg-light shadow rounded p-2 border">
               <div className="my-tickets-header d-flex justify-content-between">
                 <h5>Tickets</h5>
+                {getProject().role === "developer" ? (
+                  <Form.Check
+                    type="checkbox"
+                    //onChange={handleCheckChange}
+                    onClick={() => setFilterByAssigned((prev) => !prev)}
+                    label="Assigned To Me"
+                    defaultChecked={filterByAssigned}
+                  />
+                ) : null}
                 <button
                   className="btn btn-sm btn-primary"
                   onClick={() => {
@@ -156,6 +167,8 @@ const ProjectDetails = (props) => {
                   projectId={props.projectId}
                   handleEditClick={handleEditClick}
                   role={getProject().role}
+                  filterByAssigned={filterByAssigned}
+                  queryClient={props.queryClient}
                 />
               )}
             </div>

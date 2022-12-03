@@ -1,5 +1,6 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import Warning from "../modals/Warning";
+import { capitalize } from "../../utils/capitalize";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchURL } from "../../api";
@@ -47,7 +48,7 @@ const ProjectsTable = (props) => {
             </span>
           </td>
           <td>{project.description}</td>
-          <td>{role[0].toUpperCase() + role.slice(1)}</td>
+          <td>{capitalize(role)}</td>
           {/* <td >{openTickets}</td> */}
           <td className="ellipsis text-center">
             <DropdownButton variant="light" id="ellipsis" title="⠇">

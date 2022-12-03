@@ -8,7 +8,13 @@ const auth = require("../../verifyJWT");
 const deleteProject = express.Router();
 
 deleteProject.route("/deleteProject").post(auth.verifyJWT, async (req, res) => {
-    try {
+  if (req.user.team.role != "admin")
+      return res.json({
+        failed: true,
+        message: "Only Team Admins can delete projects",
+      });  
+  
+  try {
       const project = req.body.project_id;
       await Project.deleteOne({ _id: project});
       await ProjectUser.deleteMany({ project_id: project });

@@ -196,12 +196,12 @@ const NewTicket = (props) => {
               required
             />
           </Form.Group>
-          {props.role !== "tester" && (
+          {['admin', 'project-manager'].includes(props.role) ? (
             <>
               <Form.Label>Assign Developers</Form.Label>
               <div className="overflow-auto border p-2 w-auto">{users}</div>
             </>
-          )}
+          ) : null}
           <div className="d-flex mx-5 justify-content-between">
             {props.ticket && (
               <div>
