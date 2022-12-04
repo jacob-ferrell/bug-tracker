@@ -24,5 +24,5 @@ module.exports = {
     "getTickets",
     "deleteComment",
   ],
-  user: ["findUser", "isUserAuth", "login", "signUp"],
+  user: ["findUser", "isUserAuth", "login", "signUp", "getNotifications"],
 };

@@ -1,7 +1,6 @@
 const express = require("express");
 const Project = require("../../models/project");
 const Ticket = require("../../models/ticket");
-const TicketUser = require("../../models/ticketUser");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
 
@@ -55,16 +54,6 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
       users: [],
     });
     await newTicket.save();
-
-    for (let i in ticket.users) {
-      const newUser = new TicketUser({
-        project_id: ticket.project_id,
-        user_id: ticket.users[i],
-      });
-      await newUser.save();
-      newTicket.users.push(newUser._id);
-      await newTicket.save();
-    }
 
     project.tickets.push(newTicket._id);
     await project.save();

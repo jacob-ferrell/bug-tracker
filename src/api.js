@@ -29,9 +29,13 @@ const fetchUser = async () => {
   return await fetchURL("/isUserAuth");
 };
 
+const fetchNotifications = async () => {
+  return await fetchURL('/getNotifications');
+}
+
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("selectedProject");
 }
 
-export { fetchURL, fetchTeam, fetchProjects, fetchUser };
+export { fetchURL, fetchTeam, fetchProjects, fetchUser, fetchNotifications };
