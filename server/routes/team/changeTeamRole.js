@@ -63,7 +63,6 @@ changeTeamRole
         role: "admin",
         user_id: { $nin: [req.user.id, userId] },
       });
-      console.log(admins)
       for (let i in admins) {
         const admin = await UserInfo.findOne({ user_id: admins[i].user_id });
         admin.notifications.push({notification_id: adminNotification._id});
