@@ -55,7 +55,7 @@ addToTeam.route("/addToTeam").post(auth.verifyJWT, async (req, res) => {
     });
     for (let i in admins) {
       const admin = await UserInfo.findOne({user_id: admins[i].user_id});
-      admin.notifications.push(notification._id);
+      admin.notifications.push({id: notification._id});
       await admin.save();
     }
     return res.json({ success: true });

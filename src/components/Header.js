@@ -2,15 +2,35 @@ import "../styles/Header.css";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import { fetchNotifications, fetchUser } from "../api";
+import { fetchNotifications, fetchUser, fetchURL } from "../api";
 
 const Header = (props) => {
   const notifications = useQuery("notifications", fetchNotifications, {
     refetchInterval: 120000000,
   });
   const user = useQuery("user", fetchUser);
+
+  const handleNotificationsClick = async e => {
+    await fetchURL('/readNotifications');
+    notifications.refetch();
+  }
+
+  const getUnreadNotifications = () => {
+    return notifications.data.filter(notification => notification.unread);
+  }
+
   const getInitials = () =>
     (user.data.firstName[0] + user.data.lastName[0]).toUpperCase();
+
+  const dropdownNotifications = notifications?.data?.map((notification) => {
+    return (
+      <Dropdown.Item>
+        <span className="dropdown-item" href="#">
+          {notification.message}
+        </span>
+      </Dropdown.Item>
+    );
+  });
 
   return (
     <nav
@@ -73,22 +93,16 @@ const Header = (props) => {
                 </form> */}
 
         <ul className="navbar-nav ms-auto d-flex flex-row bg-dark">
-          <Dropdown className="nav-item rounded-0 bg-dark">
+          <Dropdown onClick={handleNotificationsClick} className="nav-item rounded-0 bg-dark">
             <Dropdown.Toggle variant="dark" className="rounded-0">
               <i className="fas fa-bell fa-lg"></i>
-              {!notifications.isLoading && !!notifications.data.length ? (
+              {!notifications.isLoading && !!getUnreadNotifications().length ? (
                 <span className="badge rounded-pill badge-notification bg-danger">
-                  {notifications.data.length}
+                  {getUnreadNotifications().length}
                 </span>
               ) : null}
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item>
-                <a className="dropdown-item" href="#">
-                  Some news
-                </a>
-              </Dropdown.Item>
-            </Dropdown.Menu>
+            <Dropdown.Menu>{dropdownNotifications}</Dropdown.Menu>
           </Dropdown>
           <Dropdown className="nav-item rounded-0 bg-dark">
             <Dropdown.Toggle variant="dark" className="rounded-0">

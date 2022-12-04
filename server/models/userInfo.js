@@ -10,7 +10,10 @@ const userInfoSchema = mongoose.Schema({
     lastName: String,
     projects: [{type: Schema.Types.ObjectId, ref: 'Project'}],
     team: {type: Schema.Types.ObjectId, ref: 'Team'},
-    notifications: [{type: Schema.Types.ObjectId, ref: 'Notification'}]
+    notifications: [{
+        notification_id: {type: Schema.Types.ObjectId, ref: 'Notification'},
+        unread: { type: Boolean, default: true },
+    }]
     
 }, {timestamps: true});
 

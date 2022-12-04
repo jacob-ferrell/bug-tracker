@@ -1,6 +1,6 @@
 const express = require("express");
 const UserInfo = require("../../models/userInfo");
-const Notification = require('../../models/notification')
+const Notification = require("../../models/notification");
 
 const auth = require("../../verifyJWT");
 
@@ -12,21 +12,26 @@ getNotifications
     const userId = req.user.id;
 
     try {
-      UserInfo.findOne({ user_id: userId })
-        .populate("notifications")
-        .exec(async (err, user) => {
-          if (err) return console.log(err);
-          const notifications = user.notifications.map((notification) => {
-            return {
-              message: notification.message,
-              project_id: notification.project_id,
-              creator: notification.creator,
-              ticket_id: notification.ticket_id,
-              createdAt: notification.createdAt,
-            };
-          });
-          return res.json([...notifications]);
+      const user = await UserInfo.findOne({ user_id: userId });
+      const notifications = user.notifications;
+      let userNotifications = [];
+      for (let i in notifications) {
+        const id = notifications[i].notification_id;
+        const notificationCollection = await Notification.findById(id);
+        userNotifications.push({
+          message: notificationCollection.message,
+          project_id: notificationCollection.project_id,
+          creator: notificationCollection.creator,
+          ticket_id: notificationCollection.ticket_id,
+          createdAt: notificationCollection.createdAt,
+          unread: notifications[i].unread || false,
         });
+      }
+      return res.json([
+        ...userNotifications.sort(
+          (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+        ),
+      ]);
     } catch (err) {
       console.log(err);
     }
