@@ -4,8 +4,8 @@ const UserInfo = require("../../models/userInfo");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
 const capitalize = require("../../utils/capitalize");
-const Notification = require("../../models/notification");
 const pushNotifications = require("../../utils/pushNotification");
+const getByProjectRole = require("../../utils/getByProjectRole");
 
 const addMemberToProject = express.Router();
 
@@ -30,26 +30,23 @@ addMemberToProject
       project.users.push(projectUser._id);
       await project.save();
 
-      const message =
+      const userMessage =
         "You were added to a new project: " +
         project.name +
         ", as a " +
         capitalize(projectUser.role);
-      await pushNotifications(req.user, [user], message);
+      await pushNotifications(req.user, [user], userMessage);
 
-      /* const userNotification = new Notification({
-        creator: req.user.id,
-        team_id: req.user.team.id,
-        message:
-          "You were added to a new project: " +
-          project.name +
-          ", as a " +
-          capitalize(projectUser.role),
-      });
-      await userNotification.save();
-
-      user.notifications.push({ notification_id: userNotification._id });
-      await user.save(); */
+      const managersMessage =
+        capitalize(user.firstName + " " + user.lastName) +
+        " was added to Project " +
+        project.name;
+      const projectManagers = await getByProjectRole(
+        projectId,
+        "project-manager",
+        [req.user.id]
+      );
+      await pushNotifications(req.user, projectManagers, managersMessage);
 
       return res.json({ success: true });
     } catch (err) {

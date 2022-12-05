@@ -3,11 +3,14 @@ const Ticket = require("../../models/ticket");
 const UserInfo = require("../../models/userInfo");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
+const populateUserProjects = require("../user/populateUserProjects");
+
  
 const getProjectData = express.Router();
 
 getProjectData.route("/getProjectData").get(auth.verifyJWT, async (req, res) => {
     try {
+      await populateUserProjects(req.user);
       UserInfo.findOne({ user_id: req.user.id })
         .populate("projects")
         .exec(async (err, user) => {
@@ -44,7 +47,6 @@ getProjectData.route("/getProjectData").get(auth.verifyJWT, async (req, res) => 
               const users = [];
               for (let i in ticket.users) {
                 const id = ticket.users[i];
-                //const ticketUser = await TicketUser.findById(id);
                 users.push(id);
               }
               ticket.users = users;

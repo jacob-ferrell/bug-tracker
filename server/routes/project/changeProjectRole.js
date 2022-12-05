@@ -2,6 +2,7 @@ const express = require("express");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
 
+
 const changeProjectRole = express.Router();
 
 changeProjectRole
@@ -22,7 +23,6 @@ changeProjectRole
         project_id: projectId,
         user_id: userId,
       });
-      console.log(projectUser);
       projectUser.role = req.body.role;
       await projectUser.save();
 

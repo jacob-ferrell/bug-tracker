@@ -3,7 +3,11 @@ const Project = require("../../models/project");
 const UserInfo = require("../../models/userInfo");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
- 
+const pushNotifications = require("../../utils/pushNotification");
+const capitalize = require("../../utils/capitalize");
+const getByProjectRole = require("../../utils/getByProjectRole");
+
+
 const removeFromProject = express.Router();
 
 removeFromProject
@@ -26,7 +30,19 @@ removeFromProject
 
       const user = await UserInfo.findOne({ user_id: userId });
       user.projects = user.projects.filter((project) => project != projectId);
-      await user.save();
+      const userMessage = "You were removed from Project: " + project.name;
+      await pushNotifications(req.user, [user], userMessage);
+
+      const managersMessage =
+        capitalize(user.firstName + " " + user.lastName) +
+        " was removed from Project: " +
+        project.name;
+      const projectManagers = await getByProjectRole(
+        projectId,
+        "project-manager",
+        [req.user.id]
+      );
+      await pushNotifications(req.user, projectManagers, managersMessage);
       return res.json({ success: true });
     } catch (err) {
       console.log(err);
@@ -37,4 +53,4 @@ removeFromProject
     }
   });
 
-  module.exports = removeFromProject;
+module.exports = removeFromProject;
