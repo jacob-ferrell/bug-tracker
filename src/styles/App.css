@@ -1,5 +1,6 @@
 html, body, #root, .App, .dashboard{
     background-color: rgb(216, 216, 216);
+    height: 100%;
 }
 .content {
     overflow: auto;

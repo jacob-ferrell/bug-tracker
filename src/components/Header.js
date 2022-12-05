@@ -3,6 +3,7 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { fetchNotifications, fetchUser, fetchURL } from "../api";
+import uniqid from 'uniqid';
 
 const Header = (props) => {
   const notifications = useQuery("notifications", fetchNotifications, {
@@ -22,9 +23,9 @@ const Header = (props) => {
   const getInitials = () =>
     (user.data.firstName[0] + user.data.lastName[0]).toUpperCase();
 
-  const dropdownNotifications = notifications?.data?.map((notification) => {
+  const dropdownNotifications = notifications?.data?.map((notification, i) => {
     return (
-      <Dropdown.Item>
+      <Dropdown.Item key={i}>
         <span className="dropdown-item" href="#">
           {notification.message}
         </span>

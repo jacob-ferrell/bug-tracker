@@ -5,6 +5,9 @@ const TeamMember = require("../../models/teamMember");
 const Notification = require('../../models/notification')
 const auth = require("../../verifyJWT");
 const capitalize = require("../../utils/capitalize");
+const getByTeamRole = require("../../utils/getByTeamRole");
+const pushNotifications = require("../../utils/pushNotification");
+
 
 const addToTeam = express.Router();
 
@@ -39,25 +42,11 @@ addToTeam.route("/addToTeam").post(auth.verifyJWT, async (req, res) => {
     team.members.push(userToAdd._id);
     await team.save();
 
-    const notification = new Notification({
-      creator: req.user.id,
-      team_id: req.user.team.id,
-      message:
-        capitalize(userToAdd.firstName + " " + userToAdd.lastName) +
-        " was added to the team.",
-    });
-    await notification.save();
-
-    const admins = await TeamMember.find({
-      team_id: req.user.team.team_id,
-      role: "admin",
-      user_id: { $ne: req.user.id },
-    });
-    for (let i in admins) {
-      const admin = await UserInfo.findOne({user_id: admins[i].user_id});
-      admin.notifications.push({id: notification._id});
-      await admin.save();
-    }
+    const admins = await getByTeamRole(req.user, 'admin', [req.user.id]);
+    const message = capitalize(userToAdd.firstName + " " + userToAdd.lastName) +
+    " was added to the team.";
+    await pushNotifications(req.user, admins, message);
+    
     return res.json({ success: true });
   } catch (err) {
     res.json({ failed: true, message: "Failed to add member" });

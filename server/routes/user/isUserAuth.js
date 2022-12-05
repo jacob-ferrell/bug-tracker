@@ -26,7 +26,7 @@ isUserAuth.route("/isUserAuth").get(auth.verifyJWT, async (req, res) => {
         for (let i in userProjects) {
           projects.push(userProjects[i].project_id);
         }
-        assignProjects(projects);
+        await assignProjects(projects);
         return res.json({
           isLoggedIn: true,
           ...user._doc,
@@ -38,7 +38,7 @@ isUserAuth.route("/isUserAuth").get(auth.verifyJWT, async (req, res) => {
         for (let i in teamProjects) {
           projects.push(teamProjects[i]._id);
         }
-        assignProjects(projects);
+        await assignProjects(projects);
         return res.json({
           isLoggedIn: true,
           ...user._doc,

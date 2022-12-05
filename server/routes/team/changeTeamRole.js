@@ -5,6 +5,8 @@ const Team = require("../../models/team");
 const TeamMember = require("../../models/teamMember");
 const Notification = require("../../models/notification");
 const capitalize = require("../../utils/capitalize");
+const pushNotifications = require("../../utils/pushNotification");
+const getByTeamRole = require("../../utils/getByTeamRole");
 
 const auth = require("../../verifyJWT");
 
@@ -48,26 +50,15 @@ changeTeamRole
         assignProjects(ids);
       }
 
-      const adminNotification = new Notification({
-        creator: req.user.id,
-        team_id: req.user.team.id,
-        message:
-          capitalize(user.firstName + " " + user.lastName) +
-          "'s Team Role was changed to " +
-          capitalize(newRole),
-      });
-      await adminNotification.save();
-
-      const admins = await TeamMember.find({
-        team_id: req.user.team.team_id,
-        role: "admin",
-        user_id: { $nin: [req.user.id, userId] },
-      });
-      for (let i in admins) {
-        const admin = await UserInfo.findOne({ user_id: admins[i].user_id });
-        admin.notifications.push({notification_id: adminNotification._id});
-        await admin.save();
-      }
+      const admins = await getByTeamRole(req.user, "admin", [
+        req.user.id,
+        userId,
+      ]);
+      const message =
+        capitalize(user.firstName + " " + user.lastName) +
+        "'s Team Role was changed to " +
+        capitalize(newRole);
+      await pushNotifications(req.user, admins, message);
 
       const userNotification = new Notification({
         creator: req.user.id,
@@ -76,7 +67,7 @@ changeTeamRole
       });
       await userNotification.save();
 
-      user.notifications.push({notification_id: userNotification._id});
+      user.notifications.push({ notification_id: userNotification._id });
       await user.save();
 
       return res.json({ success: true });

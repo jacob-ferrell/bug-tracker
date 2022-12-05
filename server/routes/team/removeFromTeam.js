@@ -5,6 +5,8 @@ const TeamMember = require("../../models/teamMember");
 const auth = require("../../verifyJWT");
 const capitalize = require("../../utils/capitalize");
 const Notification = require("../../models/notification");
+const getByTeamRole = require("../../utils/getByTeamRole");
+const pushNotifications = require("../../utils/pushNotification");
 
 const removeFromTeam = express.Router();
 
@@ -27,34 +29,21 @@ removeFromTeam
       await team.save();
 
       const removedUserNotification = new Notification({
-        message: "You have been removed from your team",
+        creator: req.user.id,
+        team_id: req.user.team.team_id,
+        message: "You were removed from Team " + team.name,
       });
       await removedUserNotification.save();
 
       const user = await UserInfo.findOne({ user_id: toRemove });
       user.team = undefined;
-      user.notifications.push({ id: removedUserNotification._id });
+      user.notifications.push({ notification_id: removedUserNotification._id });
       await user.save();
 
-      const adminNotification = new Notification({
-        creator: req.user.id,
-        team_id: req.user.team.id,
-        message:
-          capitalize(user.firstName + " " + user.lastName) +
-          " was removed from the team.",
-      });
-      await adminNotification.save();
-
-      const admins = await TeamMember.find({
-        team_id: req.user.team.team_id,
-        role: "admin",
-        user_id: { $ne: req.user.id },
-      });
-      for (let i in admins) {
-        const admin = await UserInfo.findOne({ user_id: admins[i].user_id });
-        admin.notifications.push({ id: adminNotification._id });
-        await admin.save();
-      }
+      const admins = await getByTeamRole(req.user, 'admin', [req.user.id]);
+      const message = capitalize(user.firstName + " " + user.lastName) +
+      " was removed from the team.";
+      await pushNotifications(req.user, admins, message);
 
       return res.json({ success: true });
     } catch (err) {
