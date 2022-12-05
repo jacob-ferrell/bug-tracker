@@ -36,7 +36,7 @@ const TicketsTable = (props) => {
   let ticketData = projectData.map((project) => project.tickets).flat();
 
   useEffect(() => {
-      projects.refetch();
+    projects.refetch();
   }, [props.filterByAssigned]);
 
   if (props.sortBy == "creator") {
@@ -48,6 +48,9 @@ const TicketsTable = (props) => {
     ticketData = ticketData.filter((ticket) =>
       ticket.users.includes(userData.user_id)
     );
+  }
+  if (!props.showClosed) {
+    ticketData = ticketData.filter((ticket) => ticket.status !== "closed");
   }
   const ticketRows = ticketData
     .sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status))

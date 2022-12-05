@@ -1,7 +1,8 @@
 html, body, #root, .App, .dashboard{
-    height: 100%;
     background-color: rgb(216, 216, 216);
-
+}
+.content {
+    overflow: auto;
 }
 
 .green-check {
@@ -9,7 +10,7 @@ html, body, #root, .App, .dashboard{
     color: green;
 }
 
-#root .btn:focus {
+#root .btn:focus, .form-check-input:focus {
     outline: none;
     box-shadow: none;
 }
@@ -18,3 +19,6 @@ html, body, #root, .App, .dashboard{
     flex: 1;
 }
 
+.form-check-input {
+    cursor: pointer;
+}

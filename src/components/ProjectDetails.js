@@ -18,6 +18,7 @@ const ProjectDetails = (props) => {
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState(null);
   const [filterByAssigned, setFilterByAssigned] = useState(false);
+  const [showClosed, setShowClosed] = useState(false);
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const comments = useQuery("comments", fetchComments);
@@ -89,7 +90,7 @@ const ProjectDetails = (props) => {
           refetch={projects.refetch}
         />
       )}
-      <div className="p-2 w-auto bg-light shadow rounded m-3">
+      <div className="p-2 w-auto bg-light shadow rounded m-3 overflow-auto">
         <h5 className="w-auto border-bottom pb-3">{getProject().name}</h5>
         {!projects.isLoading && (
           <div className="p-2 bg-light shadow rounded m-3 d-flex-column">
@@ -130,7 +131,7 @@ const ProjectDetails = (props) => {
               )}
             </div>
           </div>
-          <div className="p-3 flex-even">
+          <div className="p-3 flex-even"> 
             <div className="project-tickets bg-light shadow rounded p-2 border">
               <div className="my-tickets-header d-flex justify-content-between">
                 <h5>Tickets</h5>
@@ -143,6 +144,13 @@ const ProjectDetails = (props) => {
                     defaultChecked={filterByAssigned}
                   />
                 ) : null}
+                <Form.Check
+                    type="checkbox"
+                    //onChange={handleCheckChange}
+                    onClick={() => setShowClosed(prev => !prev)}
+                    label="Show Closed"
+                    defaultChecked={showClosed}
+                  />
                 <button
                   className="btn btn-sm btn-primary"
                   onClick={() => {
@@ -169,6 +177,7 @@ const ProjectDetails = (props) => {
                   role={getProject().role}
                   filterByAssigned={filterByAssigned}
                   queryClient={props.queryClient}
+                  showClosed={showClosed}
                 />
               )}
             </div>
