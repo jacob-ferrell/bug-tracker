@@ -3,6 +3,8 @@ const Project = require("../../models/project");
 const UserInfo = require("../../models/userInfo");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
+const capitalize = require("../../utils/capitalize");
+const Notification = require('../../models/notification');
 
 const addMemberToProject = express.Router();
 
@@ -27,6 +29,21 @@ addMemberToProject
       const project = await Project.findById(projectId);
       project.users.push(projectUser._id);
       await project.save();
+
+      const userNotification = new Notification({
+        creator: req.user.id,
+        team_id: req.user.team.id,
+        message:
+          "You were added to a new project: " +
+          project.name +
+          ", as a " +
+          capitalize(projectUser.role),
+      });
+      await userNotification.save();
+
+      user.notifications.push({notification_id: userNotification._id});
+      await user.save();
+      
       return res.json({ success: true });
     } catch (err) {
       console.log(err);
