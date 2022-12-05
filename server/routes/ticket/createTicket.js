@@ -3,6 +3,8 @@ const Project = require("../../models/project");
 const Ticket = require("../../models/ticket");
 const ProjectUser = require("../../models/projectUser");
 const auth = require("../../verifyJWT");
+const getByProjectRole = require("../../utils/getByProjectRole");
+const pushNotifications = require('../../utils/pushNotification');
 
 const createTicket = express.Router();
 
@@ -31,7 +33,7 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
   try {
     const projectId = ticket.project_id;
     const role = await auth.getRole(req.user, projectId);
-    if (!auth.verifyRole(role, ['tester'])) {
+    if (!auth.verifyRole(role, ["tester"])) {
       return res.json({
         failed: true,
         message: "You do not have permission to create tickets",
@@ -57,6 +59,19 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
 
     project.tickets.push(newTicket._id);
     await project.save();
+
+    const message =
+      "New Ticket '" +
+      newTicket.title +
+      "' was created in Project '" +
+      project.name + "'";
+    const projectManagers = await getByProjectRole(
+      projectId,
+      "project-manager",
+      [req.user.id]
+    );
+    await pushNotifications(req.user, projectManagers, message);
+    
 
     return res.json({ message: "Sucessfully created ticket" });
   } catch (err) {

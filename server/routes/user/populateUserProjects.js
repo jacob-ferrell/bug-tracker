@@ -21,8 +21,6 @@ async function populateUserProjects(currentUser) {
         for (let i in userProjects) {
           projects.push(userProjects[i].project_id);
         }
-        console.log(userProjects);
-        console.log(projects)
         return await assignProjects(projects);
        
       }
