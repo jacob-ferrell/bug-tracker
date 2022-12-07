@@ -7,7 +7,7 @@ import { capitalize } from "../../utils/capitalize";
 import { Form } from "react-bootstrap";
 
 const TicketsTable = (props) => {
-  const headings = ["", "Ticket Title", "Description", "Status", ""].map(
+  const headings = ["Ticket Title", "Description", "Status", ""].map(
     (heading, i) => {
       return (
         <th className="text-left" key={heading + i}>
@@ -59,17 +59,17 @@ const TicketsTable = (props) => {
       const id = ticket._id;
       return (
         <tr key={uniqid()} className="table-ticket-row">
-          <td>{i + 1}</td>
+          {/* <td>{i + 1}</td> */}
           <td>
             <span
-              className="text-primary ticket-title"
+              className="text-primary ticket-title font-weight-bold"
               onClick={props.handleClick}
               data-ticketid={id}
             >
               {ticket.title}
             </span>
           </td>
-          <td>{ticket.description}</td>
+          <td className="truncate">{ticket.description}</td>
           <td>{capitalize(status)}</td>
           <td className="ellipsis text-center">
             <DropdownButton variant="light" id="ellipsis" title="⠇">
@@ -91,7 +91,7 @@ const TicketsTable = (props) => {
   return (
     <>
       {!projects.isLoading ? (
-        <table className="table table-hover table-sm mt-2">
+        <table className="tickets-table table table-hover table-sm mt-2">
           <thead>
             <tr>{headings}</tr>
           </thead>

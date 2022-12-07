@@ -30,21 +30,20 @@ addMemberToProject
       project.users.push(projectUser._id);
       await project.save();
 
-      const userMessage =
-        "You were added to a new project: " +
-        project.name +
-        ", as a " +
-        capitalize(projectUser.role);
+      const userMessage = `You were added to '${
+        project.name
+      }' as a ${capitalize(projectUser.role)}`;
+
       await pushNotifications(req.user, [user], userMessage);
 
-      const managersMessage =
-        capitalize(user.firstName + " " + user.lastName) +
-        " was added to Project " +
-        project.name;
+      const managersMessage = `${capitalize(user.firstName)} ${capitalize(
+        user.lastName
+      )} was added to '${project.name}'`;
+
       const projectManagers = await getByProjectRole(
         projectId,
         "project-manager",
-        [req.user.id]
+        [req.user.id, user.user_id]
       );
       await pushNotifications(req.user, projectManagers, managersMessage);
 

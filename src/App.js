@@ -18,7 +18,6 @@ import MyTeam from "./components/MyTeam";
 import ProjectDetails from "./components/ProjectDetails";
 import { fetchURL, fetchTeam, fetchUser } from "./api.js";
 
-
 function App(props) {
   const navigate = useNavigate();
 
@@ -45,7 +44,7 @@ function App(props) {
 
   function handleProjectClick(e) {
     const id = e.currentTarget.dataset.projectid;
-    const name = e.currentTarget.dataset.name.toLowerCase().replace(" ", "-");
+    const name = e.currentTarget.dataset.name.toLowerCase().replace(/\s/g, "-");
     setSelectedProject(id);
     localStorage.setItem("selectedProject", id);
     navigate(`/dashboard/project/${name}`);
@@ -53,15 +52,20 @@ function App(props) {
 
   return (
     <div className="App">
-      {!isLoading && data.isLoggedIn ? (
+      {data?.isLoggedIn ? (
         <>
           <header>
-            <Header userData={data} logout={logout} />
+            <Header
+              userData={data}
+              logout={logout}
+              queryClient={props.queryClient}
+            />
           </header>
           <Sidebar />
-          <div className="content w-auto">
+          <div className="content w-auto overflow-auto">
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" />} />
+              <Route path="/login" element={<Navigate to="/dashboard" />} />
               <Route
                 path="/dashboard"
                 element={
@@ -94,6 +98,8 @@ function App(props) {
             </Routes>
           </div>
         </>
+      ) : isLoading ? (
+        <div>Loading...</div>
       ) : (
         <Routes>
           <Route path="*" element={<Navigate to="/login" />} />

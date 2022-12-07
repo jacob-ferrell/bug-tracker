@@ -26,10 +26,7 @@ const Comment = (props) => {
       <div className="d-flex justify-content-between">
         <div>
           <span className="font-weight-bold">{comment.creator.name}</span>
-          {" - "}
-          <span>{formatDate(comment.createdAt)}</span>
-          {" @ "}
-          <span>{formatTime(comment.createdAt)}</span>
+          {`   ${formatDate(comment.createdAt)} @ ${formatTime(comment.createdAt)}`}
         </div>
         {(isCreator() || hasAuth()) && (
           <DropdownButton variant="light" id="ellipsis" title="⠇">

@@ -44,7 +44,7 @@ createComment.route("/createComment").post(auth.verifyJWT, async (req, res) => {
       user_id: ticket.creator,
     });
 
-    if (ticketCreator) {
+    if (ticketCreator && ticketCreator.user_id != req.user.id) {
       developers.push(ticketCreator);
     }
 

@@ -14,6 +14,12 @@ const TicketDetails = (props) => {
   const [commentContent, setCommentContent] = useState("");
   const queryClient = props.queryClient;
 
+  const PRIORITY_COLORS = {
+    Low: "yellow",
+    Medium: "rgba(255, 166, 0, 0.7)",
+    High: "rgba(255, 0, 0, 0.65)",
+  };
+
   let comment;
 
   useEffect(() => {
@@ -91,12 +97,12 @@ const TicketDetails = (props) => {
       return ticket.users.includes(user.user_id);
     });
     return assignedDevs.map((dev) => {
-      return <span key={uniqid()}>{dev.name}</span>;
+      return <span className="pl-3" key={uniqid()}>{dev.name}</span>;
     });
   };
 
   return (
-    <div className="p-2 w-auto bg-light shadow rounded m-3">
+    <div className="ticket-details-container p-2 w-auto bg-light shadow rounded m-3">
       <h5 className="w-auto border-bottom pb-3">
         {isLoading || comments.isLoading ? (
           <Spinner
@@ -106,50 +112,81 @@ const TicketDetails = (props) => {
             role="status"
             aria-hidden="true"
           />
+        ) : !ticket ? (
+          "Select a ticket to view details"
         ) : (
-          "Ticket Details"
+          <span className="font-weight-bold">{ticket.title}</span>
         )}
       </h5>
       {ticket && (
         <div className="d-flex w-auto">
-          <div className="p-3 flex-even">
-            <div className="ticket-details p-2">
-              <div className="row d-flex justify-content-between w-auto border-bottom">
+          <div className="ticket-details p-1 flex-even">
+            <div className="container">
+              <div className="row">
                 <div className="col">
                   <div>
-                    <div className="text-primary">Title</div>
-                    <div>{ticket.title}</div>
+                    <span className="ticket-detail-label text-primary font-weight-bold">
+                      Title
+                    </span>
+                    <div className="pl-1">{ticket.title}</div>
                   </div>
-                  <div>
-                    <div className="text-primary">Status</div>
-                    <div>{capitalize(ticket.status)}</div>
+                </div>
+                <div className="col">
+                  <div className="d-flex-column">
+                    <span className="ticket-detail-label text-primary font-weight-bold">
+                      Description
+                    </span>
+                    <div className="pl-1">{ticket.description}</div>
                   </div>
                 </div>
                 <div className="col">
                   <div>
-                    <div className="text-primary">Description</div>
-                    <div>{ticket.description}</div>
-                  </div>
-                  <div>
-                    <div className="text-primary">Type</div>
-                    <div>{ticket.type}</div>
-                  </div>
-                </div>
-                <div className="col">
-                  <div>
-                    <div className="text-primary">Creator</div>
-                    <div>{ticket.creator.name}</div>
-                  </div>
-                  <div>
-                    <div className="text-primary">Priority</div>
-                    <div>{ticket.priority}</div>
+                    <span className="ticket-detail-label text-primary font-weight-bold">
+                      Creator
+                    </span>
+                    <div className="pl-1">{ticket.creator.name}</div>
                   </div>
                 </div>
               </div>
-              <div className="row p-2">
-                <span>Assigned Devs</span>
-                {getAssignedDevs()}
+              <div className="row my-1 pb-2 border-bottom">
+                <div className="col">
+                  <div>
+                    <span className="ticket-detail-label text-primary font-weight-bold">
+                      Status
+                    </span>
+                    <div className="pl-1">{capitalize(ticket.status)}</div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div>
+                    <span className="ticket-detail-label text-primary font-weight-bold">
+                      Type
+                    </span>
+                    <div className="pl-1">{ticket.type}</div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div>
+                    <span className="ticket-detail-label text-primary font-weight-bold">
+                      Priority
+                    </span>
+                    <div className="pl-1">
+                      <span className="ticket-priority"
+                        style={{
+                          backgroundColor: PRIORITY_COLORS[ticket.priority],
+                          
+                        }}
+                      >
+                        {ticket.priority}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+            <div className="row p-3">
+              <div><span className="ticket-detail-label text-primary font-weight-bold">Assigned Devs</span></div>
+              {getAssignedDevs()}
             </div>
           </div>
           <div className="p-3 flex-even">

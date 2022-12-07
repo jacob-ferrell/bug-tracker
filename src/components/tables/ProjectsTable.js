@@ -3,10 +3,10 @@ import Warning from "../modals/Warning";
 import { capitalize } from "../../utils/capitalize";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { fetchURL } from "../../api";
+import { fetchProjects } from "../../api";
 
 const ProjectsTable = (props) => {
-  const projectData = props.projectData;
+  const projects = useQuery('projects', fetchProjects);
   const [showWarning, setShowWarning] = useState(false);
   const [project, setProject] = useState(false);
 
@@ -15,7 +15,7 @@ const ProjectsTable = (props) => {
     "Project",
     "Description",
     "My Role",
-    /* 'Open Tickets', */ "",
+    'Open Tickets', "",
   ].map((heading, i) => {
     return (
       <th className="text-left" key={heading + i}>
@@ -28,16 +28,16 @@ const ProjectsTable = (props) => {
     setProject(e.target.dataset.projectid);
     setShowWarning(true);
   };
-  const projectRows = projectData
+  const projectRows = projects?.data
     .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))
     .map((project, i) => {
       const role = project.role;
-      /* const openTickets = getOpenTickets(project); */
+      const openTickets = getOpenTickets(project);
       const id = project.project_id;
       return (
         <tr key={project.name + i} className="table-project-row">
           <td>{i + 1}</td>
-          <td className="text-primary">
+          <td className="text-primary font-weight-bold">
             <span
               className="project-name"
               data-projectid={id}
@@ -49,7 +49,7 @@ const ProjectsTable = (props) => {
           </td>
           <td>{project.description}</td>
           <td>{capitalize(role)}</td>
-          {/* <td >{openTickets}</td> */}
+          <td >{openTickets}</td>
           <td className="ellipsis text-center">
             <DropdownButton variant="light" id="ellipsis" title="⠇">
               <Dropdown.Item data-projectid={id} onClick={props.showEdit}>
@@ -76,7 +76,7 @@ const ProjectsTable = (props) => {
 
   function getOpenTickets(project) {
     const id = project.project_id;
-    return project.tickets.filter((ticket) => {
+    return project.tickets?.filter((ticket) => {
       return ticket.project_id == id && ticket.status == "open";
     }).length;
   }

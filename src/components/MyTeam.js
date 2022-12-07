@@ -44,7 +44,55 @@ const MyTeam = (props) => {
           queryClient={props.queryClient}
         />
       )}
-      <div className="p-3 w-auto h-auto">
+      {!team.isLoading ? (
+        <div className="p-3 w-auto h-auto">
+          <div id="team" className="team bg-light shadow rounded p-2">
+            <div className="team-header d-flex justify-content-between">
+              <h5>My Team</h5>
+              {!team.data?.noTeam && (
+                <div className="d-flex">
+                  {hasAuth() && (
+                    <button
+                      onClick={() => setShowAddToTeam(true)}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Add Member
+                    </button>
+                  )}
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={handleLeaveClick}
+                  >
+                    Leave Team
+                  </button>
+                </div>
+              )}
+            </div>
+            {team.data?.noTeam ? (
+              <div className="d-flex flex-column justify-content-center">
+                <span className="text-center">
+                  You are not part of a team. You can create a team, or you must
+                  wait for another user to add you to theirs
+                </span>
+                <button
+                  onClick={() => setShowCreateTeam(true)}
+                  className="btn btn-primary btn-sm"
+                >
+                  Create Team
+                </button>
+              </div>
+            ) : !team.isLoading ? (
+              <TeamTable
+                users={teamData}
+                queryClient={props.queryClient}
+                userData={props.userData}
+                type="myteam"
+                hasAuth={hasAuth}
+              />
+            ) : null}
+          </div>
+        </div>
+      ) : (
         <div id="team" className="team bg-light shadow rounded p-2">
           <div className="team-header d-flex justify-content-between">
             <h5>
@@ -57,51 +105,11 @@ const MyTeam = (props) => {
                   aria-hidden="true"
                 />
               )}
-              {team.isLoading ? " Loading Team..." : "My Team"}
+              {" Loading Team"}
             </h5>
-            {!team.data?.noTeam && (
-              <div className="d-flex">
-                {hasAuth() && (
-                  <button
-                    onClick={() => setShowAddToTeam(true)}
-                    className="btn btn-primary btn-sm"
-                  >
-                    Add Member
-                  </button>
-                )}
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={handleLeaveClick}
-                >
-                  Leave Team
-                </button>
-              </div>
-            )}
           </div>
-          {team.data?.noTeam ? (
-            <div className="d-flex flex-column justify-content-center">
-              <span className="text-center">
-                You are not part of a team. You can create a team, or you must
-                wait for another user to add you to theirs
-              </span>
-              <button
-                onClick={() => setShowCreateTeam(true)}
-                className="btn btn-primary btn-sm"
-              >
-                Create Team
-              </button>
-            </div>
-          ) : !team.isLoading ? (
-            <TeamTable
-              users={teamData}
-              queryClient={props.queryClient}
-              userData={props.userData}
-              type="myteam"
-              hasAuth={hasAuth}
-            />
-          ) : null}
         </div>
-      </div>
+      )}
     </>
   );
 };

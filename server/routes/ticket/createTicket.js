@@ -1,10 +1,10 @@
 const express = require("express");
 const Project = require("../../models/project");
 const Ticket = require("../../models/ticket");
-const ProjectUser = require("../../models/projectUser");
+const UserInfo = require("../../models/userInfo");
 const auth = require("../../verifyJWT");
 const getByProjectRole = require("../../utils/getByProjectRole");
-const pushNotifications = require('../../utils/pushNotification');
+const pushNotifications = require("../../utils/pushNotification");
 
 const createTicket = express.Router();
 
@@ -50,28 +50,35 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
         message: "This project already has a ticket with that name",
       });
 
+    const project = await Project.findById(projectId);
+
     let newTicket = new Ticket({
       ...ticket,
       creator: req.user.id,
-      users: [],
     });
     await newTicket.save();
 
     project.tickets.push(newTicket._id);
     await project.save();
 
-    const message =
-      "New Ticket '" +
-      newTicket.title +
-      "' was created in Project '" +
-      project.name + "'";
+    let developers = [];
+
+    for (let i in ticket.users) {
+      const user = await UserInfo.findOne({ user_id: ticket.users[i] });
+      developers.push(user);
+    }
+
+    const developerMessage = `You were assigned to '${ticket.title}' in '${project.name}'`;
+
+    const managerMessage = `New ticket '${newTicket.title}' was created in '${project.name}'`;
     const projectManagers = await getByProjectRole(
       projectId,
       "project-manager",
       [req.user.id]
     );
-    await pushNotifications(req.user, projectManagers, message);
-    
+    await pushNotifications(req.user, projectManagers, managerMessage);
+    if (developers.length)
+      await pushNotifications(req.user, developers, developerMessage);
 
     return res.json({ message: "Sucessfully created ticket" });
   } catch (err) {

@@ -19,10 +19,6 @@ app.use(bodyParser.json());
 Object.keys(routes).forEach(folder => {
   routes[folder].forEach(route => app.use(require(`./routes/${folder}/${route}`)))
 })
-/* projectRoutes.forEach(route => app.use(require(`./routes/project/${route}`)));
-userRoutes.forEach(route => app.use(require(`./routes/user/${route}`)));
-teamRoutes.forEach(route => app.use(require(`./routes/team/${route}`)));
-ticketRoutes.forEach(route => app.use(require(`./routes/ticket/${route}`))) */
 
 
 

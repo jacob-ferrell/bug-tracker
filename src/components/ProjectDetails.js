@@ -64,7 +64,7 @@ const ProjectDetails = (props) => {
   };
 
   return (
-    <>
+    <div className="d-flex-column h-100 overflow-auto">
       {showAddMember && (
         <AddToProject
           teamData={team.data}
@@ -90,100 +90,108 @@ const ProjectDetails = (props) => {
           refetch={projects.refetch}
         />
       )}
-      <div className="p-2 w-auto bg-light shadow rounded m-3 overflow-auto">
-        <h5 className="w-auto border-bottom pb-3">{getProject().name}</h5>
-        {!projects.isLoading && (
-          <div className="p-2 bg-light shadow rounded m-3 d-flex-column">
-            <div>Project Description: {getProject().description}</div>
-            <div>My Role: {capitalize(getProject().role)}</div>
-          </div>
-        )}
-        <div className="d-flex w-auto">
-          <div className="p-3 flex-even">
-            <div className="project-members bg-light shadow rounded p-2 border">
-              <div className="my-tickets-header d-flex justify-content-between">
-                <h5>Assigned Team Members</h5>
-                {!projects.isLoading && (
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={() => {
-                      setShowAddMember(true);
-                      setMemberToEdit(null);
-                    }}
-                    disabled={
-                      !["admin", "project-manager"].includes(getProject().role)
-                    }
-                  >
-                    Add Member
-                  </button>
-                )}
-              </div>
-              {!projects.isLoading && getProjectUsers().length > 0 && (
-                <TeamTable
-                  users={getProjectUsers()}
-                  userData={props.userData}
-                  hasAuth={hasAuth}
-                  getProject={getProject}
-                  queryClient={props.queryClient}
-                  showEdit={() => setShowAddMember(true)}
-                  setMember={(member) => setMemberToEdit(member)}
-                />
-              )}
+      {!projects.isLoading ? (
+        <div className="p-2 w-auto bg-light shadow rounded m-3 overflow-auto">
+          <div className="d-flex">
+            <h5 className="w-auto border-bottom pb-3 font-weight-bold">
+              {getProject().name}
+            </h5>
+            <div className="ml-2">
+              <span className="ticket-detail-label text-primary">
+                {capitalize(getProject().role)}
+              </span>
             </div>
           </div>
-          <div className="p-3 flex-even"> 
-            <div className="project-tickets bg-light shadow rounded p-2 border">
-              <div className="my-tickets-header d-flex justify-content-between">
-                <h5>Tickets</h5>
-                {getProject().role === "developer" ? (
+          <div className="text-secondary ml-2">{getProject().description}</div>
+          <div className="d-flex w-auto">
+            <div className="p-1 flex-even">
+              <div className="project-members bg-light shadow rounded p-2 border">
+                <div className="my-tickets-header d-flex justify-content-between">
+                  <h5>Assigned Personnel</h5>
+                  {!projects.isLoading && (
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => {
+                        setShowAddMember(true);
+                        setMemberToEdit(null);
+                      }}
+                      disabled={
+                        !["admin", "project-manager"].includes(
+                          getProject().role
+                        )
+                      }
+                    >
+                      Add Member
+                    </button>
+                  )}
+                </div>
+                {!!getProjectUsers().length ? (
+                  <TeamTable
+                    users={getProjectUsers()}
+                    userData={props.userData}
+                    hasAuth={hasAuth}
+                    getProject={getProject}
+                    queryClient={props.queryClient}
+                    showEdit={() => setShowAddMember(true)}
+                    setMember={(member) => setMemberToEdit(member)}
+                  />
+                ) : <div className="text-secondary">No personnel are assigned to this project</div>}
+              </div>
+            </div>
+            <div className="p-1 flex-even">
+              <div className="project-tickets bg-light shadow rounded p-2 border">
+                <div className="my-tickets-header d-flex justify-content-between">
+                  <h5>Tickets</h5>
+                  {getProject().role === "developer" ? (
+                    <Form.Check
+                      type="checkbox"
+                      //onChange={handleCheckChange}
+                      onClick={() => setFilterByAssigned((prev) => !prev)}
+                      label="Assigned To Me"
+                      defaultChecked={filterByAssigned}
+                    />
+                  ) : null}
                   <Form.Check
                     type="checkbox"
                     //onChange={handleCheckChange}
-                    onClick={() => setFilterByAssigned((prev) => !prev)}
-                    label="Assigned To Me"
-                    defaultChecked={filterByAssigned}
-                  />
-                ) : null}
-                <Form.Check
-                    type="checkbox"
-                    //onChange={handleCheckChange}
-                    onClick={() => setShowClosed(prev => !prev)}
+                    onClick={() => setShowClosed((prev) => !prev)}
                     label="Show Closed"
                     defaultChecked={showClosed}
                   />
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() => {
-                    setTicketToEdit(null);
-                    setShowNewTicket(true);
-                  }}
-                  disabled={
-                    !["admin", "project-manager", "tester"].includes(
-                      getProject().role
-                    )
-                  }
-                >
-                  New Ticket
-                </button>
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => {
+                      setTicketToEdit(null);
+                      setShowNewTicket(true);
+                    }}
+                    disabled={
+                      !["admin", "project-manager", "tester"].includes(
+                        getProject().role
+                      )
+                    }
+                  >
+                    New Ticket
+                  </button>
+                </div>
+                {!!getProject().tickets.length ? (
+                  <TicketsTable
+                    sortBy="project"
+                    projectData={projects.data}
+                    userData={props.userData}
+                    handleClick={handleTicketClick}
+                    projectId={props.projectId}
+                    handleEditClick={handleEditClick}
+                    role={getProject().role}
+                    filterByAssigned={filterByAssigned}
+                    queryClient={props.queryClient}
+                    showClosed={showClosed}
+                  />
+                ) : null}
               </div>
-              {!projects.isLoading && (
-                <TicketsTable
-                  sortBy="project"
-                  projectData={projects.data}
-                  userData={props.userData}
-                  handleClick={handleTicketClick}
-                  projectId={props.projectId}
-                  handleEditClick={handleEditClick}
-                  role={getProject().role}
-                  filterByAssigned={filterByAssigned}
-                  queryClient={props.queryClient}
-                  showClosed={showClosed}
-                />
-              )}
             </div>
           </div>
         </div>
-      </div>
+      ) : null}
       {!comments.isLoading && (
         <TicketDetails
           projectId={projectId}
@@ -194,7 +202,7 @@ const ProjectDetails = (props) => {
           getProject={getProject}
         />
       )}
-    </>
+    </div>
   );
 };
 

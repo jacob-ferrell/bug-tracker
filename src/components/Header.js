@@ -3,7 +3,6 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { fetchNotifications, fetchUser, fetchURL } from "../api";
-import uniqid from 'uniqid';
 
 const Header = (props) => {
   const notifications = useQuery("notifications", fetchNotifications, {
@@ -11,14 +10,21 @@ const Header = (props) => {
   });
   const user = useQuery("user", fetchUser);
 
-  const handleNotificationsClick = async e => {
-    await fetchURL('/readNotifications');
-    notifications.refetch();
-  }
+  const handleNotificationsClick = async (e) => {
+    props.queryClient.setQueryData("notifications", (prev) => {
+      return prev.map((notification) => ({
+        ...notification,
+        unread: false,
+      }));
+    });
+    await fetchURL("/readNotifications");
+    props.queryClient.invalidateQueries("notifications");
+    //notifications.refetch();
+  };
 
   const getUnreadNotifications = () => {
-    return notifications.data.filter(notification => notification.unread);
-  }
+    return notifications.data.filter((notification) => notification.unread);
+  };
 
   const getInitials = () =>
     (user.data.firstName[0] + user.data.lastName[0]).toUpperCase();
@@ -94,7 +100,10 @@ const Header = (props) => {
                 </form> */}
 
         <ul className="navbar-nav ms-auto d-flex flex-row bg-dark">
-          <Dropdown onClick={handleNotificationsClick} className="nav-item rounded-0 bg-dark">
+          <Dropdown
+            onClick={handleNotificationsClick}
+            className="nav-item rounded-0 bg-dark"
+          >
             <Dropdown.Toggle variant="dark" className="rounded-0">
               <i className="fas fa-bell fa-lg"></i>
               {!notifications.isLoading && !!getUnreadNotifications().length ? (
