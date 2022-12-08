@@ -4,9 +4,24 @@ import { useState, useEffect } from "react";
 import { fetchProjects } from "../../api";
 import uniqid from "uniqid";
 import { capitalize } from "../../utils/capitalize";
-import { Form } from "react-bootstrap";
+import Warning from "../modals/Warning";
 
 const TicketsTable = (props) => {
+  const [showWarning, setShowWarning] = useState(false);
+  const [ticket, setTicket] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const handleDeleteClick = (e) => {
+    const ticket = JSON.parse(e.target.dataset.ticket);
+
+    setTicket(() => ticket);
+    setMessage({
+      body: `Are you sure you want to delete '${ticket.title}' ? All data for this ticket will be lost`,
+      heading: 'Warning!'
+    });
+    setShowWarning(true);
+
+  };
   const headings = ["Ticket Title", "Description", "Status", ""].map(
     (heading, i) => {
       return (
@@ -83,11 +98,11 @@ const TicketsTable = (props) => {
               ) : null}
               <Dropdown.Item>View Details</Dropdown.Item>
               <Dropdown.Item
-                  data-ticketid={id}
-                  onClick={props.handleDeleteClick}
-                >
-                  Delete Ticket
-                </Dropdown.Item>
+                data-ticket={JSON.stringify(ticket)}
+                onClick={handleDeleteClick}
+              >
+                Delete Ticket
+              </Dropdown.Item>
             </DropdownButton>
           </td>
         </tr>
@@ -96,6 +111,17 @@ const TicketsTable = (props) => {
 
   return (
     <>
+      {showWarning && (
+        <Warning
+          close={() => setShowWarning(false)}
+          show={showWarning}
+          message={message}
+          url="/deleteTicket"
+          ticket={ticket}
+          queryClient={props.queryClient}
+          hideRole={true}
+        />
+      )}
       {!projects.isLoading ? (
         <table className="tickets-table table table-hover table-sm mt-2">
           <thead>

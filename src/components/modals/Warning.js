@@ -2,11 +2,29 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import { fetchURL } from "../../api";
 
-const Warning = ({ hideRole, user, url, message, queryClient, show, close, project }) => {
+const Warning = ({
+  hideRole,
+  user,
+  url,
+  message,
+  queryClient,
+  show,
+  close,
+  project,
+  ticket,
+}) => {
   const [role, setRole] = useState("");
 
   const handleConfirmClick = async (e) => {
-    await fetchURL(url, { user, role, project_id: project });
+    await fetchURL(url, {
+      user,
+      role,
+      project_id: project,
+      ticket: {
+        ticket_id: ticket?._id,
+        project_id: ticket?.project_id
+      }
+    });
     queryClient.invalidateQueries();
     close();
   };

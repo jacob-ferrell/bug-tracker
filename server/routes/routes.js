@@ -23,6 +23,7 @@ module.exports = {
     "getComments",
     "getTickets",
     "deleteComment",
+    "deleteTicket"
   ],
   user: [
     "findUser",
