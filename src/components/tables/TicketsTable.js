@@ -82,6 +82,12 @@ const TicketsTable = (props) => {
                 </Dropdown.Item>
               ) : null}
               <Dropdown.Item>View Details</Dropdown.Item>
+              <Dropdown.Item
+                  data-ticketid={id}
+                  onClick={props.handleDeleteClick}
+                >
+                  Delete Ticket
+                </Dropdown.Item>
             </DropdownButton>
           </td>
         </tr>

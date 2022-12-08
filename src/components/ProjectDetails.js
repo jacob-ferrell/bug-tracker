@@ -92,11 +92,11 @@ const ProjectDetails = (props) => {
       )}
       {!projects.isLoading ? (
         <div className="p-2 w-auto bg-light shadow rounded m-3 overflow-auto">
-          <div className="d-flex">
-            <h5 className="w-auto border-bottom pb-3 font-weight-bold">
+          <div className="d-flex border-bottom">
+            <h5 className="w-auto py-1 font-weight-bold">
               {getProject().name}
             </h5>
-            <div className="ml-2">
+            <div className="ml-2 pt-1">
               <span className="ticket-detail-label text-primary">
                 {capitalize(getProject().role)}
               </span>

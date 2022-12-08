@@ -9,6 +9,7 @@ const TeamTable = (props) => {
   const [message, setMessage] = useState("");
   const [url, setURL] = useState(null);
   const [user, setUser] = useState(null);
+  const [hideRole, setHideRole] = useState(false);
 
   const hasAuth = props.hasAuth || true;
 
@@ -32,6 +33,7 @@ const TeamTable = (props) => {
       body: `Are you sure you want to remove ${name} from the team?`});
     setURL("/removeFromTeam");
     setShowWarning(true);
+    setHideRole(true);
     /* await fetchURL("/removeFromTeam", { user });
     props.queryClient.invalidateQueries({queryKey: ['team']});   */
   };
@@ -47,6 +49,7 @@ const TeamTable = (props) => {
     });
     setURL("/changeTeamRole");
     setShowWarning(true);
+    setHideRole(false);
   };
 
   const removeFromProject = async (e) => {
@@ -113,6 +116,7 @@ const TeamTable = (props) => {
           url={url}
           user={user}
           queryClient={props.queryClient}
+          hideRole={hideRole}
         />
       )}
       <table className="table table-hover table-sm mt-2">
