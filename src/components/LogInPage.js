@@ -1,6 +1,8 @@
 import '../styles/LogInPage.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import createDemoUsers from '../demoUser/createDemoUsers';
+import { fetchURL } from '../api';
 
 const LogInPage = (props) => {
 
@@ -29,6 +31,17 @@ const LogInPage = (props) => {
       localStorage.setItem('token', data.token);
       navigate('/dashboard');
     }) */
+  }
+
+  async function handleDemoUserClick(e) {
+    const demoUsers = await createDemoUsers();
+    if (!demoUsers) return alert("Unable to create demo account");
+    const admin = {
+      ...demoUsers.find(user => user.lastName === 'Admin'),
+      emails: demoUsers.map(user => user.email)
+    };
+    const userId = await props.login(admin);
+    await fetchURL('/createDemoData', {emails: admin.emails});
   }
 
   useEffect(() => {
