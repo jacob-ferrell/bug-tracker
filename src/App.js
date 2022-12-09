@@ -32,8 +32,7 @@ function App(props) {
     if (res.isLoggedIn == false) return logout();
     localStorage.setItem("token", res.token);
     refetch();
-    if (user.demo) return res.userData.user_id;
-    return navigate("/dashboard");
+    navigate("/dashboard");
   }
 
   function logout() {

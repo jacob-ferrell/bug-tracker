@@ -8,7 +8,6 @@ const signUp = express.Router();
 //create new users
 signUp.route("/signup").post(async (req, res) => {
   const user = req.body;
-  if (!user.demo) user.demo = false;
   const takenEmail = await User.findOne({ email: user.email });
 
   if (!takenEmail) {
@@ -17,7 +16,6 @@ signUp.route("/signup").post(async (req, res) => {
     const dbUser = new User({
       password: user.password,
       email: user.email,
-      demo: user.demo
     });
 
     dbUser.save((err, dbUser) => {
@@ -26,12 +24,11 @@ signUp.route("/signup").post(async (req, res) => {
         lastName: user.lastName,
         user_id: dbUser._id,
         email: user.email,
-        demo: user.demo
       });
       dbUserInfo.save();
     });
     return res.json({ takenEmail: false });
   }
-  return res.json({ failed: true, takenEmail: true });
+  return res.json({ takenEmail: true });
 });
 module.exports = signUp;

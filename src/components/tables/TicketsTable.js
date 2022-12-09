@@ -17,9 +17,10 @@ const TicketsTable = (props) => {
     setTicket(() => ticket);
     setMessage({
       body: `Are you sure you want to delete '${ticket.title}' ? All data for this ticket will be lost`,
-      heading: "Warning!",
+      heading: 'Warning!'
     });
     setShowWarning(true);
+
   };
   const headings = ["Ticket Title", "Description", "Status", ""].map(
     (heading, i) => {
@@ -95,9 +96,7 @@ const TicketsTable = (props) => {
                   Edit Ticket
                 </Dropdown.Item>
               ) : null}
-              <Dropdown.Item onClick={props.handleClick} data-ticketid={id}>
-                View Details
-              </Dropdown.Item>
+              <Dropdown.Item>View Details</Dropdown.Item>
               <Dropdown.Item
                 data-ticket={JSON.stringify(ticket)}
                 onClick={handleDeleteClick}
