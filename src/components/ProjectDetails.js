@@ -91,7 +91,7 @@ const ProjectDetails = (props) => {
         />
       )}
       {!projects.isLoading ? (
-        <div className="p-2 w-auto bg-light shadow rounded m-3 overflow-auto">
+        <div className="p-2 w-auto bg-light shadow rounded m-3 overflow-auto d-flex-column">
           <div className="d-flex border-bottom">
             <h5 className="w-auto py-1 font-weight-bold">
               {getProject().name}
@@ -103,6 +103,7 @@ const ProjectDetails = (props) => {
             </div>
           </div>
           <div className="text-secondary ml-2">{getProject().description}</div>
+
           <div className="d-flex w-auto">
             <div className="p-1 flex-even">
               <div className="project-members bg-light shadow rounded p-2 border">

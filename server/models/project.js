@@ -7,7 +7,9 @@ const projectSchema = mongoose.Schema({
     creator: {type: Schema.Types.ObjectId, ref: 'User'},
     tickets: [{type: Schema.Types.ObjectId, ref: 'Ticket'}],
     users: [{type: Schema.Types.ObjectId, ref: 'ProjectUser'}],
-    team: {type: Schema.Types.ObjectId, ref: 'Team'}
+    team: {type: Schema.Types.ObjectId, ref: 'Team'},
+    demo: {type: Boolean, default: false}
+
 
 }, {timestamps: true});
 

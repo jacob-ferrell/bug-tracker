@@ -8,6 +8,8 @@ const projectUserSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    demo: {type: Boolean, default: false}
+
     
 }, {timestamps: true});
 
