@@ -43,7 +43,6 @@ const NewTicket = (props) => {
       ...prev,
       [userId]: !prev[userId],
     }));
-    console.log(checkedUsers);
   };
 
   const users = props.users
@@ -139,7 +138,6 @@ const NewTicket = (props) => {
     const users = Object.keys(checkedUsers).filter((user) => {
       return checkedUsers[user];
     });
-    console.log(checkedUsers, users)
     newTicket = {
       title,
       description,

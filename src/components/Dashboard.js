@@ -23,7 +23,6 @@ const Dashboard = (props) => {
 
   const handleEditClick = (e) => {
     const projectId = e.target.dataset.projectid;
-    console.log(projectId);
     setSelectedProject(projectId);
     setShowEdit(true);
   };

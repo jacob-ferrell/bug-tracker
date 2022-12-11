@@ -4,6 +4,9 @@ import App from './App';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { disableReactDevTools } from '@fvilers/disable-react-devtools';
+
+if (process.env.NODE_ENV === 'production') disableReactDevTools();
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: {staleTime: Infinity}}
@@ -15,7 +18,6 @@ root.render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <App queryClient={queryClient}/>
-        <ReactQueryDevtools />
       </QueryClientProvider>
     </BrowserRouter>
 );

@@ -36,7 +36,6 @@ const LogInPage = (props) => {
       ...demoUsers.find((user) => user.lastName === capitalize(demoRole)),
       emails: demoUsers.map((user) => user.email),
     };
-    console.log(user)
     fetchURL('/createDemoData', {email: user.email, emails: user.emails})
     .then(() => props.login(user))
     .finally(() => setLoading(false))

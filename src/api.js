@@ -1,5 +1,3 @@
-
-
 async function fetchURL(url, data = null) {
   const req = {
     headers: {
@@ -13,7 +11,6 @@ async function fetchURL(url, data = null) {
   const res = await fetch(url, { ...req });
   const json = await res.json();
   if (json.failed) alert(json.message);
-  console.log(url, json);
   if (json.isLoggedIn == false) logout();
   return json;
 }
@@ -30,8 +27,8 @@ const fetchUser = async () => {
 };
 
 const fetchNotifications = async () => {
-  return await fetchURL('/getNotifications');
-}
+  return await fetchURL("/getNotifications");
+};
 
 function logout() {
   localStorage.removeItem("token");

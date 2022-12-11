@@ -46,7 +46,6 @@ const AddToTeam = (props) => {
     setSearching(true);
 
     const res = await fetchURL("/findUser", { email: email });
-    console.log(res);
     if (res.team) {
       alert("This user already has a team");
     }

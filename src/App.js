@@ -30,7 +30,6 @@ function App(props) {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   async function login(user) {
-    console.log(user);
     const res = await fetchURL("/login", user);
     if (res.isLoggedIn == false) return logout();
     localStorage.setItem("token", res.token);

@@ -76,7 +76,6 @@ const AddToProject = (props) => {
 
   const handleSubmitClick = async (e) => {
     if (props.member) {
-      console.log(props.member);
       const res = await fetchURL("/changeProjectRole", {
         ...props.member,
         role,
