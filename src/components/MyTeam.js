@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Spinner } from "react-bootstrap";
 import CreateTeam from "./modals/CreateTeam";
 import AddToTeam from "./modals/AddToTeam";
@@ -12,6 +12,10 @@ const MyTeam = (props) => {
 
   const team = useQuery("team", fetchTeam);
   const teamData = team.data;
+
+  useEffect(() => { 
+    props.queryClient.invalidateQueries('team');
+  }, [])
 
   const handleLeaveClick = async (e) => {
     await fetchURL("/leaveTeam");

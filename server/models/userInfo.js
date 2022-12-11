@@ -13,7 +13,9 @@ const userInfoSchema = mongoose.Schema({
     notifications: [{
         notification_id: {type: Schema.Types.ObjectId, ref: 'Notification'},
         unread: { type: Boolean, default: true },
-    }]
+    }],
+    demo: {type: Boolean, default: false}
+
     
 }, {timestamps: true});
 

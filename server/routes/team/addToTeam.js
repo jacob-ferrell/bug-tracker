@@ -20,6 +20,7 @@ addToTeam.route("/addToTeam").post(auth.verifyJWT, async (req, res) => {
     });
   const userToAddId = req.body.user_id;
   const userToAddRole = req.body.role;
+  const demo = req.user.demo || false;
   try {
     const userToAdd = await UserInfo.findOne({ user_id: userToAddId });
     const teamMemberToAdd = await TeamMember.findOne({ user_id: userToAddId });
@@ -33,6 +34,7 @@ addToTeam.route("/addToTeam").post(auth.verifyJWT, async (req, res) => {
         user_id: userToAddId,
         team_id: teamId,
         role: userToAddRole,
+        demo
       });
       await newTeamMember.save();
     }

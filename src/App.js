@@ -28,14 +28,22 @@ function App(props) {
   const [selectedProject, setSelectedProject] = useState(null);
 
   async function login(user) {
+    console.log(user)
     const res = await fetchURL("/login", user);
     if (res.isLoggedIn == false) return logout();
     localStorage.setItem("token", res.token);
     refetch();
+
+    if (user.demo) {
+      await fetchURL('/createDemoData', {emails: user.emails});
+    }
     navigate("/dashboard");
+    props.queryClient.invalidateQueries();
   }
 
-  function logout() {
+  async function logout() {
+    await fetchURL("/deleteDemoData");
+
     localStorage.removeItem("token");
     localStorage.removeItem("selectedProject");
     props.queryClient.clear();
@@ -103,7 +111,13 @@ function App(props) {
       ) : (
         <Routes>
           <Route path="*" element={<Navigate to="/login" />} />
-          <Route path="/login" exact element={<LogInPage login={login} />} />
+          <Route
+            path="/login"
+            exact
+            element={
+              <LogInPage queryClient={props.queryClient} login={login} />
+            }
+          />
           <Route path="/signup" exact element={<SignUpPage />} />
         </Routes>
       )}

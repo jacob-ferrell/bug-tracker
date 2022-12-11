@@ -33,4 +33,8 @@ module.exports = {
     "getNotifications",
     "readNotifications",
   ],
+  demoUser: [
+    "createDemoData",
+    "deleteDemoData"
+  ]
 };

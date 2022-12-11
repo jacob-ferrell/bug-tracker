@@ -8,11 +8,12 @@ const createTeam = express.Router();
 
 createTeam.route("/createTeam").post(auth.verifyJWT, async (req, res) => {
     const team = req.body;
+    const demo = req.user.demo || false;
     team.creator = req.user.id;
     try {
       const user = await UserInfo.findOne({ user_id: req.body.creator });
   
-      const newTeam = new Team({ ...team });
+      const newTeam = new Team({ ...team, demo });
       newTeam.members.push(req.body.creator);
       await newTeam.save();
   
@@ -20,6 +21,7 @@ createTeam.route("/createTeam").post(auth.verifyJWT, async (req, res) => {
         user_id: req.user.id,
         team_id: newTeam._id,
         role: "admin",
+        demo
       });
       teamMember.save();
   

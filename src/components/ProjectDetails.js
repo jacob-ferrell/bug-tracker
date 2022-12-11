@@ -18,7 +18,7 @@ const ProjectDetails = (props) => {
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState(null);
   const [filterByAssigned, setFilterByAssigned] = useState(false);
-  const [showClosed, setShowClosed] = useState(false);
+  const [showClosed, setShowClosed] = useState(true);
   const projects = useQuery("projects", fetchProjects);
   const projectId = props.projectId || localStorage.getItem("selectedProject");
   const comments = useQuery("comments", fetchComments);
@@ -155,7 +155,7 @@ const ProjectDetails = (props) => {
                     type="checkbox"
                     //onChange={handleCheckChange}
                     onClick={() => setShowClosed((prev) => !prev)}
-                    label="Show Closed"
+                    label="Show Closed Tickets"
                     defaultChecked={showClosed}
                   />
                   <button

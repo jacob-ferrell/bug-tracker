@@ -17,6 +17,7 @@ function verifyJWT(req, res, next) {
     req.user.id = decoded.id;
     req.user.email = decoded.email;
     const teamMember = await TeamMember.findOne({ user_id: req.user.id });
+    if (teamMember?.demo) req.user.demo = true;
     if (teamMember) {
       req.user.team = {
         team_id: teamMember.team_id,

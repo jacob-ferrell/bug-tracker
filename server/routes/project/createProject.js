@@ -2,7 +2,7 @@ const express = require("express");
 const Project = require("../../models/project");
 const UserInfo = require("../../models/userInfo");
 const Team = require("../../models/team");
-const TeamMember = require('../../models/teamMember');
+const TeamMember = require("../../models/teamMember");
 const auth = require("../../verifyJWT");
 const Notification = require("../../models/notification");
 const capitalize = require("../../utils/capitalize");
@@ -15,6 +15,7 @@ createProject.route("/createProject").post(auth.verifyJWT, async (req, res) => {
       failed: true,
       message: "Only Team Admins can create new projects",
     });
+  const demo = req.user.demo || false;
   const project = req.body;
   delete project.id;
   project.creator = req.user.id;
@@ -54,6 +55,7 @@ createProject.route("/createProject").post(auth.verifyJWT, async (req, res) => {
     const newProject = new Project({
       ...project,
       team: req.user.team.team_id,
+      demo,
     });
 
     newProject.save((err) => {
@@ -74,6 +76,7 @@ createProject.route("/createProject").post(auth.verifyJWT, async (req, res) => {
         capitalize(user.firstName + " " + user.lastName) +
         " created a new project: " +
         newProject.name,
+      demo,
     });
     await adminNotification.save();
 

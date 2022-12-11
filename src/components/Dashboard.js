@@ -1,6 +1,6 @@
 import "../styles/Dashboard.css";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { fetchProjects, fetchTeam, fetchUser } from "../api";
 import ProjectsTable from "./tables/ProjectsTable";
 import NewProjectForm from "./modals/NewProjectForm";
@@ -16,6 +16,10 @@ const Dashboard = (props) => {
   const { data, isLoading, refetch } = useQuery("projects", fetchProjects);
   const team = useQuery('team', fetchTeam);
   const user = useQuery('user', fetchUser);
+
+/*   useEffect(() => {
+    if (user.data.demo) props.queryClient.invalidateQueries();
+  }, []) */
 
   const handleEditClick = (e) => {
     const projectId = e.target.dataset.projectid;

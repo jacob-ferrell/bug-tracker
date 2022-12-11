@@ -19,7 +19,6 @@ const Header = (props) => {
     });
     await fetchURL("/readNotifications");
     props.queryClient.invalidateQueries("notifications");
-    //notifications.refetch();
   };
 
   const getUnreadNotifications = () => {
@@ -29,15 +28,17 @@ const Header = (props) => {
   const getInitials = () =>
     (user.data.firstName[0] + user.data.lastName[0]).toUpperCase();
 
-  const dropdownNotifications = notifications?.data?.map((notification, i) => {
-    return (
-      <Dropdown.Item key={i}>
-        <span className="dropdown-item" href="#">
-          {notification.message}
-        </span>
-      </Dropdown.Item>
-    );
-  });
+  const dropdownNotifications = notifications?.data?.map(
+    (notification, i, a) => {
+      return (
+        <Dropdown.Item key={i}>
+          <span className="dropdown-item" href="#">
+            {notification.message}
+          </span>
+        </Dropdown.Item>
+      );
+    }
+  );
 
   return (
     <nav
@@ -112,7 +113,17 @@ const Header = (props) => {
                 </span>
               ) : null}
             </Dropdown.Toggle>
-            <Dropdown.Menu>{dropdownNotifications}</Dropdown.Menu>
+            <Dropdown.Menu>
+              {!notifications.isLoading && !!notifications.data.length ? (
+                { dropdownNotifications }
+              ) : (
+                <Dropdown.Item>
+                  <span className="dropdown-item" href="#">
+                    {'You have no notifications'}
+                  </span>
+                </Dropdown.Item>
+              )}
+            </Dropdown.Menu>
           </Dropdown>
           <Dropdown className="nav-item rounded-0 bg-dark">
             <Dropdown.Toggle variant="dark" className="rounded-0">

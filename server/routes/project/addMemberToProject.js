@@ -14,6 +14,7 @@ addMemberToProject
   .post(auth.verifyJWT, async (req, res) => {
     try {
       const projectId = req.body.project_id;
+      const demo = req.user.demo || false;
       const role = await auth.getRole(req.user, projectId);
       if (!auth.verifyRole(role))
         return res.json({
@@ -23,7 +24,7 @@ addMemberToProject
       const user = await UserInfo.findOne({ user_id: req.body.user_id });
       user.projects.push(projectId);
 
-      const projectUser = new ProjectUser({ ...req.body });
+      const projectUser = new ProjectUser({ ...req.body, demo });
       await projectUser.save();
 
       const project = await Project.findById(projectId);

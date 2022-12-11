@@ -11,7 +11,7 @@ const createTicket = express.Router();
 //create new ticket
 createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
   const ticket = req.body;
-  const project = await Project.findById(ticket.project_id);
+  const demo = req.user.demo || false;
   const getTakenTitle = async () => {
     return new Promise((resolve) => {
       Project.findById(ticket.project_id)
@@ -55,6 +55,7 @@ createTicket.route("/createTicket").post(auth.verifyJWT, async (req, res) => {
     let newTicket = new Ticket({
       ...ticket,
       creator: req.user.id,
+      demo
     });
     await newTicket.save();
 

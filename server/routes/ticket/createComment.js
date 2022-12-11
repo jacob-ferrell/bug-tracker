@@ -15,12 +15,14 @@ const createComment = express.Router();
 createComment.route("/createComment").post(auth.verifyJWT, async (req, res) => {
   try {
     const commenter = await UserInfo.findOne({ user_id: req.user.id });
+    const demo = req.user.demo || false;
     const commenterName =
       capitalize(commenter.firstName) + " " + capitalize(commenter.lastName);
 
     const comment = new Comment({
       ...req.body,
       creator: req.user.id,
+      demo
     });
     await comment.save();
 
@@ -34,11 +36,10 @@ createComment.route("/createComment").post(auth.verifyJWT, async (req, res) => {
     for (let i in ticket.users) {
       if (ticket.users[i] == req.user.id) continue;
       const developer = await UserInfo.findOne({
-        user_id: ticket.users[i].user_id,
+        user_id: ticket.users[i],
       });
       developers.push(developer);
     }
-
     const ticketCreator = await UserInfo.findOne({
       project_id: project._id,
       user_id: ticket.creator,

@@ -11,7 +11,7 @@ const MyTickets = (props) => {
   return (
     <div className="p-3 w-auto">
       <div className="my-tickets bg-light shadow rounded p-2">
-        <div className="my-tickets-header d-flex justify-content-between">
+        <div className="my-tickets-header d-flex">
           <h5>
             {projects.isLoading && (
               <Spinner
@@ -25,6 +25,8 @@ const MyTickets = (props) => {
             {projects.isLoading ? " Loading Tickets..." : "My Tickets"}
           </h5>
         </div>
+
+
         {!projects.isLoading && (
           <TicketsTable
             sortBy="creator"

@@ -8,7 +8,9 @@ const signUp = express.Router();
 //create new users
 signUp.route("/signup").post(async (req, res) => {
   const user = req.body;
+  const demo = user.demo || false;
   const takenEmail = await User.findOne({ email: user.email });
+
 
   if (!takenEmail) {
     user.password = await bcrypt.hash(user.password, 10);
@@ -16,6 +18,7 @@ signUp.route("/signup").post(async (req, res) => {
     const dbUser = new User({
       password: user.password,
       email: user.email,
+      demo
     });
 
     dbUser.save((err, dbUser) => {
@@ -24,6 +27,7 @@ signUp.route("/signup").post(async (req, res) => {
         lastName: user.lastName,
         user_id: dbUser._id,
         email: user.email,
+        demo
       });
       dbUserInfo.save();
     });

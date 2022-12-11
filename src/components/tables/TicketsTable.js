@@ -17,10 +17,9 @@ const TicketsTable = (props) => {
     setTicket(() => ticket);
     setMessage({
       body: `Are you sure you want to delete '${ticket.title}' ? All data for this ticket will be lost`,
-      heading: 'Warning!'
+      heading: "Warning!",
     });
     setShowWarning(true);
-
   };
   const headings = ["Ticket Title", "Description", "Status", ""].map(
     (heading, i) => {
@@ -122,16 +121,16 @@ const TicketsTable = (props) => {
           hideRole={true}
         />
       )}
-      {!projects.isLoading ? (
+      {projects.isLoading ? (
+        <span>Loading...</span>
+      ) : !!ticketData.length ? (
         <table className="tickets-table table table-hover table-sm mt-2">
           <thead>
             <tr>{headings}</tr>
           </thead>
           <tbody>{ticketRows}</tbody>
         </table>
-      ) : (
-        <span>Loading...</span>
-      )}
+      ) : <span className="text-secondary">You have not created or been assigned to any tickets</span>}
     </>
   );
 };

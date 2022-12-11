@@ -26,6 +26,8 @@ const ticketSchema = mongoose.Schema({
     },
     comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
     users: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    demo: {type: Boolean, default: false}
+
 
 
 
