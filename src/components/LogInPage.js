@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import createDemoUsers from "../demoUser/createDemoUsers";
 import { fetchURL } from "../api";
 import DemoUser from "./modals/DemoUser";
+import { capitalize } from "../utils/capitalize";
 
 const LogInPage = (props) => {
   const [showDemo, setShowDemo] = useState(false);
+  const [demoRole, setDemoRole] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   function handleLogin(e) {
@@ -19,15 +22,24 @@ const LogInPage = (props) => {
     props.login(user);
   }
 
-  async function handleDemoUserClick(e) {
+  async function handleDemoSignIn(e) {
+    setLoading(true);
     const demoUsers = await createDemoUsers();
-    if (!demoUsers) return alert("Unable to create demo account");
-    const admin = {
-      ...demoUsers.find((user) => user.lastName === "Admin"),
+    if (!demoUsers) return alert("Unable to create demo accounts");
+    const roles = {
+      admin: 'Admin',
+      developer: 'Developer',
+      tester: 'Tester',
+      'project-manager': 'Manager'
+    }
+    const user = {
+      ...demoUsers.find((user) => user.lastName === capitalize(demoRole)),
       emails: demoUsers.map((user) => user.email),
     };
-    await props.login(admin);
-    navigate("/dashboard");
+    console.log(user)
+    fetchURL('/createDemoData', {email: user.email, emails: user.emails})
+    .then(() => props.login(user))
+    .finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -47,6 +59,10 @@ const LogInPage = (props) => {
           handleClose={() => setShowDemo(false)}
           show={showDemo}
           queryClient={props.queryClient}
+          setDemoRole = {role => setDemoRole(role)}
+          demoRole={demoRole}
+          signIn={handleDemoSignIn}
+          loading={loading}
         />
       )}
       <div className="login-dark">

@@ -16,11 +16,15 @@ const createDemoData = express.Router();
 
 createDemoData
   .route("/createDemoData")
-  .post(auth.verifyJWT, async (req, res) => {
-    const userId = req.user.id;
+  .post(async (req, res) => {
     const emails = req.body.emails;
     try {
-      const user = await UserInfo.findOne({user_id: userId});
+      const users = await UserInfo.find({email: {$regex: "Demo"}});
+      const user = await UserInfo.findOne({email: req.body.email});
+      
+      console.log(user)
+      const userId = user.user_id;
+
       let teamMembers = [];
       let userIds = {};
       //create demo team
@@ -163,7 +167,7 @@ createDemoData
       return res.json({success: true})
     } catch (err) {
       console.log(err);
-      return res.json({ failed: true, message: "Failed to create team" });
+      return res.json({ failed: true, message: "There was an error while generating demo data" });
     }
   });
 

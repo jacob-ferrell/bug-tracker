@@ -27,18 +27,16 @@ function App(props) {
 
   const [selectedProject, setSelectedProject] = useState(null);
 
+  const [selectedTicket, setSelectedTicket] = useState(null);
+
   async function login(user) {
-    console.log(user)
+    console.log(user);
     const res = await fetchURL("/login", user);
     if (res.isLoggedIn == false) return logout();
     localStorage.setItem("token", res.token);
     refetch();
-
-    if (user.demo) {
-      await fetchURL('/createDemoData', {emails: user.emails});
-    }
     navigate("/dashboard");
-    props.queryClient.invalidateQueries();
+    //props.queryClient.invalidateQueries();
   }
 
   async function logout() {
@@ -51,10 +49,12 @@ function App(props) {
   }
 
   function handleProjectClick(e) {
-    const id = e.currentTarget.dataset.projectid;
+    const projectId = e.currentTarget.dataset.projectid;
+    const ticketId = e.currentTarget.dataset.ticketid;
     const name = e.currentTarget.dataset.name.toLowerCase().replace(/\s/g, "-");
-    setSelectedProject(id);
-    localStorage.setItem("selectedProject", id);
+    setSelectedProject(projectId);
+    localStorage.setItem("selectedProject", projectId);
+    localStorage.setItem("selectedTicket", ticketId);
     navigate(`/dashboard/project/${name}`);
   }
 
@@ -85,7 +85,9 @@ function App(props) {
               />
               <Route
                 path="/dashboard/my-tickets"
-                element={<MyTickets userData={data} />}
+                element={
+                  <MyTickets userData={data} handleClick={handleProjectClick} />
+                }
               />
               <Route
                 path="/dashboard/my-team"
@@ -100,6 +102,9 @@ function App(props) {
                     userData={data}
                     projectId={selectedProject}
                     queryClient={props.queryClient}
+                    ticketId={selectedTicket}
+                    selectedTicket={selectedTicket}
+                    setSelectedTicket={ticket => setSelectedTicket(ticket)}
                   />
                 }
               />

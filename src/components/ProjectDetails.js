@@ -13,7 +13,7 @@ import { capitalize } from "../utils/capitalize";
 
 const ProjectDetails = (props) => {
   const [showAddMember, setShowAddMember] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(localStorage.getItem('selectedTicket'));
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState(null);
@@ -35,6 +35,7 @@ const ProjectDetails = (props) => {
 
   const handleTicketClick = (e) => {
     const id = e.currentTarget.dataset.ticketid;
+    localStorage.setItem('selectedTicket', id);
     setSelectedTicket(id);
   };
 
@@ -192,7 +193,7 @@ const ProjectDetails = (props) => {
           </div>
         </div>
       ) : null}
-      {!comments.isLoading && (
+      {!projects.isLoading && !comments.isLoading ? (
         <TicketDetails
           projectId={projectId}
           ticketId={selectedTicket}
@@ -201,7 +202,7 @@ const ProjectDetails = (props) => {
           userData={props.userData}
           getProject={getProject}
         />
-      )}
+      ) : null}
     </div>
   );
 };

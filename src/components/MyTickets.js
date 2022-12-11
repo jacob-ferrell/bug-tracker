@@ -32,6 +32,7 @@ const MyTickets = (props) => {
             sortBy="creator"
             projectData={projects.data}
             userData={props.userData}
+            handleClick={props.handleClick}
           />
         )}
       </div>

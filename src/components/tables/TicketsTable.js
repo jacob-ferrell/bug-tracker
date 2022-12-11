@@ -55,7 +55,9 @@ const TicketsTable = (props) => {
 
   if (props.sortBy == "creator") {
     ticketData = ticketData.filter(
-      (ticket) => ticket.creator.id == userData.user_id
+      (ticket) =>
+        ticket.creator.id == userData.user_id ||
+        ticket.users.includes(userData.user_id)
     );
   }
   if (props.filterByAssigned) {
@@ -79,6 +81,12 @@ const TicketsTable = (props) => {
               className="text-primary ticket-title font-weight-bold"
               onClick={props.handleClick}
               data-ticketid={id}
+              data-projectid={projectId}
+              data-name={
+                projectData.find(
+                  (project) => project.project_id === ticket.project_id
+                ).name
+              }
             >
               {ticket.title}
             </span>
@@ -130,7 +138,11 @@ const TicketsTable = (props) => {
           </thead>
           <tbody>{ticketRows}</tbody>
         </table>
-      ) : <span className="text-secondary">You have not created or been assigned to any tickets</span>}
+      ) : (
+        <span className="text-secondary">
+          You have not created or been assigned to any tickets
+        </span>
+      )}
     </>
   );
 };
