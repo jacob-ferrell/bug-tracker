@@ -1,5 +1,7 @@
+const server = 'https://bug-tracker-backend-934x.onrender.com';
+
+
 async function fetchURL(url, data = null) {
-  const server = 'https://bug-tracker-backend-934x.onrender.com';
   const req = {
     headers: {
       "Content-type": "application/json",
