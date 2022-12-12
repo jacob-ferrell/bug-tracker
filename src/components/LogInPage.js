@@ -100,6 +100,7 @@ const LogInPage = (props) => {
             Don't have an account? <u>Sign Up</u>
           </Link>
           <a href="#" onClick={(e) => {
+            setDemoRole('');
             setShowDemo(true);
             e.preventDefault();
             }} className="demo-user">
