@@ -39,6 +39,7 @@ const DemoUser = (props) => {
             className="form-select form-select-sm"
             aria-label="select demo role"
             onChange={(e) => props.setDemoRole(e.target.value)}
+            defaultValue=""
           >
             <option disabled value="">
               -- Select a Role --
