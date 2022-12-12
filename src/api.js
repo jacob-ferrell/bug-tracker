@@ -18,19 +18,19 @@ async function fetchURL(url, data = null) {
   return json;
 }
 const fetchProjects = async () => {
-  return await fetchURL(server + "/getProjectData");
+  return await fetchURL("/getProjectData");
 };
 
 const fetchTeam = async () => {
-  return await fetchURL(server + "/getTeamMembers");
+  return await fetchURL("/getTeamMembers");
 };
 
 const fetchUser = async () => {
-  return await fetchURL(server + "/isUserAuth");
+  return await fetchURL("/isUserAuth");
 };
 
 const fetchNotifications = async () => {
-  return await fetchURL(server + "/getNotifications");
+  return await fetchURL("/getNotifications");
 };
 
 function logout() {
