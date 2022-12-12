@@ -188,7 +188,7 @@ const TicketDetails = (props) => {
               {getAssignedDevs()}
             </div>
           </div>
-          <div className="p-3 flex-even">
+          <div className="comments-container p-3 flex-even">
             <div className="comments flex-even bg-light border shadow rounded p-2">
               <h6 className="border-bottom pb-3">Comments</h6>
               <div className="d-flex">
