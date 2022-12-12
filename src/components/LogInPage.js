@@ -93,13 +93,13 @@ const LogInPage = (props) => {
               Log In
             </button>
           </div>
-          <a href="#" className="forgot">
+          <a href="" className="forgot">
             Forgot your email or password?
           </a>
           <Link className="signup" to="/signup">
             Don't have an account? <u>Sign Up</u>
           </Link>
-          <a href="#" onClick={() => setShowDemo(true)} className="demo-user">
+          <a href="" onClick={() => setShowDemo(true)} className="demo-user">
             Sign In as <u>Demo User</u>
           </a>
         </form>
