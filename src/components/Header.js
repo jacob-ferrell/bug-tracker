@@ -100,7 +100,7 @@ const Header = (props) => {
                   <span className="input-group-text border-0"><i className="fas fa-search"></i></span>
                 </form> */}
 
-        <ul className="navbar-nav ms-auto d-flex flex-row bg-dark">
+        <div className="navbar-nav ms-auto d-flex bg-dark">
           <Dropdown
             onClick={handleNotificationsClick}
             className="nav-item rounded-0 bg-dark"
@@ -138,7 +138,7 @@ const Header = (props) => {
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
-        </ul>
+        </div>
       </div>
     </nav>
   );
