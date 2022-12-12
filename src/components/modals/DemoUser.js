@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
-import { fetchURL, fetchTeam, fetchUser } from "../../api";
-import { useMutation } from "react-query";
+
 import { capitalize } from "../../utils/capitalize";
-import { Modal, Button, Spinner, Form } from "react-bootstrap";
+import { Modal, Spinner } from "react-bootstrap";
 
 const DemoUser = (props) => {
   const descriptions = {
