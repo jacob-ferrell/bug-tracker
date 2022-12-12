@@ -67,6 +67,9 @@ body {
     #root {
       font-size: 12px;
     }
+    #root .personnel-tickets-container, #root .details-comments-container {
+      flex-direction: column;
+    }
   }
   .sidebar .active {
     border-radius: 5px;

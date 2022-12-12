@@ -1,7 +1,6 @@
 import { useQuery, useMutation } from "react-query";
 import { useEffect, useState } from "react";
 import { fetchProjects, fetchURL } from "../api";
-import { formatDate } from "../utils/formatDate";
 import { capitalize } from "../utils/capitalize";
 import { Spinner } from "react-bootstrap";
 import Comment from "./Comment";
@@ -119,7 +118,7 @@ const TicketDetails = (props) => {
         )}
       </h5>
       {ticket && (
-        <div className="d-flex w-auto">
+        <div className="details-comments-container d-flex w-auto">
           <div className="ticket-details p-1 flex-even">
             <div className="container">
               <div className="row">

@@ -1,6 +1,4 @@
-import Table from "./Table";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import { fetchTeam, fetchProjects, fetchURL } from "../api";
 import TicketsTable from "./tables/TicketsTable";
@@ -104,7 +102,7 @@ const ProjectDetails = (props) => {
             </div>
           </div>
           <div className="text-secondary ml-2">{getProject().description}</div>
-          <div className="d-flex w-auto">
+          <div className="personnel-tickets-container d-flex w-auto">
             <div className="p-1 flex-even">
               <div className="project-members bg-light shadow rounded p-2 border">
                 <div className="my-tickets-header d-flex justify-content-between">

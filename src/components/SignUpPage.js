@@ -67,7 +67,7 @@ const SignUpPage = props => {
                   <button className="btn btn-primary btn-block" type="submit">Create Account</button>
               </div>
               <Link className="signup" to="/login">Already have an account? <u>Sign In</u></Link>
-              <a href="#" className="demo-user">Sign In as <u>Demo User</u></a>
+              {/* <a href="#" className="demo-user">Sign In as <u>Demo User</u></a> */}
           </form>
     </div>
     );
