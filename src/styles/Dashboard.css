@@ -22,6 +22,9 @@ body {
   .content {
     margin-left: 240px;
   }
+  .comment-container {
+    padding: 1rem;
+  }
   
 }
 
