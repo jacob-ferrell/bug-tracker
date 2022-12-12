@@ -27,9 +27,9 @@ const LogInPage = (props) => {
     const demoUsers = await createDemoUsers();
     if (!demoUsers) return alert("Unable to create demo accounts");
     const roles = {
-      'admin': 'Admin',
-      'developer': 'Developer',
-      'tester': 'Tester',
+      admin: 'Admin',
+      developer: 'Developer',
+      tester: 'Tester',
       'project-manager': 'Manager'
     }
     const user = {
@@ -42,13 +42,8 @@ const LogInPage = (props) => {
   }
 
   useEffect(() => {
-    fetch("/isUserAuth", {
-      'headers': {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => (data.isLoggedIn ? navigate("/dashboard") : null));
+    fetchURL('/isUserAuth')
+    .then((data) => (data.isLoggedIn ? navigate("/dashboard") : null));
   }, []);
 
   return (
