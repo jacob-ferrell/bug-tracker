@@ -1,6 +1,5 @@
-
 import { capitalize } from "../../utils/capitalize";
-import { Modal, Spinner } from "react-bootstrap";
+import { Modal, Spinner} from "react-bootstrap";
 
 const DemoUser = (props) => {
   const descriptions = {
@@ -37,10 +36,12 @@ const DemoUser = (props) => {
           {"Select a role to view it's description"}
           <select
             className="form-select form-select-sm"
-            multiple
             aria-label="select demo role"
             onChange={(e) => props.setDemoRole(e.target.value)}
           >
+            <option disabled value="">
+              -- Select a Role --
+            </option>
             <option value="admin">Team Admin</option>
             <option value="manager">Project Manager</option>
             <option value="developer">Developer</option>

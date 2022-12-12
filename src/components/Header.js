@@ -63,10 +63,10 @@ const Header = (props) => {
           </Dropdown.Item>
           <Dropdown.Item>
             <Link
-              to="/dashboard/my-projects"
+              to="/dashboard/my-tickets"
               className="bg-dark text-light list-group-item list-group-item-action py-2 ripple"
             >
-              <i className="fas fa-chart-area fa-fw me-3"></i>My Projects
+              <i className="fas fa-chart-area fa-fw me-3"></i>My Tickets
             </Link>
           </Dropdown.Item>
           <Dropdown.Item>
@@ -132,7 +132,6 @@ const Header = (props) => {
                         height="22" alt="Avatar" loading="lazy" /> */}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item>My Profile</Dropdown.Item>
               <Dropdown.Item onClick={props.logout}>
                 <i className="fa fa-sign-out" aria-hidden="true"></i>Logout
               </Dropdown.Item>
