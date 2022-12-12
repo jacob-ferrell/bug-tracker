@@ -100,7 +100,7 @@ body {
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
 }
 
-table .dropdown-toggle::after, comments .dropdown-toggle::after {
+table .dropdown-toggle::after, .comments .dropdown-toggle::after {
   display: none;
 }
 
