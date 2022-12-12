@@ -8,7 +8,7 @@ import { capitalize } from "../utils/capitalize";
 
 const LogInPage = (props) => {
   const [showDemo, setShowDemo] = useState(false);
-  const [demoRole, setDemoRole] = useState('');
+  const [demoRole, setDemoRole] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,18 +27,18 @@ const LogInPage = (props) => {
     const demoUsers = await createDemoUsers();
     if (!demoUsers) return alert("Unable to create demo accounts");
     const roles = {
-      admin: 'Admin',
-      developer: 'Developer',
-      tester: 'Tester',
-      'project-manager': 'Manager'
-    }
+      admin: "Admin",
+      developer: "Developer",
+      tester: "Tester",
+      "project-manager": "Manager",
+    };
     const user = {
       ...demoUsers.find((user) => user.lastName === capitalize(demoRole)),
       emails: demoUsers.map((user) => user.email),
     };
-    fetchURL('/createDemoData', {email: user.email, emails: user.emails})
-    .then(() => props.login(user))
-    .finally(() => setLoading(false))
+    fetchURL("/createDemoData", { email: user.email, emails: user.emails })
+      .then(() => props.login(user))
+      .finally(() => setLoading(false));
   }
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const LogInPage = (props) => {
           handleClose={() => setShowDemo(false)}
           show={showDemo}
           queryClient={props.queryClient}
-          setDemoRole = {role => setDemoRole(role)}
+          setDemoRole={(role) => setDemoRole(role)}
           demoRole={demoRole}
           signIn={handleDemoSignIn}
           loading={loading}
@@ -99,7 +99,14 @@ const LogInPage = (props) => {
           <Link className="signup" to="/signup">
             Don't have an account? <u>Sign Up</u>
           </Link>
-          <a href="" onClick={() => setShowDemo(true)} className="demo-user">
+          <a
+            href="#"
+            onClick={(e) => {
+              setShowDemo(true);
+              e.preventDefault();
+            }}
+            className="demo-user"
+          >
             Sign In as <u>Demo User</u>
           </a>
         </form>
