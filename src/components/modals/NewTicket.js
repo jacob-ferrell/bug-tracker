@@ -139,14 +139,14 @@ const NewTicket = (props) => {
       return checkedUsers[user];
     });
     newTicket = {
-      title,
-      description,
-      users,
-      priority,
-      type,
+      'title': title,
+      'description': description,
+      'users': users,
+      'priority': priority,
+      'type': type,
       project_id: props.projectId,
-      status: "open",
-      creator: props.userData.user_id,
+      'status': "open",
+      'creator': props.userData.user_id,
     };
     if (!props.ticket) return mutation.mutate({ ...newTicket });
     const edited = {
@@ -157,7 +157,7 @@ const NewTicket = (props) => {
       users,
       priority,
       type,
-      status: status.toLowerCase(),
+      'status': status.toLowerCase(),
     };
     await fetchURL("/editTicket", { ticket: edited });
     //props.refetch();
