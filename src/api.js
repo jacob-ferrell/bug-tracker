@@ -11,7 +11,7 @@ async function fetchURL(url, data = null) {
   req.method = data ? "POST" : "GET";
   req.cors = 'no-cors';
   if (data) req.body = JSON.stringify(data);
-  const res = await fetch(server + url, { ...req });
+  const res = await fetch(url, { ...req });
   const json = await res.json();
   if (json.failed) alert(json.message);
   if (json.isLoggedIn == false) logout();
