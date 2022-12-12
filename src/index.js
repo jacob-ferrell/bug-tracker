@@ -6,7 +6,8 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 
-if (process.env.NODE_ENV === 'production') disableReactDevTools();
+
+disableReactDevTools();
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: {staleTime: Infinity}}
