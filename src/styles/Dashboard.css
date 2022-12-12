@@ -21,6 +21,7 @@ body {
   @media (min-width: 991.98px) {
     .content {
       margin-left: 240px;
+      top: 78px;
     }
     
   }
@@ -42,6 +43,25 @@ body {
     .sidebar {
       width: 100%;
     }
+    #main-navbar {
+      padding: 0px;
+      padding-bottom: 5px;
+    }
+    #main-navbar .container-fluid {
+      display: flex;
+      justify-content: start;
+    }
+    #main-navbar .navbar-nav {
+      display: flex;
+      justify-content: center;
+      margin: 0px !important;
+    }
+    #main-navbar .text-white {
+      font-size: 30px;
+    }
+    #root {
+      font-size: 12px;
+    }
   }
   .sidebar .active {
     border-radius: 5px;
@@ -61,7 +81,7 @@ body {
     position: fixed;
     left: 0;
     right: 5px;
-    top: 78px;
+    top: 105px;
     height: 94%;
     overflow: scroll;
     width: 100%;
