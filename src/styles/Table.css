@@ -17,8 +17,8 @@ td {
     display: none;
 }
 
-.project-name, .ticket-title {
-    cursor: pointer
+#root .project-name, #root .ticket-title {
+    cursor: pointer !important;
 }
 
 #ellipsis {
