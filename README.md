@@ -10,7 +10,11 @@
 - Issues/Tickets are created through the respective projects, providing details such as a description, urgency, status, etc.
 - Specific personnel can be assigned to specific Tickets
 - Notifications alert users to changes throughout all of their projects, teams, etc.
-
+### Technologies Used
+- React front-end
+- Node and Express back-end
+- MongoDB database
+- React Query for state management
 
 
 ### Role Descriptions
@@ -19,6 +23,8 @@
 - Capable of adding/removing users to/from the team as well as changing their roles within the team.
 - Can create, edit and delete projects
 - Within projects, have full Project Manager permissions (See Project Manager below)
+##### Developer
+- Can leave their team, but has no permissions to add other users or edit their roles
 
 
 
