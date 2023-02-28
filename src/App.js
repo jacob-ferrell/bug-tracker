@@ -111,16 +111,6 @@ function App(props) {
             </Routes>
           </div>
         </>
-      ) : isLoading ? (
-        <div className="w-auto d-flex justify-content-center">
-          <Spinner
-            animation="border"
-            as="span"
-            size="sm"
-            role="status"
-            aria-hidden="true"
-          />
-        </div>
       ) : (
         <Routes>
           <Route path="*" element={<Navigate to="/login" />} />

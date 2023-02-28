@@ -10,6 +10,7 @@
 - Issues/Tickets are created through the respective projects, providing details such as a description, urgency, status, etc.
 - Specific personnel can be assigned to specific Tickets
 - Notifications alert users to changes throughout all of their projects, teams, etc.
+- Will auto-generate demo accounts and content 
 ### Technologies Used
 - React front-end
 - Node and Express back-end
