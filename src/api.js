@@ -13,9 +13,9 @@ async function fetchURL(url, data = null) {
   req.method = data ? "POST" : "GET";
   if (data) req.body = JSON.stringify(data);
   const res = await fetch(server + url, { ...req });
-  //console.log('fired')
   const json = await res.json();
-  console.log(url, json)
+  if (process.env.NODE_ENV === 'development') console.log(url, json);
+
 
   if (json.failed) alert(json.message);
   if (json.isLoggedIn == false) logout();
