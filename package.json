@@ -29,7 +29,7 @@
     "eject": "react-scripts eject",
     "serverStart": "node ./server/server.js"
   },
-  "proxy": "https://bug-tracker-backend-934x.onrender.com",
+  
   "eslintConfig": {
     "extends": [
       "react-app",

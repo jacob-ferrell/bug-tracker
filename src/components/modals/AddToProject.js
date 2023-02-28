@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
-import { fetchURL, fetchTeam, fetchUser } from "../../api";
-import { useMutation } from "react-query";
-import { Modal, Button, Spinner, Form } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Form, Modal, Spinner } from "react-bootstrap";
+import { useMutation, useQuery } from "react-query";
+import { fetchURL, fetchUser } from "../../api";
 
 const AddToProject = (props) => {
   const [selectedUser, setSelectedUser] = useState(null);

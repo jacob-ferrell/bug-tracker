@@ -60,6 +60,7 @@ function App(props) {
 
   return (
     <div className="App">
+
       {data?.isLoggedIn ? (
         <>
           <header>
