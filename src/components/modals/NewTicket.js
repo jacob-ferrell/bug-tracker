@@ -112,7 +112,7 @@ const NewTicket = (props) => {
         );
         project.tickets = [
           ...project.tickets,
-          { id: project.tickets.length + 1, ...newTicket },
+          { id: project.tickets.length + 1, ...newTicket }
         ];
         const filtered = oldQueryData.filter(
           (project) => project.project_id != newTicket.project_id
@@ -134,35 +134,42 @@ const NewTicket = (props) => {
   });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const users = Object.keys(checkedUsers).filter((user) => {
-      return checkedUsers[user];
-    });
-    newTicket = {
-      title,
-      description,
-      users,
-      priority,
-      type,
-      project_id: props.projectId,
-      status: "open",
-      creator: props.userData.user_id,
-    };
-    if (!props.ticket) return mutation.mutate({ ...newTicket });
-    const edited = {
-      ...newTicket,
-      ...props.ticket,
-      title,
-      description,
-      users,
-      priority,
-      type,
-      status: status.toLowerCase(),
-    };
-    await fetchURL("/editTicket", { ticket: edited });
-    //props.refetch();
-    queryClient.invalidateQueries('projects');
-    props.handleClose();
+    try {
+      e.preventDefault();
+      const users = Object.keys(checkedUsers).filter((user) => {
+        return checkedUsers[user];
+      });
+      newTicket = {
+        title: title,
+        description: description,
+        users: users,
+        priority: priority,
+        type: type,
+        project_id: props.projectId,
+        status: "open",
+        creator: props.userData.user_id,
+      };
+      //console.log(JSON.stringify(newTicket));
+
+      if (!props.ticket) return mutation.mutate(newTicket);
+
+      const edited = {
+        ...newTicket,
+        ...props.ticket,
+        title,
+        description,
+        users,
+        priority,
+        type,
+        status: status.toLowerCase(),
+      };
+      await fetchURL("/editTicket", { ticket: edited });
+      //props.refetch();
+      queryClient.invalidateQueries("projects");
+      props.handleClose();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -194,7 +201,7 @@ const NewTicket = (props) => {
               required
             />
           </Form.Group>
-          {['admin', 'project-manager'].includes(props.role) ? (
+          {["admin", "project-manager"].includes(props.role) ? (
             <>
               <Form.Label>Assign Developers</Form.Label>
               <div className="overflow-auto border p-2 w-auto">{users}</div>

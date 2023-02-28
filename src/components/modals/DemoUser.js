@@ -1,4 +1,3 @@
-
 import { capitalize } from "../../utils/capitalize";
 import { Modal, Spinner} from "react-bootstrap";
 

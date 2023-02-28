@@ -127,7 +127,7 @@ const Header = (props) => {
           </Dropdown>
           <Dropdown className="nav-item rounded-0 bg-dark">
             <Dropdown.Toggle variant="dark" className="rounded-0">
-              {user.isLoading ? null : getInitials()}
+              {user.isLoading ? '  ' : getInitials()}
               {/* <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" className="rounded-circle"
                         height="22" alt="Avatar" loading="lazy" /> */}
             </Dropdown.Toggle>

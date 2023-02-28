@@ -1,3 +1,7 @@
+const server =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000"
+    : "https://bug-tracker-backend-934x.onrender.com";
 async function fetchURL(url, data = null) {
   const req = {
     headers: {
@@ -8,10 +12,14 @@ async function fetchURL(url, data = null) {
     req.headers["x-access-token"] = localStorage.getItem("token");
   req.method = data ? "POST" : "GET";
   if (data) req.body = JSON.stringify(data);
-  const res = await fetch(url, { ...req });
+  const res = await fetch(server + url, { ...req });
+  //console.log('fired')
   const json = await res.json();
+  console.log(url, json)
+
   if (json.failed) alert(json.message);
   if (json.isLoggedIn == false) logout();
+
   return json;
 }
 const fetchProjects = async () => {

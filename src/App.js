@@ -16,7 +16,8 @@ import Header from "./components/Header";
 import MyTickets from "./components/MyTickets";
 import MyTeam from "./components/MyTeam";
 import ProjectDetails from "./components/ProjectDetails";
-import { fetchURL, fetchTeam, fetchUser } from "./api.js";
+import { fetchURL, fetchUser } from "./api.js";
+import { Spinner } from "react-bootstrap";
 
 function App(props) {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ function App(props) {
 
   return (
     <div className="App">
+
       {data?.isLoggedIn ? (
         <>
           <header>
@@ -103,15 +105,13 @@ function App(props) {
                     queryClient={props.queryClient}
                     ticketId={selectedTicket}
                     selectedTicket={selectedTicket}
-                    setSelectedTicket={ticket => setSelectedTicket(ticket)}
+                    setSelectedTicket={(ticket) => setSelectedTicket(ticket)}
                   />
                 }
               />
             </Routes>
           </div>
         </>
-      ) : isLoading ? (
-        <div>Loading...</div>
       ) : (
         <Routes>
           <Route path="*" element={<Navigate to="/login" />} />

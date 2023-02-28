@@ -42,13 +42,8 @@ const LogInPage = (props) => {
   }
 
   useEffect(() => {
-    fetch("/isUserAuth", {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => (data.isLoggedIn ? navigate("/dashboard") : null));
+    fetchURL('/isUserAuth')
+    .then((data) => (data.isLoggedIn ? navigate("/dashboard") : null));
   }, []);
 
   return (
@@ -66,7 +61,7 @@ const LogInPage = (props) => {
       )}
       <div className="login-dark">
         <form onSubmit={handleLogin}>
-          <h2 className="login-form-heading">Login</h2>
+          <h2 className="login-form-heading">Bug Tracker Login</h2>
           <div className="illustration">
             <i className="icon ion-ios-locked-outline"></i>
           </div>
