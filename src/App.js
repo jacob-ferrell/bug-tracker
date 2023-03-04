@@ -4,7 +4,6 @@ import {
   Route,
   useNavigate,
   Navigate,
-  useParams,
 } from "react-router-dom";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
@@ -17,22 +16,22 @@ import MyTickets from "./components/MyTickets";
 import MyTeam from "./components/MyTeam";
 import ProjectDetails from "./components/ProjectDetails";
 import { fetchURL, fetchUser } from "./api.js";
-import { Spinner } from "react-bootstrap";
+
 
 function App(props) {
   const navigate = useNavigate();
 
-  const { name } = useParams();
-
-  const { data, isLoading, refetch } = useQuery("user", fetchUser);
+  const { data, refetch } = useQuery("user", fetchUser);
 
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [selectedTicket, setSelectedTicket] = useState(null);
 
+
+
   async function login(user) {
     const res = await fetchURL("/login", user);
-    if (res.isLoggedIn == false) return logout();
+    if (res.isLoggedIn === false) return logout();
     localStorage.setItem("token", res.token);
     refetch();
     navigate("/dashboard");

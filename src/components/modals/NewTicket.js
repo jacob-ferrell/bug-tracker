@@ -13,6 +13,9 @@ const NewTicket = (props) => {
   const [type, setType] = useState("");
   const [status, setStatus] = useState("");
   const [checkedUsers, setCheckedUsers] = useState({});
+  const [firefoxLoading, setFirefoxLoading] = useState(false);
+
+  const isFirefox = () => navigator.userAgent.includes('Firefox');
 
   let newTicket;
   const queryClient = props.queryClient;
@@ -35,7 +38,7 @@ const NewTicket = (props) => {
     setStatus(status);
     const type = ticket.type;
     setType(type);
-  }, []);
+  }, [props.ticket, props.users]);
 
   const handleCheckChange = (e) => {
     const userId = e.target.dataset.userid;
@@ -47,7 +50,7 @@ const NewTicket = (props) => {
 
   const users = props.users
     .filter(
-      (user) => user.email != props.userData.email && user.role === "developer"
+      (user) => user.email !== props.userData.email && user.role === "developer"
     )
     .map((user) => {
       return (
@@ -108,14 +111,14 @@ const NewTicket = (props) => {
       const previousProjects = queryClient.getQueryData("projects");
       await queryClient.setQueryData("projects", (oldQueryData) => {
         const project = oldQueryData.find(
-          (project) => project.project_id == newTicket.project_id
+          (project) => project.project_id === newTicket.project_id
         );
         project.tickets = [
           ...project.tickets,
           { id: project.tickets.length + 1, ...newTicket }
         ];
         const filtered = oldQueryData.filter(
-          (project) => project.project_id != newTicket.project_id
+          (project) => project.project_id !== newTicket.project_id
         );
         return [...filtered, project];
       });
@@ -149,8 +152,9 @@ const NewTicket = (props) => {
         status: "open",
         creator: props.userData.user_id,
       };
-      //console.log(JSON.stringify(newTicket));
-
+      if (!props.ticket && isFirefox()) {
+        return handleFirefoxSubmit(newTicket);
+      }
       if (!props.ticket) return mutation.mutate(newTicket);
 
       const edited = {
@@ -171,6 +175,14 @@ const NewTicket = (props) => {
       console.log(err);
     }
   };
+
+  async function handleFirefoxSubmit(newTicket) {
+    setFirefoxLoading(true);
+    await fetchURL("/createTicket", newTicket);
+    setFirefoxLoading(false);
+    queryClient.invalidateQueries("projects");
+    props.handleClose();
+  }
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
@@ -260,7 +272,7 @@ const NewTicket = (props) => {
           Cancel
         </Button>
         <Button variant="success" form="new-project-form" type="submit">
-          {mutation.isLoading && (
+          {(mutation.isLoading || firefoxLoading) && (
             <Spinner
               animation="border"
               as="span"
@@ -269,7 +281,7 @@ const NewTicket = (props) => {
               aria-hidden="true"
             />
           )}
-          {mutation.isLoading
+          {mutation.isLoading || firefoxLoading
             ? " Saving..."
             : !props.ticket
             ? "Create Ticket"
