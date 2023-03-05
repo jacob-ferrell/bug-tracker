@@ -25,8 +25,10 @@ const Header = (props) => {
     return notifications.data.filter((notification) => notification.unread);
   };
 
-  const getInitials = () =>
-    (user.data.firstName[0] + user.data.lastName[0]).toUpperCase();
+  const getInitials = () => {
+    if (!user?.data?.firstName) return "  ";
+    return (user.data.firstName[0] + user.data.lastName[0]).toUpperCase();
+  };
 
   const dropdownNotifications = notifications?.data?.map(
     (notification, i, a) => {
@@ -119,7 +121,7 @@ const Header = (props) => {
               ) : (
                 <Dropdown.Item>
                   <span className="dropdown-item" href="#">
-                    {'You have no notifications'}
+                    {"You have no notifications"}
                   </span>
                 </Dropdown.Item>
               )}
@@ -127,7 +129,7 @@ const Header = (props) => {
           </Dropdown>
           <Dropdown className="nav-item rounded-0 bg-dark">
             <Dropdown.Toggle variant="dark" className="rounded-0">
-              {user.isLoading ? '  ' : getInitials()}
+              {user.isLoading ? "  " : getInitials()}
               {/* <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" className="rounded-circle"
                         height="22" alt="Avatar" loading="lazy" /> */}
             </Dropdown.Toggle>
