@@ -1,7 +1,7 @@
 const server =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:5000"
-    : "https://bug-tracker-backend-934x.onrender.com";
+    ? process.env.SERVER_DEV_URL
+    : process.env.SERVER_PROD_URL;
 async function fetchURL(url, data = null) {
   const req = {
     headers: {
@@ -14,8 +14,7 @@ async function fetchURL(url, data = null) {
   if (data) req.body = JSON.stringify(data);
   const res = await fetch(server + url, { ...req });
   const json = await res.json();
-  if (process.env.NODE_ENV === 'development') console.log(url, json);
-
+  if (process.env.NODE_ENV === "development") console.log(url, json);
 
   if (json.failed) alert(json.message);
   if (json.isLoggedIn == false) logout();
