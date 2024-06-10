@@ -24,7 +24,7 @@ const MyTeam = (props) => {
 
   const hasAuth = () => {
     return (
-      teamData.find((user) => user.user_id == props.userData.user_id).role ==
+      teamData.find((user) => user.user_id === props.userData.user_id).role ==
       "admin"
     );
   };

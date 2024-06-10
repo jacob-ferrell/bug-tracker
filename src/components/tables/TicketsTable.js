@@ -41,9 +41,9 @@ const TicketsTable = (props) => {
   };
   const order = ["open", "in progress", "closed"];
   let projectData = projects.data;
-  if (props.sortBy == "project") {
+  if (props.sortBy === "project") {
     projectData = projectData.filter((project) => {
-      return project.project_id == projectId;
+      return project.project_id === projectId;
     });
   }
 
@@ -53,10 +53,10 @@ const TicketsTable = (props) => {
     projects.refetch();
   }, [props.filterByAssigned]);
 
-  if (props.sortBy == "creator") {
+  if (props.sortBy === "creator") {
     ticketData = ticketData.filter(
       (ticket) =>
-        ticket.creator.id == userData.user_id ||
+        ticket.creator.id === userData.user_id ||
         ticket.users.includes(userData.user_id)
     );
   }

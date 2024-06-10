@@ -26,7 +26,7 @@ const TeamTable = (props) => {
 
   const removeFromTeam = async (e) => {
     const userId = e.target.dataset.user;
-    const name = props.users.find((user) => user.user_id == userId).name;
+    const name = props.users.find((user) => user.user_id === userId).name;
     setUser(userId);
     setMessage({
       heading: 'Warning!',
@@ -40,7 +40,7 @@ const TeamTable = (props) => {
 
   const changeTeamRole = async (e) => {
     const userId = e.target.dataset.user;
-    const name = props.users.find((user) => user.user_id == userId).name;
+    const name = props.users.find((user) => user.user_id === userId).name;
     setUser(userId);
     setMessage({
       heading: 'Change Role',
@@ -85,16 +85,16 @@ const TeamTable = (props) => {
                 <Dropdown.Item
                   data-user={member.user_id}
                   onClick={
-                    props.type == "myteam" ? removeFromTeam : removeFromProject
+                    props.type === "myteam" ? removeFromTeam : removeFromProject
                   }
                 >
-                  {props.type == 'myteam' ? 'Remove User' : 'Remove From Project'}
+                  {props.type === 'myteam' ? 'Remove User' : 'Remove From Project'}
                 </Dropdown.Item>
                 <Dropdown.Item
                   data-user={member.user_id}
                   data-role={member.role}
                   onClick={
-                    props.type == "myteam" ? changeTeamRole : changeProjectRole
+                    props.type === "myteam" ? changeTeamRole : changeProjectRole
                   }
                 >
                   Change Role

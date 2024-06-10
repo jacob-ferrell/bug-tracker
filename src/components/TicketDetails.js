@@ -24,11 +24,11 @@ const TicketDetails = (props) => {
   useEffect(() => {
     if (!props.ticketId) return;
     const project = data.find(
-      (project) => project.project_id == props.projectId
+      (project) => project.project_id === props.projectId
     );
 
     const ticket = project.tickets.find(
-      (ticket) => ticket._id == props.ticketId
+      (ticket) => ticket._id === props.ticketId
     );
     setProject(project);
     setTicket(ticket);
@@ -77,7 +77,7 @@ const TicketDetails = (props) => {
   };
 
   const comments = props.comments
-    .filter((comment) => comment.ticket_id == props.ticketId)
+    .filter((comment) => comment.ticket_id === props.ticketId)
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .map((comment) => {
       return (

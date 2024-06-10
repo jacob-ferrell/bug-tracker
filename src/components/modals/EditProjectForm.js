@@ -18,14 +18,14 @@ const EditProjectForm = props => {
 
     const projects = props.projectData;
     const projectId = props.projectId;
-    const project = projects.find(project => project.project_id == projectId);
+    const project = projects.find(project => project.project_id === projectId);
 
     const mutation = useMutation(editProject, {
       onMutate: async newProject => {
         await queryClient.cancelQueries('projects');
         const previousProjects = queryClient.getQueryData('projects');
         await queryClient.setQueryData("projects", oldQueryData => {
-          const oldProject = oldQueryData.find(project => project.project_id == projectId);
+          const oldProject = oldQueryData.find(project => project.project_id === projectId);
           const filtered = oldQueryData.filter(project => project.project_id != projectId);
           return [
             ...filtered,

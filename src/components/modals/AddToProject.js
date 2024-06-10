@@ -48,7 +48,7 @@ const AddToProject = (props) => {
       const previousProjects = queryClient.getQueryData("projects");
       await queryClient.setQueryData("projects", (oldQueryData) => {
         const project = oldQueryData.find(
-          (project) => project.project_id == projectId
+          (project) => project.project_id === projectId
         );
         project.users = [
           ...project.users,
@@ -99,7 +99,7 @@ const AddToProject = (props) => {
       return props.handleClose();
     }
     const member = props.teamData.find(
-      (member) => member.user_id == selectedUser
+      (member) => member.user_id === selectedUser
     );
     userToAdd = member;
     mutation.mutate({ ...userToAdd });

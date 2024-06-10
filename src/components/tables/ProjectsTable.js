@@ -77,7 +77,7 @@ const ProjectsTable = (props) => {
   function getOpenTickets(project) {
     const id = project.project_id;
     return project.tickets?.filter((ticket) => {
-      return ticket.project_id == id && ticket.status == "open";
+      return ticket.project_id === id && ticket.status === "open";
     }).length;
   }
 

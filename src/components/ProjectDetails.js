@@ -40,7 +40,7 @@ const ProjectDetails = (props) => {
   const handleEditClick = (e) => {
     const ticketId = e.target.dataset.ticketid;
     setTicketToEdit(() =>
-      getProject().tickets.find((ticket) => ticket._id == ticketId)
+      getProject().tickets.find((ticket) => ticket._id === ticketId)
     );
 
     setShowNewTicket(true);
@@ -50,14 +50,14 @@ const ProjectDetails = (props) => {
 
   const getProject = () => {
     const project = projects.data.find(
-      (project) => project.project_id == projectId
+      (project) => project.project_id === projectId
     );
     return project;
   };
 
   const hasAuth = () => {
     const role = projects.data.find(
-      (user) => user.user_id == props.userData.user_id
+      (user) => user.user_id === props.userData.user_id
     ).role;
     return role != "developer";
   };
