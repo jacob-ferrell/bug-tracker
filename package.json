@@ -22,14 +22,16 @@
     "validator": "^13.7.0",
     "web-vitals": "^2.1.4"
   },
+  "homepage": "https://jacob-ferrell.github.io/bugtracker",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "serverStart": "node ./server/server.js"
   },
-  
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -47,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
   }
 }
