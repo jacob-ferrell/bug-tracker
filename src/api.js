@@ -1,7 +1,7 @@
 const server =
   process.env.NODE_ENV === "development"
-    ? process.env.SERVER_DEV_URL
-    : process.env.SERVER_PROD_URL;
+    ? "https://jacobferrell.net"
+    : "https://jacobferrell.net";
 async function fetchURL(url, data = null) {
   const req = {
     headers: {
@@ -17,7 +17,7 @@ async function fetchURL(url, data = null) {
   if (process.env.NODE_ENV === "development") console.log(url, json);
 
   if (json.failed) alert(json.message);
-  if (json.isLoggedIn == false) logout();
+  if (json.isLoggedIn === false) logout();
 
   return json;
 }
