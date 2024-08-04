@@ -1,7 +1,7 @@
-const server =
-  process.env.NODE_ENV === "development"
-    ? "https://jacobferrell.net"
-    : "https://jacobferrell.net";
+const server = "https://bugtracker-server.jacobferrell.net";
+  /* process.env.NODE_ENV === "development"
+    ? "https://bugtracker-server.jacobferrell.net"
+    : "https://bugtracker-server.jacobferrell.net"; */
 async function fetchURL(url, data = null) {
   const req = {
     headers: {
