@@ -5,7 +5,6 @@ import { fetchProjects } from "../api";
 import { useQuery } from "react-query";
 
 const MyTickets = (props) => {
-  const userData = props.userData;
   const projects = useQuery("projects", fetchProjects);
 
   return (

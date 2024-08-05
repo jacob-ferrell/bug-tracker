@@ -15,7 +15,7 @@ const queryClient = new QueryClient({
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <App queryClient={queryClient}/>
       </QueryClientProvider>

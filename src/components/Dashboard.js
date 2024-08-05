@@ -1,7 +1,7 @@
 import "../styles/Dashboard.css";
 import React from "react";
-import { useState, useEffect } from "react";
-import { fetchProjects, fetchTeam, fetchUser } from "../api";
+import { useState } from "react";
+import { fetchProjects, fetchUser } from "../api";
 import ProjectsTable from "./tables/ProjectsTable";
 import NewProjectForm from "./modals/NewProjectForm";
 import EditProjectForm from "./modals/EditProjectForm";
@@ -13,8 +13,7 @@ const Dashboard = (props) => {
   const [showEdit, setShowEdit] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const { data, isLoading, refetch } = useQuery("projects", fetchProjects);
-  const team = useQuery('team', fetchTeam);
+  const { data, isLoading } = useQuery("projects", fetchProjects);
   const user = useQuery('user', fetchUser);
 
 /*   useEffect(() => {

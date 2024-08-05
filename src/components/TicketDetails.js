@@ -63,7 +63,6 @@ const TicketDetails = (props) => {
       alert(error + "an error occurred");
     },
     onSettled: () => {
-      //queryClient.invalidateQueries("comments");
       setCommentContent("");
     },
   });

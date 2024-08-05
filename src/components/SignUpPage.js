@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
-const SignUpPage = props => {
+const SignUpPage = () => {
 
     const navigate = useNavigate();
 

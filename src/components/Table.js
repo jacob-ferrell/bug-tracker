@@ -6,7 +6,7 @@ const Table = props => {
     const users = props.users;
     const tickets = props.tickets;
 
-    let projectRows, teamRows, userRows, ticketRows, checkBox;
+    let projectRows, teamRows, userRows, ticketRows;
 
 
     let headings = {
@@ -27,10 +27,6 @@ const Table = props => {
         return project.tickets.filter(ticket => {
             return ticket.project_id === id && ticket.status === 'open';
         }).length;
-    }
-
-    function getCheckBox() {
-
     }
 
     if (teamData) {
@@ -56,9 +52,6 @@ const Table = props => {
                 return (
                     <tr key={project.name + i} className='table-project-row' data-projectid={id}
                     data-name={project.name} onClick={props.handleClick}>
-                        {/* <td><button data-projectid={project.project_id} 
-                        className='btn btn-info add-ticket-btn' 
-                        data-type='ticket' onClick={props.addTicket}>+</button></td> */}
                         <td>{project.name}</td>
                         <td>{role[0].toUpperCase() + role.slice(1)}</td>
                         <td>{openTickets}</td>

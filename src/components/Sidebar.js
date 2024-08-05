@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 
-const Sidebar = props => {
-
-    const userData = props.userData;
-    const linkStyle = {
-        textDecoration: 'none',
-        color: 'dark-grey'
-    }
+const Sidebar = () => {
 
     return (
        

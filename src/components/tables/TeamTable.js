@@ -11,8 +11,6 @@ const TeamTable = (props) => {
   const [user, setUser] = useState(null);
   const [hideRole, setHideRole] = useState(false);
 
-  const hasAuth = props.hasAuth || true;
-
   const headings = ["Name", "Email", "Role", ""].map((heading, i) => {
     return (
       <th className="text-left" key={heading + i}>
@@ -20,9 +18,6 @@ const TeamTable = (props) => {
       </th>
     );
   });
-  let dropdownItems = ["Remove User", "Change Role"].map((text) => (
-    <Dropdown.Item>{text}</Dropdown.Item>
-  ));
 
   const removeFromTeam = async (e) => {
     const userId = e.target.dataset.user;
@@ -72,7 +67,7 @@ const TeamTable = (props) => {
   };
 
   const teamRows = props.users
-    .filter((member) => member.email != props.userData.email)
+    .filter((member) => member.email !== props.userData.email)
     .map((member, i) => {
       return (
         <tr key={member.name + i}>
