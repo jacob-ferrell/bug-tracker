@@ -5,7 +5,7 @@ import {
   useNavigate,
   Navigate,
 } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import LogInPage from "./components/LogInPage";
 import SignUpPage from "./components/SignUpPage";
@@ -27,15 +27,12 @@ function App(props) {
 
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-
-
   async function login(user) {
     const res = await fetchURL("/login", user);
     if (res.isLoggedIn === false) return logout();
     localStorage.setItem("token", res.token);
     refetch();
     navigate("/dashboard");
-    //props.queryClient.invalidateQueries();
   }
 
   async function logout() {
@@ -60,7 +57,7 @@ function App(props) {
   return (
     <div className="App">
 
-      {data?.isLoggedIn ? (
+      {(data && data.isLoading) || (data && data.isLoggedIn) ? (
         <>
           <header>
             <Header
@@ -113,7 +110,7 @@ function App(props) {
         </>
       ) : (
         <Routes>
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route
             path="/login"
             exact
