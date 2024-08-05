@@ -22,7 +22,7 @@
     "validator": "^13.7.0",
     "web-vitals": "^2.1.4"
   },
-  "homepage": "https://jacob-ferrell.github.io/bug-tracker",
+  "homepage": ".",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
