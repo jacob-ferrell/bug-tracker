@@ -15,6 +15,9 @@
 # production
 /build
 
+# deployment script
+build_deploy.sh
+
 # misc
 .DS_Store
 .env.local
