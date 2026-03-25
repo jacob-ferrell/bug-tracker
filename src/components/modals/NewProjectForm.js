@@ -11,7 +11,7 @@ const NewProjectForm = (props) => {
   const [description, setDescription] = useState("");
   const queryClient = props.queryClient;
 
-  const addProject = (project) => fetchURL("/createProject", project);
+  const addProject = (project) => fetchURL("/projects", project);
 
   const mutation = useMutation(addProject, {
     onMutate: async (newProject) => {

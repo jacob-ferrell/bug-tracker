@@ -36,13 +36,13 @@ const LogInPage = (props) => {
       ...demoUsers.find((user) => user.lastName === capitalize(demoRole)),
       emails: demoUsers.map((user) => user.email),
     };
-    fetchURL('/createDemoData', {email: user.email, emails: user.emails})
+    fetchURL('/demo', {email: user.email, emails: user.emails})
     .then(() => props.login(user))
     .finally(() => setLoading(false))
   }
 
   useEffect(() => {
-    fetchURL('/isUserAuth')
+    fetchURL('/auth/me')
     .then((data) => (data.isLoggedIn ? navigate("/dashboard") : null));
   }, []);
 

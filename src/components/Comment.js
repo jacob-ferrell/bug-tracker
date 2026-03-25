@@ -13,11 +13,10 @@ const Comment = (props) => {
     ["admin", "project-manager"].includes(props.project.role);
 
   const deleteComment = async (e) => {
-    await fetchURL('/deleteComment', {
-      comment: props.comment._id,
+    await fetchURL(`/comments/${props.comment._id}`, {
       project: props.project.project_id,
       ticket: props.ticketId
-    });
+    }, "DELETE");
     props.queryClient.invalidateQueries();
   }
 

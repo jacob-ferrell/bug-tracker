@@ -11,7 +11,7 @@ export default async function createDemoUsers () {
   }));
 
   for (let i in demoUsers) {
-    const res = await fetchURL("/signup", demoUsers[i]);
+    const res = await fetchURL("/auth/signup", demoUsers[i]);
     if (res.failed) return null;
 
   }

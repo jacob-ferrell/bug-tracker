@@ -17,7 +17,7 @@ const Header = (props) => {
         unread: false,
       }));
     });
-    await fetchURL("/readNotifications");
+    await fetchURL("/notifications/read", null, "PATCH");
     props.queryClient.invalidateQueries("notifications");
   };
 

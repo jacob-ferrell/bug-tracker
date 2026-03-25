@@ -1,16 +1,14 @@
 const server = "https://bugtracker-server.jacobferrell.net";
-  /* process.env.NODE_ENV === "development"
-    ? "https://bugtracker-server.jacobferrell.net"
-    : "https://bugtracker-server.jacobferrell.net"; */
-async function fetchURL(url, data = null) {
+
+async function fetchURL(url, data = null, method = null) {
   const req = {
     headers: {
       "Content-type": "application/json",
     },
   };
-  if (url != "/login")
+  if (url !== "/auth/login")
     req.headers["x-access-token"] = localStorage.getItem("token");
-  req.method = data ? "POST" : "GET";
+  req.method = method || (data ? "POST" : "GET");
   if (data) req.body = JSON.stringify(data);
   const res = await fetch(server + url, { ...req });
   const json = await res.json();
@@ -21,21 +19,11 @@ async function fetchURL(url, data = null) {
 
   return json;
 }
-const fetchProjects = async () => {
-  return await fetchURL("/getProjectData");
-};
 
-const fetchTeam = async () => {
-  return await fetchURL("/getTeamMembers");
-};
-
-const fetchUser = async () => {
-  return await fetchURL("/isUserAuth");
-};
-
-const fetchNotifications = async () => {
-  return await fetchURL("/getNotifications");
-};
+const fetchProjects = async () => fetchURL("/projects");
+const fetchTeam = async () => fetchURL("/team/members");
+const fetchUser = async () => fetchURL("/auth/me");
+const fetchNotifications = async () => fetchURL("/notifications");
 
 function logout() {
   localStorage.removeItem("token");

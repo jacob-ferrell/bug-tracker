@@ -18,7 +18,7 @@ const MyTeam = (props) => {
   }, [])
 
   const handleLeaveClick = async (e) => {
-    await fetchURL("/leaveTeam");
+    await fetchURL("/team/leave", {});
     props.queryClient.invalidateQueries();
   };
 

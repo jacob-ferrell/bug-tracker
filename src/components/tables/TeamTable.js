@@ -19,6 +19,8 @@ const TeamTable = (props) => {
     );
   });
 
+  const [method, setMethod] = useState(null);
+
   const removeFromTeam = async (e) => {
     const userId = e.target.dataset.user;
     const name = props.users.find((user) => user.user_id === userId).name;
@@ -26,11 +28,10 @@ const TeamTable = (props) => {
     setMessage({
       heading: 'Warning!',
       body: `Are you sure you want to remove ${name} from the team?`});
-    setURL("/removeFromTeam");
+    setURL(`/team/members/${userId}`);
+    setMethod("DELETE");
     setShowWarning(true);
     setHideRole(true);
-    /* await fetchURL("/removeFromTeam", { user });
-    props.queryClient.invalidateQueries({queryKey: ['team']});   */
   };
 
   const changeTeamRole = async (e) => {
@@ -42,7 +43,8 @@ const TeamTable = (props) => {
       body: `Select a new Team role for ${name}`,
       change: true
     });
-    setURL("/changeTeamRole");
+    setURL(`/team/members/${userId}/role`);
+    setMethod("PATCH");
     setShowWarning(true);
     setHideRole(false);
   };
@@ -50,7 +52,7 @@ const TeamTable = (props) => {
   const removeFromProject = async (e) => {
     const user = e.target.dataset.user;
     const project = props.getProject().project_id;
-    await fetchURL('/removeFromProject', {user, project});
+    await fetchURL(`/projects/${project}/members/${user}`, null, "DELETE");
     props.queryClient.invalidateQueries();
   };
 
@@ -109,6 +111,7 @@ const TeamTable = (props) => {
           show={showWarning}
           message={message}
           url={url}
+          method={method}
           user={user}
           queryClient={props.queryClient}
           hideRole={hideRole}

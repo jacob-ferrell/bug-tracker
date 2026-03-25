@@ -103,7 +103,7 @@ const NewTicket = (props) => {
     );
   });
 
-  const addTicket = () => fetchURL("/createTicket", newTicket);
+  const addTicket = () => fetchURL("/tickets", newTicket);
 
   const mutation = useMutation(addTicket, {
     onMutate: async (newTicket) => {
@@ -167,7 +167,7 @@ const NewTicket = (props) => {
         type,
         status: status.toLowerCase(),
       };
-      await fetchURL("/editTicket", { ticket: edited });
+      await fetchURL(`/tickets/${edited._id}`, { ticket: edited }, "PUT");
       //props.refetch();
       queryClient.invalidateQueries("projects");
       props.handleClose();
@@ -178,7 +178,7 @@ const NewTicket = (props) => {
 
   async function handleFirefoxSubmit(newTicket) {
     setFirefoxLoading(true);
-    await fetchURL("/createTicket", newTicket);
+    await fetchURL("/tickets", newTicket);
     setFirefoxLoading(false);
     queryClient.invalidateQueries("projects");
     props.handleClose();

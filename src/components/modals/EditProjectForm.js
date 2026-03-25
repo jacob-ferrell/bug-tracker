@@ -14,7 +14,7 @@ const EditProjectForm = props => {
 
     const queryClient = props.queryClient;
 
-    const editProject = project => fetchURL('/editProject', project);
+    const editProject = project => fetchURL(`/projects/${project.project_id}`, project, "PUT");
 
     const projects = props.projectData;
     const projectId = props.projectId;

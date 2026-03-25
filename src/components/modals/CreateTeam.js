@@ -14,7 +14,7 @@ const CreateTeam = props => {
         const team = {
             name,
         }
-        await fetchURL('/createTeam', team);
+        await fetchURL('/teams', team);
         props.queryClient.invalidateQueries();
         props.handleClose();
     }

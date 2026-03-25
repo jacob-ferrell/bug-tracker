@@ -36,9 +36,8 @@ const AddToProject = (props) => {
     });
 
   const addToProject = () =>
-    fetchURL("/addMemberToProject", {
+    fetchURL(`/projects/${projectId}/members`, {
       user_id: userToAdd.user_id,
-      project_id: projectId,
       role,
     });
 
@@ -75,10 +74,11 @@ const AddToProject = (props) => {
 
   const handleSubmitClick = async (e) => {
     if (props.member) {
-      const res = await fetchURL("/changeProjectRole", {
-        ...props.member,
-        role,
-      });
+      const res = await fetchURL(
+        `/projects/${props.member.project}/members/${props.member.user}/role`,
+        { role },
+        "PATCH"
+      );
       if (res.failed) return;
      /*  queryClient.setQueryData("projects", (prev) => {
         const project = prev.find(

@@ -26,7 +26,7 @@ const ProjectDetails = (props) => {
   }, [projectId]);
 
   async function fetchComments() {
-    return await fetchURL("/getComments", { project_id: projectId });
+    return await fetchURL(`/comments?project_id=${projectId}`);
   }
 
   const team = useQuery("team", fetchTeam);

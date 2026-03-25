@@ -13,7 +13,7 @@ const AddToTeam = (props) => {
   const queryClient = props.queryClient;
 
   const addToTeam = () =>
-    fetchURL("/addToTeam", { user_id: foundUser, role });
+    fetchURL("/team/members", { user_id: foundUser, role });
 
   const mutation = useMutation(addToTeam, {
     onMutate: async (newMember) => {
@@ -45,7 +45,7 @@ const AddToTeam = (props) => {
     }
     setSearching(true);
 
-    const res = await fetchURL("/findUser", { email: email });
+    const res = await fetchURL("/users/search", { email: email });
     if (res.team) {
       alert("This user already has a team");
     }

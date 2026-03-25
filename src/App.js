@@ -28,7 +28,7 @@ function App(props) {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   async function login(user) {
-    const res = await fetchURL("/login", user);
+    const res = await fetchURL("/auth/login", user);
     if (res.isLoggedIn === false) return logout();
     localStorage.setItem("token", res.token);
     refetch();
@@ -36,7 +36,7 @@ function App(props) {
   }
 
   async function logout() {
-    await fetchURL("/deleteDemoData");
+    await fetchURL("/demo", null, "DELETE");
 
     localStorage.removeItem("token");
     localStorage.removeItem("selectedProject");

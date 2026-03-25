@@ -13,7 +13,6 @@ const TicketsTable = (props) => {
 
   const handleDeleteClick = (e) => {
     const ticket = JSON.parse(e.target.dataset.ticket);
-
     setTicket(() => ticket);
     setMessage({
       body: `Are you sure you want to delete '${ticket.title}' ? All data for this ticket will be lost`,
@@ -21,6 +20,8 @@ const TicketsTable = (props) => {
     });
     setShowWarning(true);
   };
+
+  const deleteTicketUrl = ticket ? `/tickets/${ticket._id}` : null;
   const headings = ["Ticket Title", "Description", "Status", ""].map(
     (heading, i) => {
       return (
@@ -123,7 +124,8 @@ const TicketsTable = (props) => {
           close={() => setShowWarning(false)}
           show={showWarning}
           message={message}
-          url="/deleteTicket"
+          url={deleteTicketUrl}
+          method="DELETE"
           ticket={ticket}
           queryClient={props.queryClient}
           hideRole={true}

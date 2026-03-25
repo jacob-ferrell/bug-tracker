@@ -6,6 +6,7 @@ const Warning = ({
   hideRole,
   user,
   url,
+  method,
   message,
   queryClient,
   show,
@@ -16,15 +17,8 @@ const Warning = ({
   const [role, setRole] = useState("");
 
   const handleConfirmClick = async (e) => {
-    await fetchURL(url, {
-      user,
-      role,
-      project_id: project,
-      ticket: {
-        ticket_id: ticket?._id,
-        project_id: ticket?.project_id
-      }
-    });
+    const body = method === "DELETE" ? null : { user, role, project_id: project };
+    await fetchURL(url, body, method);
     queryClient.invalidateQueries();
     close();
   };

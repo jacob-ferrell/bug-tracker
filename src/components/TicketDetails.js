@@ -34,7 +34,7 @@ const TicketDetails = (props) => {
     setTicket(ticket);
   }, [props.ticketId, data]);
 
-  const addComment = () => fetchURL("/createComment", comment);
+  const addComment = () => fetchURL(`/tickets/${props.ticketId}/comments`, comment);
 
   const mutation = useMutation(addComment, {
     onMutate: async (newComment) => {
