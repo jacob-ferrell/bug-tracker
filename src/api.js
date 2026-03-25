@@ -1,4 +1,4 @@
-const server = "https://bugtracker-server.jacobferrell.net";
+const server = process.env.REACT_APP_SERVER ?? "https://bugtracker-server.jacobferrell.net";
 
 async function fetchURL(url, data = null, method = null) {
   const req = {

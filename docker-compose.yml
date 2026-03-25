@@ -1,0 +1,21 @@
+services:
+  backend:
+    build:
+      context: ../bug-tracker-backend
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+  frontend:
+    build:
+      context: .
+      args:
+        REACT_APP_SERVER: /api
+    ports:
+      - "127.0.0.1:5002:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
